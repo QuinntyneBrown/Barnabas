@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+  Editable current-member profile and settings page.
+  Responsive notes:
+  - <768px: profile fields and settings stack in a single column.
+  - >=768px: core profile fields form a two-column grid while settings remain stacked below.
+  - >=1280px: no material layout change beyond wider margins.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My profile and settings · Barnabas</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html">Board</a>
+      <a href="search-results.html">Search</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="requests-incoming.html">Requests</a>
+      <a href="my-listings-active.html">My listings</a>
+      <a href="my-profile-settings.html" aria-current="page">Profile</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+    </div>
+  </div>
+</header>
+<main id="main" class="page-main">
+  <div class="container stack">
+    <div class="section-title">
+      <h1 class="mb-0">My profile</h1>
+      <span class="text-sm text-muted">Visible to St. Aidan's members</span>
+    </div>
+
+    <section class="card panel">
+      <form class="stack">
+        <div class="photo-placeholder">
+          <div class="avatar" aria-hidden="true">
+            <svg viewBox="0 0 80 80" width="80" height="80" role="img">
+              <circle cx="40" cy="40" r="40" fill="#ece5f4" />
+              <text x="40" y="47" text-anchor="middle" font-size="28" font-family="Arial, sans-serif" fill="#6d4a9c" font-weight="700">PK</text>
+            </svg>
+          </div>
+          <div>
+            <h2 class="mb-0">Priya K.</h2>
+            <p class="text-muted">Current photo placeholder</p>
+            <a class="btn btn-secondary btn-sm" href="#">Change photo</a>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="profile-name">Display name</label>
+            <input id="profile-name" type="text" value="Priya K.">
+          </div>
+          <div class="field">
+            <label for="profile-neighbourhood">Neighbourhood</label>
+            <select id="profile-neighbourhood">
+              <option>Leslieville</option>
+              <option>Riverdale</option>
+              <option>The Danforth</option>
+              <option>East York</option>
+              <option>Scarborough</option>
+              <option>The Beaches</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="profile-bio">Short bio</label>
+          <textarea id="profile-bio">Parent of two school-age kids, usually around St. Aidan's on Sundays, and glad to swap practical help with neighbours nearby.</textarea>
+        </div>
+
+        <fieldset class="field">
+          <legend>What you can help with</legend>
+          <div class="check-list">
+            <label class="check-row"><input type="checkbox" checked> School pickup backup</label>
+            <label class="check-row"><input type="checkbox" checked> Homework help / tutoring</label>
+            <label class="check-row"><input type="checkbox"> Meal train coordination</label>
+            <label class="check-row"><input type="checkbox" checked> Baby gear advice</label>
+            <label class="check-row"><input type="checkbox"> Tech support</label>
+            <label class="check-row"><input type="checkbox"> Hospital visits</label>
+          </div>
+        </fieldset>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" type="submit">Save profile</button>
+          <a class="btn btn-ghost" href="member-profile.html">Preview public profile</a>
+        </div>
+      </form>
+    </section>
+
+    <section class="card panel stack" aria-labelledby="settings-heading">
+      <h2 id="settings-heading" class="mb-0">Settings</h2>
+
+      <fieldset class="field">
+        <legend>Notification preferences</legend>
+        <div class="check-list">
+          <label class="check-row"><input type="checkbox" checked> Email me when someone requests my listing</label>
+          <label class="check-row"><input type="checkbox" checked> Notify me about new messages</label>
+          <label class="check-row"><input type="checkbox" checked> Notify me when a request is accepted or declined</label>
+          <label class="check-row"><input type="checkbox"> Weekly digest of new listings near Leslieville</label>
+        </div>
+      </fieldset>
+
+      <div class="card panel danger-zone">
+        <h3>Leave St. Aidan's board</h3>
+        <p class="text-muted">Your listings and requests would be hidden until a moderator reactivates your access.</p>
+        <a class="btn btn-danger" href="#">Leave St. Aidan's board</a>
+      </div>
+    </section>
+  </div>
+</main>
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
+  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
+  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
+  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
+  <a href="my-profile-settings.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+</nav>
+</body>
+</html>

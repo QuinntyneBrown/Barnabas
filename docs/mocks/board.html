@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--
+  Board (main browse view). Mixed listing types with filter chips.
+  Responsive notes:
+  - <768px: single-column card grid, bottom tab bar for primary nav.
+  - >=768px: two-column card grid, header nav replaces bottom tab bar.
+  - >=1280px: three-column card grid, filter chips no longer scroll (wrap).
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Board · Barnabas</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html" aria-current="page">Board</a>
+      <a href="search-results.html">Search</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="requests-incoming.html">Requests</a>
+      <a href="my-listings-active.html">My listings</a>
+      <a href="my-profile-settings.html">Profile</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+  <div class="container">
+    <div class="section-title">
+      <h1 class="mb-0">St. Aidan's Board</h1>
+      <a href="search-results.html" class="text-sm">Search →</a>
+    </div>
+
+    <nav aria-label="Filter by listing type" class="chip-row" style="margin-bottom: var(--space-5);">
+      <a class="chip is-active" aria-current="true" href="board.html">All</a>
+      <a class="chip" href="board.html#lend">Lend</a>
+      <a class="chip" href="board.html#give">Give</a>
+      <a class="chip" href="board.html#sell">Sell</a>
+      <a class="chip" href="board-help.html">Help</a>
+    </nav>
+
+    <div class="board-grid">
+
+      <a class="card listing-card" href="listing-lend.html">
+        <div class="listing-card-media">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Photo of a ladder">
+            <rect width="400" height="300" fill="#e5f0ec"/>
+            <g stroke="#2f6d5e" stroke-width="6" fill="none" stroke-linecap="round">
+              <line x1="120" y1="40" x2="90" y2="260"/>
+              <line x1="220" y1="40" x2="250" y2="260"/>
+              <line x1="102" y1="90" x2="234" y2="90"/>
+              <line x1="98" y1="140" x2="238" y2="140"/>
+              <line x1="94" y1="190" x2="242" y2="190"/>
+            </g>
+          </svg>
+        </div>
+        <div class="listing-card-body">
+          <span class="badge-type badge-type-lend">Lend</span>
+          <h3 class="listing-card-title">6ft aluminum step ladder</h3>
+          <p class="listing-card-meta mb-0">Riverdale · posted by Marion T.</p>
+          <div class="listing-card-footer">
+            <span class="text-sm text-muted">Back within 2 weeks</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card listing-card listing-card-help" href="listing-help.html">
+        <div class="listing-card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.5C.7 8.8 2.6 5 6.2 5c2 0 3.4 1.1 4.3 2.4C11.4 6.1 12.8 5 14.8 5c3.6 0 5.5 3.8 3.7 7.5C20.5 16.65 12 21 12 21z"/></svg>
+        </div>
+        <div class="listing-card-body">
+          <span class="badge-type badge-type-help">Help</span>
+          <h3 class="listing-card-title">Rides to dialysis, Tues/Thurs</h3>
+          <p class="listing-card-meta mb-0">Offered by Desmond O. · The Beaches</p>
+          <div class="listing-card-footer">
+            <span class="text-sm text-muted">Available Tue &amp; Thu mornings</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card listing-card" href="listing-sell.html">
+        <div class="listing-card-media">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Photo of a bicycle">
+            <rect width="400" height="300" fill="#f5e9dc"/>
+            <g stroke="#a15a1f" stroke-width="6" fill="none" stroke-linecap="round">
+              <circle cx="130" cy="210" r="55"/>
+              <circle cx="280" cy="210" r="55"/>
+              <path d="M130 210l60-100h70l20 100"/>
+              <path d="M190 110l50 100"/>
+              <path d="M190 110h-30"/>
+            </g>
+          </svg>
+        </div>
+        <div class="listing-card-body">
+          <span class="badge-type badge-type-sell">Sell</span>
+          <h3 class="listing-card-title">Kids' 20" bike, barely used</h3>
+          <p class="listing-card-meta mb-0">Leslieville · posted by Priya K.</p>
+          <div class="listing-card-footer">
+            <span class="listing-card-price">$60</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card listing-card" href="listing-give.html">
+        <div class="listing-card-media">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Photo of a crib">
+            <rect width="400" height="300" fill="#ece5f4"/>
+            <g stroke="#6d4a9c" stroke-width="6" fill="none" stroke-linecap="round">
+              <rect x="90" y="90" width="220" height="120" rx="8"/>
+              <line x1="90" y1="90" x2="90" y2="240"/>
+              <line x1="310" y1="90" x2="310" y2="240"/>
+              <line x1="130" y1="100" x2="130" y2="200"/>
+              <line x1="170" y1="100" x2="170" y2="200"/>
+              <line x1="210" y1="100" x2="210" y2="200"/>
+              <line x1="250" y1="100" x2="250" y2="200"/>
+            </g>
+          </svg>
+        </div>
+        <div class="listing-card-body">
+          <span class="badge-type badge-type-give">Give</span>
+          <h3 class="listing-card-title">Crib, mattress included</h3>
+          <p class="listing-card-meta mb-0">The Danforth · posted by Angela F.</p>
+          <div class="listing-card-footer">
+            <span class="text-sm text-muted">Free · pickup only</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card listing-card" href="listing-lend.html">
+        <div class="listing-card-media">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Photo of a canoe">
+            <rect width="400" height="300" fill="#e5f0ec"/>
+            <path d="M40 190 Q200 130 360 190 Q200 240 40 190Z" fill="none" stroke="#2f6d5e" stroke-width="6"/>
+          </svg>
+        </div>
+        <div class="listing-card-body">
+          <span class="badge-type badge-type-lend">Lend</span>
+          <h3 class="listing-card-title">16ft Nova Craft canoe + paddles</h3>
+          <p class="listing-card-meta mb-0">Scarborough · posted by Hank W.</p>
+          <div class="listing-card-footer">
+            <span class="text-sm text-muted">Back by Labour Day</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card listing-card listing-card-help" href="listing-help.html">
+        <div class="listing-card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16M6 19V9l6-4 6 4v10"/><path d="M9 19v-5h6v5"/></svg>
+        </div>
+        <div class="listing-card-body">
+          <span class="badge-type badge-type-help">Help</span>
+          <h3 class="listing-card-title">Help moving apartment, one Saturday</h3>
+          <p class="listing-card-meta mb-0">Offered by the Odusanya family · East York</p>
+          <div class="listing-card-footer">
+            <span class="text-sm text-muted">Any Saturday in June</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card listing-card" href="listing-sell.html">
+        <div class="listing-card-media">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Photo of a cordless drill">
+            <rect width="400" height="300" fill="#f5e9dc"/>
+            <g stroke="#a15a1f" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="150" y="120" width="120" height="50" rx="8"/>
+              <path d="M270 135h40v20h-40z"/>
+              <path d="M190 170l-30 60"/>
+            </g>
+          </svg>
+        </div>
+        <div class="listing-card-body">
+          <span class="badge-type badge-type-sell">Sell</span>
+          <h3 class="listing-card-title">DeWalt cordless drill, 2 batteries</h3>
+          <p class="listing-card-meta mb-0">Riverdale · posted by Marion T.</p>
+          <div class="listing-card-footer">
+            <span class="listing-card-price">$45</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card listing-card" href="listing-give.html">
+        <div class="listing-card-media">
+          <svg viewBox="0 0 400 300" role="img" aria-label="Photo of a box of books">
+            <rect width="400" height="300" fill="#ece5f4"/>
+            <g stroke="#6d4a9c" stroke-width="6" fill="none">
+              <rect x="110" y="110" width="180" height="110" rx="4"/>
+              <line x1="110" y1="150" x2="290" y2="150"/>
+            </g>
+          </svg>
+        </div>
+        <div class="listing-card-body">
+          <span class="badge-type badge-type-give">Give</span>
+          <h3 class="listing-card-title">Box of paperback novels</h3>
+          <p class="listing-card-meta mb-0">Leslieville · posted by Priya K.</p>
+          <div class="listing-card-footer">
+            <span class="text-sm text-muted">Free · pickup only</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
+  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
+  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
+  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
+  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+</nav>
+</body>
+</html>
