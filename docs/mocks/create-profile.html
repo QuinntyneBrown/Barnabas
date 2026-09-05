@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+  Profile creation page after a valid St. Aidan's invite.
+  Responsive notes:
+  - <768px: single centered form column.
+  - >=768px: no material layout change, just more surrounding whitespace around the same max-440px column.
+  - >=1280px: no material layout change, only wider page margins.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create your profile · Barnabas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="landing.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    </div>
+  </header>
+
+  <main id="main" class="page-main">
+    <div class="container">
+      <div class="auth-shell">
+        <section class="card panel stack">
+          <a class="back-link" href="join-invite.html">← Back</a>
+          <div class="stack">
+            <h1>Create your profile</h1>
+            <p class="text-muted">A simple profile helps fellow parishioners know who they are meeting and what kinds of help you are open to giving.</p>
+          </div>
+
+          <form action="board.html" method="get">
+            <div class="field">
+              <label>Photo</label>
+              <div class="avatar avatar-lg" aria-hidden="true">
+                <svg viewBox="0 0 160 160" role="img" aria-label="Profile photo placeholder with camera icon">
+                  <circle cx="80" cy="80" r="80" fill="var(--color-surface-alt)"></circle>
+                  <circle cx="80" cy="64" r="28" fill="none" stroke="var(--color-text-muted)" stroke-width="6"></circle>
+                  <path d="M40 126c10-20 24-30 40-30s30 10 40 30" fill="none" stroke="var(--color-text-muted)" stroke-width="6" stroke-linecap="round"></path>
+                  <circle cx="116" cy="116" r="26" fill="var(--color-primary)"></circle>
+                  <path d="M105 117h22M116 106v22" stroke="#fff" stroke-width="6" stroke-linecap="round"></path>
+                  <rect x="101" y="104" width="30" height="26" rx="6" fill="none" stroke="#fff" stroke-width="4"></rect>
+                </svg>
+              </div>
+              <p class="field-hint">You can add a photo later if you prefer.</p>
+            </div>
+
+            <div class="field">
+              <label for="full-name">Full name</label>
+              <input id="full-name" name="full-name" type="text" autocomplete="name" placeholder="Lillian Osei" required>
+            </div>
+
+            <div class="field">
+              <label for="neighbourhood">Neighbourhood</label>
+              <select id="neighbourhood" name="neighbourhood" required>
+                <option value="">Choose your area</option>
+                <option>Riverdale</option>
+                <option>Leslieville</option>
+                <option>The Danforth</option>
+                <option>Scarborough</option>
+                <option>The Beaches</option>
+                <option>East York</option>
+                <option>Cabbagetown</option>
+                <option>North York</option>
+              </select>
+            </div>
+
+            <fieldset>
+              <legend>What are you willing to help with?</legend>
+              <div class="check-list">
+                <label class="check-row" for="help-rides"><input id="help-rides" name="help-rides" type="checkbox"> Rides to appointments or church events</label>
+                <label class="check-row" for="help-tutoring"><input id="help-tutoring" name="help-tutoring" type="checkbox"> Tutoring or homework help</label>
+                <label class="check-row" for="help-moving"><input id="help-moving" name="help-moving" type="checkbox"> Moving help for small jobs</label>
+                <label class="check-row" for="help-tech"><input id="help-tech" name="help-tech" type="checkbox"> Tech support for phones, email, or printers</label>
+                <label class="check-row" for="help-company"><input id="help-company" name="help-company" type="checkbox"> Sitting with someone or checking in</label>
+                <label class="check-row" for="help-repairs"><input id="help-repairs" name="help-repairs" type="checkbox"> Minor repairs around the home</label>
+              </div>
+            </fieldset>
+
+            <button class="btn btn-primary btn-block" type="submit">Finish setting up my profile</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

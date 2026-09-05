@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!--
+  Archived listings with a confirmation dialog for permanent deletion. This
+  is the one deliberate use of mocks.js in the set: it opens/closes the
+  native <dialog> confirmation. With JavaScript disabled the "Delete
+  permanently" buttons are inert (no destructive action happens) rather than
+  silently deleting, which is the safe fallback for a mock. Responsive
+  notes: no material layout change beyond wider margins; the shared header
+  nav replaces the bottom tab bar from 768px upward.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archived listings · Barnabas</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html">Board</a>
+      <a href="search-results.html">Search</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="requests-incoming.html">Requests</a>
+      <a href="my-listings-active.html" aria-current="page">My listings</a>
+      <a href="my-profile-settings.html">Profile</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+    </div>
+  </div>
+</header>
+<main id="main" class="page-main">
+  <div class="container">
+    <div class="section-title">
+      <div>
+        <h1>Archived listings</h1>
+        <p class="text-muted mb-0">Past listings Priya K. has already wrapped up or tucked away.</p>
+      </div>
+    </div>
+    <nav class="chip-row" aria-label="My listing views">
+      <a class="chip" href="my-listings-active.html">Active</a>
+      <a class="chip is-active" aria-current="true" href="my-listings-archived.html">Archived</a>
+    </nav>
+
+    <div class="stack">
+      <article class="card">
+        <div class="list-row list-row-muted">
+          <div class="stack">
+            <p class="mb-0"><span class="badge-type badge-type-sell">Sell</span> <span class="badge-status badge-status-sold">Sold</span></p>
+            <h2 class="listing-card-title">Set of four winter tires, 16&quot;</h2>
+            <p class="text-sm mb-0">Sold to Robert Nguyen for $180 CAD · Pickup completed in East York.</p>
+            <div class="btn-group">
+              <button class="btn btn-ghost btn-sm" type="button">View details</button>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="delete-confirm-tires">Delete permanently</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="list-row list-row-muted">
+          <div class="stack">
+            <p class="mb-0"><span class="badge-type badge-type-give">Give</span> <span class="badge-status badge-status-given">Given away</span></p>
+            <h2 class="listing-card-title">Baby gate, pressure-mounted</h2>
+            <p class="text-sm mb-0">Picked up by the Odusanya family after Sunday liturgy.</p>
+            <div class="btn-group">
+              <button class="btn btn-ghost btn-sm" type="button">View details</button>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="delete-confirm-gate">Delete permanently</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="list-row list-row-muted">
+          <div class="stack">
+            <p class="mb-0"><span class="badge-type badge-type-lend">Lend</span> <span class="badge-status badge-status-archived">Archived</span></p>
+            <h2 class="listing-card-title">Twelve folding chairs</h2>
+            <p class="text-sm mb-0">Archived for now after the parish hall repainting wrapped up.</p>
+            <div class="btn-group">
+              <button class="btn btn-ghost btn-sm" type="button">Restore</button>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="delete-confirm-chairs">Delete permanently</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="list-row list-row-muted">
+          <div class="stack">
+            <p class="mb-0"><span class="badge-type badge-type-help">Help</span> <span class="badge-status badge-status-archived">Completed</span></p>
+            <h2 class="listing-card-title">Resume review evenings</h2>
+            <p class="text-sm mb-0">Finished after helping Sam Iqbal and Marion T. prepare applications.</p>
+            <div class="btn-group">
+              <button class="btn btn-ghost btn-sm" type="button">Repost</button>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="delete-confirm-resume">Delete permanently</button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <dialog class="confirm-dialog" id="delete-confirm-tires" aria-labelledby="delete-confirm-tires-title">
+      <h2 id="delete-confirm-tires-title">Delete &quot;Set of four winter tires, 16&quot;&quot; permanently?</h2>
+      <p class="text-muted">This removes the listing from your archive for good. Request history in the mock stays implied, but the listing itself would be gone.</p>
+      <div class="btn-group">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+        <button class="btn btn-danger" type="button" data-close-dialog>Delete permanently</button>
+      </div>
+    </dialog>
+
+    <dialog class="confirm-dialog" id="delete-confirm-gate" aria-labelledby="delete-confirm-gate-title">
+      <h2 id="delete-confirm-gate-title">Delete &quot;Baby gate, pressure-mounted&quot; permanently?</h2>
+      <p class="text-muted">This removes the listing from your archive for good. Request history in the mock stays implied, but the listing itself would be gone.</p>
+      <div class="btn-group">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+        <button class="btn btn-danger" type="button" data-close-dialog>Delete permanently</button>
+      </div>
+    </dialog>
+
+    <dialog class="confirm-dialog" id="delete-confirm-chairs" aria-labelledby="delete-confirm-chairs-title">
+      <h2 id="delete-confirm-chairs-title">Delete &quot;Twelve folding chairs&quot; permanently?</h2>
+      <p class="text-muted">This removes the listing from your archive for good. Request history in the mock stays implied, but the listing itself would be gone.</p>
+      <div class="btn-group">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+        <button class="btn btn-danger" type="button" data-close-dialog>Delete permanently</button>
+      </div>
+    </dialog>
+
+    <dialog class="confirm-dialog" id="delete-confirm-resume" aria-labelledby="delete-confirm-resume-title">
+      <h2 id="delete-confirm-resume-title">Delete &quot;Resume review evenings&quot; permanently?</h2>
+      <p class="text-muted">This removes the listing from your archive for good. Request history in the mock stays implied, but the listing itself would be gone.</p>
+      <div class="btn-group">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+        <button class="btn btn-danger" type="button" data-close-dialog>Delete permanently</button>
+      </div>
+    </dialog>
+  </div>
+</main>
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
+  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
+  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
+  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
+  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+</nav>
+<script src="mocks.js"></script>
+</body>
+</html>

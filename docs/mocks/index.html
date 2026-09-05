@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--
+  Catalogue / entry point for the Barnabas static mock set.
+  Responsive notes: the list of mocks is a single column on phones and
+  becomes a two-column grid of section cards at 768px and up; no other
+  material change at 1280px beyond wider margins.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barnabas — Mock catalogue</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .catalogue-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .catalogue-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .catalogue-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .catalogue-list li {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-3);
+  }
+  .catalogue-list li:last-child { border-bottom: none; padding-bottom: 0; }
+  .catalogue-list a {
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .catalogue-list p {
+    margin: var(--space-1) 0 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+</style>
+</head>
+<body style="padding-bottom: 0;">
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas mocks</a>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+  <div class="container">
+    <h1>Barnabas — static mock catalogue</h1>
+    <p class="text-muted">
+      Barnabas is a lending-and-helping board scoped to a single congregation
+      (St. Aidan's, in this set). Members post something to lend, give away,
+      or sell, or post time they're offering — a ride, tutoring, help moving.
+      Everything below is plain HTML and CSS: no build step, no framework, no
+      CDN. Open any file directly from the filesystem in a browser. A single
+      shared <code>styles.css</code> carries the token system, and a tiny
+      <code>mocks.js</code> only powers a couple of confirmation dialogs —
+      every page is fully usable with JavaScript turned off.
+    </p>
+    <p class="text-muted">
+      Mobile-first: every mock is designed for 360px first, and re-flows at
+      768px and 1280px. Where a layout changes materially between
+      breakpoints, that's noted in an HTML comment at the top of the file.
+    </p>
+
+    <div class="catalogue-grid">
+
+      <section class="card" style="padding: var(--space-5);">
+        <h2>Onboarding and access</h2>
+        <ul class="catalogue-list">
+          <li><a href="landing.html">1. Landing / what this is</a><p>What a first-time visitor sees after following an invite link.</p></li>
+          <li><a href="sign-in.html">2. Sign in</a><p>Returning-member sign in, with a link out to join with a code.</p></li>
+          <li><a href="join-invite.html">3. Join with invite code</a><p>Entering a congregation invite code to get in.</p></li>
+          <li><a href="create-profile.html">4. Create profile</a><p>Name, photo, neighbourhood, and what you're willing to help with.</p></li>
+        </ul>
+      </section>
+
+      <section class="card" style="padding: var(--space-5);">
+        <h2>Core — browsing and posting</h2>
+        <ul class="catalogue-list">
+          <li><a href="board.html">5. Board</a><p>Main browse view: mixed Lend/Give/Sell/Help listings with filter chips.</p></li>
+          <li><a href="board-help.html">6. Board, filtered to Help</a><p>Same board, showing how time offers read differently from goods.</p></li>
+          <li><a href="search-results.html">7. Search results, filters open</a><p>A search with the type/neighbourhood/price filter panel expanded.</p></li>
+          <li><a href="listing-lend.html">8. Listing detail — Lend</a><p>A ladder loan, with a return expectation instead of a price.</p></li>
+          <li><a href="listing-sell.html">9. Listing detail — Sell</a><p>A priced item, with a "request to buy" action.</p></li>
+          <li><a href="listing-give.html">10. Listing detail — Give</a><p>A free item, with pickup-only logistics called out.</p></li>
+          <li><a href="listing-help.html">11. Listing detail — Help</a><p>An offer of time, showing the offerer's availability windows.</p></li>
+          <li><a href="new-listing-choose-type.html">12. New listing, step 1</a><p>Choosing between Lend / Give / Sell / Help before anything else.</p></li>
+          <li><a href="new-listing-details-goods.html">13a. New listing, step 2 — Sell</a><p>Details form variant with a price field.</p></li>
+          <li><a href="new-listing-details-help.html">13b. New listing, step 2 — Help</a><p>Details form variant with availability instead of a price.</p></li>
+        </ul>
+      </section>
+
+      <section class="card" style="padding: var(--space-5);">
+        <h2>Core — managing your own activity</h2>
+        <ul class="catalogue-list">
+          <li><a href="my-listings-active.html">14. My listings — active</a><p>Own listings with pending request counts and quick actions.</p></li>
+          <li><a href="my-listings-archived.html">15. My listings — archived</a><p>No-longer-available listings, with a delete confirmation dialog.</p></li>
+          <li><a href="requests-incoming.html">16. Requests, incoming</a><p>Requests other members made on your listings, Accept/Decline.</p></li>
+          <li><a href="requests-outgoing.html">17. Requests, outgoing</a><p>Requests you made on other members' listings, with status.</p></li>
+          <li><a href="message-thread.html">18. Message thread</a><p>A conversation between two members about one specific listing.</p></li>
+        </ul>
+      </section>
+
+      <section class="card" style="padding: var(--space-5);">
+        <h2>Core — people and moderation</h2>
+        <ul class="catalogue-list">
+          <li><a href="member-profile.html">19. Member profile — public view</a><p>Someone else's profile: bio, help tags, their active listings.</p></li>
+          <li><a href="my-profile-settings.html">20. My profile / settings</a><p>Editable profile plus notification preferences and a danger zone.</p></li>
+          <li><a href="notifications.html">21. Notification centre</a><p>Read/unread activity notices with relative timestamps.</p></li>
+          <li><a href="directory.html">22. Congregation directory</a><p>Browsable member list with neighbourhood and help tags.</p></li>
+          <li><a href="moderator-view.html">23. Moderator view</a><p>Flagged listings and pending members awaiting approval.</p></li>
+        </ul>
+      </section>
+
+      <section class="card" style="padding: var(--space-5);">
+        <h2>States</h2>
+        <ul class="catalogue-list">
+          <li><a href="board-empty.html">24. Board, empty</a><p>Nothing posted yet, with a prompt to post the first listing.</p></li>
+          <li><a href="requests-empty.html">25. Requests, empty</a><p>No incoming requests yet.</p></li>
+          <li><a href="search-no-results.html">26. Search, no results</a><p>A search that matched nothing, with suggestions to broaden it.</p></li>
+          <li><a href="board-loading.html">27. Loading skeleton</a><p>Shimmering placeholder cards while the board loads.</p></li>
+          <li><a href="error-state.html">28. Error state</a><p>Something failed to load, with a plain-language retry.</p></li>
+          <li><a href="404.html">29. 404</a><p>A missing or removed page/listing.</p></li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+</main>
+</body>
+</html>

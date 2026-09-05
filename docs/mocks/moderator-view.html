@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!--
+  Moderator dashboard for flagged listings and pending members.
+  Responsive notes:
+  - <768px and >=768px: sections stack vertically; no material layout change beyond wider margins.
+  - >=1280px: no material layout change beyond wider margins.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moderator view · Barnabas</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html">Board</a>
+      <a href="search-results.html">Search</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="requests-incoming.html">Requests</a>
+      <a href="my-listings-active.html">My listings</a>
+      <a href="my-profile-settings.html">Profile</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+    </div>
+  </div>
+</header>
+<main id="main" class="page-main">
+  <div class="container stack">
+    <div class="section-title">
+      <h1 class="mb-0">Moderator view</h1>
+      <span class="text-sm text-muted">For clergy and approved board moderators</span>
+    </div>
+
+    <section aria-labelledby="flagged-heading" class="stack">
+      <h2 id="flagged-heading" class="mb-0">Flagged listings</h2>
+
+      <article class="card panel stack">
+        <div class="section-title" style="margin-bottom: 0;">
+          <div>
+            <span class="badge-type badge-type-give">Give</span>
+            <span class="badge-status badge-status-flagged">Flagged</span>
+            <h3 style="margin-top: var(--space-2);">Box of books</h3>
+            <p class="text-sm text-muted mb-0">Posted by Priya K. · Leslieville</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm" type="button">Approve</button>
+            <button class="btn btn-danger btn-sm" type="button">Remove</button>
+          </div>
+        </div>
+        <p class="detail-note mb-0">Reported: possible duplicate listing after a second identical free-cycle post appeared the same afternoon.</p>
+      </article>
+
+      <article class="card panel stack">
+        <div class="section-title" style="margin-bottom: 0;">
+          <div>
+            <span class="badge-type badge-type-sell">Sell</span>
+            <span class="badge-status badge-status-flagged">Flagged</span>
+            <h3 style="margin-top: var(--space-2);">Dining table, solid oak</h3>
+            <p class="text-sm text-muted mb-0">Posted by Grace Papadopoulos · Leslieville · $300</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm" type="button">Approve</button>
+            <button class="btn btn-danger btn-sm" type="button">Remove</button>
+          </div>
+        </div>
+        <p class="detail-note mb-0">Reported: price seems too high for an item described in the text as “free to any parish family who can use it.”</p>
+      </article>
+
+      <article class="card panel stack">
+        <div class="section-title" style="margin-bottom: 0;">
+          <div>
+            <span class="badge-type badge-type-help">Help</span>
+            <span class="badge-status badge-status-flagged">Flagged</span>
+            <h3 style="margin-top: var(--space-2);">Painting help for cash</h3>
+            <p class="text-sm text-muted mb-0">Posted by Sam Iqbal · Scarborough</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm" type="button">Approve</button>
+            <button class="btn btn-danger btn-sm" type="button">Remove</button>
+          </div>
+        </div>
+        <p class="detail-note mb-0">Reported: listing reads like off-platform commercial work rather than neighbourly help within St. Aidan's community.</p>
+      </article>
+    </section>
+
+    <section aria-labelledby="pending-heading" class="stack">
+      <h2 id="pending-heading" class="mb-0">Pending members</h2>
+
+      <article class="card panel stack">
+        <div class="section-title" style="margin-bottom: 0;">
+          <div>
+            <span class="badge-status badge-status-pending">Pending</span>
+            <h3 style="margin-top: var(--space-2);">Nora Almeida</h3>
+            <p class="text-sm text-muted mb-0">Invite source: parish newcomer lunch sign-up</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary btn-sm" type="button">Approve</button>
+            <button class="btn btn-ghost btn-sm" type="button">Decline</button>
+          </div>
+        </div>
+        <p class="mb-0">Lives in East York and asked to join after hearing about the lending board from Angela F.</p>
+      </article>
+
+      <article class="card panel stack">
+        <div class="section-title" style="margin-bottom: 0;">
+          <div>
+            <span class="badge-status badge-status-pending">Pending</span>
+            <h3 style="margin-top: var(--space-2);">David Mensah</h3>
+            <p class="text-sm text-muted mb-0">Invite source: emailed parish office after Sunday notices</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary btn-sm" type="button">Approve</button>
+            <button class="btn btn-ghost btn-sm" type="button">Decline</button>
+          </div>
+        </div>
+        <p class="mb-0">Listed St. Aidan's choir as his main connection to the congregation.</p>
+      </article>
+
+      <article class="card panel stack">
+        <div class="section-title" style="margin-bottom: 0;">
+          <div>
+            <span class="badge-status badge-status-pending">Pending</span>
+            <h3 style="margin-top: var(--space-2);">Evelyn Chow</h3>
+            <p class="text-sm text-muted mb-0">Invite source: referred by Fr. Michael Chen</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary btn-sm" type="button">Approve</button>
+            <button class="btn btn-ghost btn-sm" type="button">Decline</button>
+          </div>
+        </div>
+        <p class="mb-0">Hopes to offer rides from Riverdale and borrow a crib for visiting grandchildren.</p>
+      </article>
+    </section>
+  </div>
+</main>
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
+  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
+  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
+  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
+  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+</nav>
+</body>
+</html>
