@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -97,7 +97,7 @@ jobs:
       # Playwright drives the real product: the Angular application, the API behind a proxy, and a
       # real database. Both runtimes are needed.
       - name: Set up .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
