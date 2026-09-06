@@ -6,6 +6,7 @@ using Barnabas.Domain.Congregations;
 using Barnabas.Domain.Listings;
 using Barnabas.Domain.Members;
 using Barnabas.Domain.Messaging;
+using Barnabas.Domain.Notifications;
 using Barnabas.Domain.Requests;
 using Microsoft.EntityFrameworkCore;
 
@@ -76,6 +77,10 @@ public sealed class BarnabasDbContext : DbContext, IBarnabasDbContext
     public DbSet<MessageThread> MessageThreads => Scoped<MessageThread>();
 
     public DbSet<Message> Messages => Scoped<Message>();
+
+    public DbSet<Notification> Notifications => Scoped<Notification>();
+
+    public DbSet<NotificationPreference> NotificationPreferences => Scoped<NotificationPreference>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

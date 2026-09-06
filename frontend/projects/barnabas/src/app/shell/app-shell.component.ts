@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { ViewportService } from '@barnabas/domain';
+import { NotificationStore, ViewportService } from '@barnabas/domain';
 
 import { BottomNavComponent } from './bottom-nav.component';
 import { NAV_DESTINATIONS } from './nav-destinations';
@@ -25,8 +25,23 @@ import { SkipLinkComponent } from '@barnabas/components';
 })
 export class AppShellComponent {
   private readonly viewport = inject(ViewportService);
+  private readonly notifications = inject(NotificationStore);
+
+  /**
+   * How many notifications are waiting.
+   *
+   * Read once here rather than by each screen that shows it: L2-073 puts the count on every
+   * screen at every width, and several copies asking independently would disagree the moment one
+   * of them went stale. The bell is in the header at every band, so this is the one place it
+   * needs to be.
+   */
+  readonly unread = this.notifications.unread;
 
   readonly destinations = NAV_DESTINATIONS;
+
+  constructor() {
+    void this.notifications.refreshCount();
+  }
 
   readonly isCompact = this.viewport.isCompactNav;
 

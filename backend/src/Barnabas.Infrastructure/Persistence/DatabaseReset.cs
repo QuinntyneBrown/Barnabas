@@ -19,17 +19,31 @@ namespace Barnabas.Infrastructure.Persistence;
 /// </remarks>
 public sealed class DatabaseReset
 {
-    private static readonly string[] TablesInDeletionOrder =
+    /// <summary>
+    /// Every table, in an order that respects the foreign keys.
+    /// </summary>
+    /// <remarks>
+    /// Public because the integration-test factory empties the same tables, and two lists that
+    /// have to agree are two lists that will eventually disagree. They did: five tables added
+    /// after this one was written were emptied between integration tests and left standing
+    /// between Playwright specs, which reads as a product defect rather than as leaked state.
+    /// </remarks>
+    public static readonly string[] TablesInDeletionOrder =
     [
+        "Notifications",
+        "NotificationPreferences",
         "Messages",
         "ThreadReadMarks",
         "MessageThreads",
         "ListingRequests",
+        "AvailabilityWindows",
         "Listings",
         "RefreshTokens",
         "Sessions",
         "SignInTokens",
+        "JoiningSessions",
         "InviteCodes",
+        "MemberHelpTags",
         "Members",
         "Congregations",
     ];

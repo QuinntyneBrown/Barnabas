@@ -17,6 +17,7 @@ export * from './lib/board/board.store';
 export * from './lib/listings/my-listings.store';
 export * from './lib/listings/listing-words';
 export * from './lib/members/profile.store';
+export * from './lib/notifications/notification.store';
 export * from './lib/requests/request.store';
 export * from './lib/messaging/thread.store';
 

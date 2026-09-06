@@ -37,6 +37,22 @@ public sealed record RedeemedInviteCode(
 
 public sealed record JoinedCongregation(Guid MemberId, string CongregationName, string Status);
 
+public sealed record NotificationBody(
+    Guid NotificationId,
+    string Kind,
+    Guid? SubjectMemberId,
+    string? SubjectMemberDisplayName,
+    Guid? ListingId,
+    string? ListingTitle,
+    Guid? RequestId,
+    Guid? ThreadId,
+    DateTimeOffset CreatedAt,
+    bool Unread);
+
+public sealed record UnreadCountBody(int Unread);
+
+public sealed record NotificationPreferenceBody(string Kind, bool Enabled);
+
 public sealed record MyProfileBody(
     Guid MemberId,
     string DisplayName,

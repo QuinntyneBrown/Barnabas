@@ -8,6 +8,16 @@ import { Locator, Page } from '@playwright/test';
  * actually reach.
  */
 export class ShellPage {
+  /**
+   * How many notifications are waiting, as drawn on the bell.
+   *
+   * The bell is in the header at every width, which is how L2-073's count stays reachable below
+   * the band where the header nav is not.
+   */
+  get unreadCount(): Locator {
+    return this.page.locator('.bell-count');
+  }
+
   constructor(private readonly page: Page) {}
 
   /** The navigation a member can currently use, of the two that are rendered. */
