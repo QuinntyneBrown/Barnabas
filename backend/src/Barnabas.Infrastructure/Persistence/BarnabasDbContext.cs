@@ -91,6 +91,11 @@ public sealed class BarnabasDbContext : DbContext, IBarnabasDbContext
 
         ConfigureConcurrencyToken(modelBuilder);
 
+        if (Database.IsSqlite())
+        {
+            SqliteTimestamps.Apply(modelBuilder);
+        }
+
         var applyFilter = typeof(BarnabasDbContext)
             .GetMethod(nameof(ApplyCongregationFilter), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
 

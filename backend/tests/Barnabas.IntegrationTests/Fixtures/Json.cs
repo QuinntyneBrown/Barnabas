@@ -30,6 +30,12 @@ public static class Json
         CancellationToken cancellationToken = default) =>
         client.PostAsync(route, new StringContent(json, Encoding.UTF8, "application/json"), cancellationToken);
 
+    /// <summary>Builds a JSON body for a request the tests assemble by hand.</summary>
+    public static class From
+    {
+        public static HttpContent Of(object payload) => JsonContent.Create(payload, options: Options);
+    }
+
     public static async Task<T> ReadAsync<T>(this HttpResponseMessage response)
     {
         ArgumentNullException.ThrowIfNull(response);

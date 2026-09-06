@@ -20,6 +20,17 @@ public sealed class AuthenticationStore : IAuthenticationStore
 
     public AuthenticationStore(BarnabasDbContext context) => _context = context;
 
+    /// <summary>
+    /// The instant, in the shape this provider stores it.
+    /// </summary>
+    /// <remarks>
+    /// The conditional updates below are written as SQL, which goes around the value converters
+    /// the model applies. On SQLite timestamps are stored as UTC DateTime so they can be sorted,
+    /// so a raw statement has to write one too, or the value it writes will not read back.
+    /// </remarks>
+    private object Timestamp(DateTimeOffset value) =>
+        _context.Database.IsSqlite() ? value.UtcDateTime : value;
+
     public Task<Member?> FindApprovedMemberByEmailAsync(string emailAddress, CancellationToken cancellationToken)
     {
         var normalised = Member.Normalise(emailAddress);
@@ -44,16 +55,27 @@ public sealed class AuthenticationStore : IAuthenticationStore
     /// by a save cannot promise what L2-016 asks for: two callers can both read an unconsumed
     /// token and both proceed. Here the database refuses the second write, and that caller
     /// receives the same 410 a genuinely reused link gets.
+    /// <para>
+    /// The returned token may still be expired. Consumption and expiry are separate questions -
+    /// only the first is a race - so the caller asks the entity about the second.
+    /// </para>
     /// </remarks>
     public async Task<SignInToken?> TryConsumeSignInTokenAsync(
         string tokenHash,
         DateTimeOffset asOf,
         CancellationToken cancellationToken)
     {
-        var consumed = await _context.Set<SignInToken>()
-            .IgnoreQueryFilters()
-            .Where(t => t.TokenHash == tokenHash && t.ConsumedAt == null && t.ExpiresAt > asOf)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(t => t.ConsumedAt, asOf), cancellationToken);
+        // Written as SQL rather than through the query API because the guarantee wanted here is
+        // a property of the statement: one UPDATE, and the row count it reports is the answer.
+        // Only the consumption is raced over. Expiry is checked below, on the entity, because a
+        // clock reading is not something two callers can disagree about.
+        var consumed = await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             UPDATE "SignInTokens"
+             SET "ConsumedAt" = {Timestamp(asOf)}
+             WHERE "TokenHash" = {tokenHash} AND "ConsumedAt" IS NULL
+             """,
+            cancellationToken);
 
         if (consumed == 0)
         {
@@ -94,7 +116,7 @@ public sealed class AuthenticationStore : IAuthenticationStore
     /// <remarks>
     /// The same reasoning as the sign-in token consumption. Two callers racing one refresh
     /// token produce one winner and one 401, never two valid tokens, which is what L2-018
-    /// requires.
+    /// requires. Expiry is the caller's question, for the same reason.
     /// </remarks>
     public async Task<bool> TryRotateRefreshTokenAsync(
         Guid tokenId,
@@ -102,17 +124,13 @@ public sealed class AuthenticationStore : IAuthenticationStore
         DateTimeOffset asOf,
         CancellationToken cancellationToken)
     {
-        var rotated = await _context.Set<RefreshToken>()
-            .IgnoreQueryFilters()
-            .Where(t => t.Id == tokenId
-                && t.RevokedAt == null
-                && t.ReplacedByTokenId == null
-                && t.ExpiresAt > asOf)
-            .ExecuteUpdateAsync(
-                setters => setters
-                    .SetProperty(t => t.ReplacedByTokenId, replacementTokenId)
-                    .SetProperty(t => t.RevokedAt, asOf),
-                cancellationToken);
+        var rotated = await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             UPDATE "RefreshTokens"
+             SET "ReplacedByTokenId" = {replacementTokenId}, "RevokedAt" = {Timestamp(asOf)}
+             WHERE "Id" = {tokenId} AND "RevokedAt" IS NULL AND "ReplacedByTokenId" IS NULL
+             """,
+            cancellationToken);
 
         return rotated == 1;
     }
@@ -131,14 +149,18 @@ public sealed class AuthenticationStore : IAuthenticationStore
     /// </remarks>
     public async Task RevokeSessionAsync(Guid sessionId, DateTimeOffset asOf, CancellationToken cancellationToken)
     {
-        await _context.Set<Session>()
-            .IgnoreQueryFilters()
-            .Where(s => s.Id == sessionId && s.RevokedAt == null)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(s => s.RevokedAt, asOf), cancellationToken);
+        await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             UPDATE "Sessions" SET "RevokedAt" = {Timestamp(asOf)}
+             WHERE "Id" = {sessionId} AND "RevokedAt" IS NULL
+             """,
+            cancellationToken);
 
-        await _context.Set<RefreshToken>()
-            .IgnoreQueryFilters()
-            .Where(t => t.SessionId == sessionId && t.RevokedAt == null)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(t => t.RevokedAt, asOf), cancellationToken);
+        await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             UPDATE "RefreshTokens" SET "RevokedAt" = {Timestamp(asOf)}
+             WHERE "SessionId" = {sessionId} AND "RevokedAt" IS NULL
+             """,
+            cancellationToken);
     }
 }

@@ -24,6 +24,9 @@ namespace Barnabas.IntegrationTests.Fixtures;
 /// </remarks>
 public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
+    /// <summary>Shared with the forged tokens, so "correctly signed" means the same thing to both.</summary>
+    public const string SigningKey = "integration-tests-signing-key-not-for-any-real-deployment";
+
     private static readonly string[] TablesInDeletionOrder =
     [
         "Messages",
@@ -71,7 +74,9 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
     /// <summary>Empties every table and re-seeds, so each test starts from the same board.</summary>
     public async Task ResetAsync()
     {
-        Clock.SetUtcNow(new DateTimeOffset(2026, 9, 5, 9, 0, 0, TimeSpan.Zero));
+        // The clock is not rewound between tests. A fake clock refuses to go backwards, and
+        // nothing here needs it to: every assertion about time is relative to when the test
+        // itself created the row it is reasoning about.
         Outbox.Clear();
 
         await using var scope = Services.CreateAsyncScope();
@@ -146,7 +151,7 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         builder.UseSetting("Database:ConnectionString", _harness.ConnectionString);
         builder.UseSetting("Database:Seed", "false");
         builder.UseSetting("Database:ResetOnStart", "false");
-        builder.UseSetting("Jwt:SigningKey", "integration-tests-signing-key-not-for-any-real-deployment");
+        builder.UseSetting("Jwt:SigningKey", SigningKey);
         builder.UseSetting("Auth:RefreshCookie:Secure", "false");
 
         builder.ConfigureServices(services => services.Replace(

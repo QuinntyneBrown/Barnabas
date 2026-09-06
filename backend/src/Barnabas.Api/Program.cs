@@ -1,3 +1,4 @@
+using Barnabas.Api.Controllers;
 using Barnabas.Api.Errors;
 using Barnabas.Api.Filters;
 using Barnabas.Api.Middleware;
@@ -11,6 +12,7 @@ using Barnabas.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -27,10 +29,21 @@ if (!string.IsNullOrWhiteSpace(providerOverride))
 
 builder.WebHost.ConfigureKestrel(kestrel => kestrel.Limits.MaxRequestBodySize = RequestBodyLimitMiddleware.MaxBytes);
 
-builder.Services.AddControllers(options => options.Filters.Add<ForbiddenFieldInspector>());
+builder.Services
+    .AddControllers(options => options.Filters.Add<ForbiddenFieldInspector>())
+    .ConfigureApplicationPartManager(manager =>
+    {
+        if (!builder.Environment.IsDevelopment())
+        {
+            manager.FeatureProviders.Add(new RemoveDevelopmentEndpoints());
+        }
+    });
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
+
+builder.Services.Configure<RefreshCookieOptions>(
+    builder.Configuration.GetSection(RefreshCookieOptions.SectionName));
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddHttpContextAccessor();
@@ -45,6 +58,11 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // Read the claims back under the names they were issued with. The default inbound map
+        // rewrites sub and sid to WS-Federation URIs, which would leave the session claim
+        // unreadable and every authenticated request refused.
+        options.MapInboundClaims = false;
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -64,6 +82,9 @@ builder.Services
         // request. This is what makes sign-out immediate rather than eventual.
         options.Events = new JwtBearerEvents { OnTokenValidated = SessionValidator.ValidateAsync };
     });
+
+builder.Services
+    .AddSingleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerClock>();
 
 // Authenticated by default. An endpoint is public only by saying so, which is the safer
 // direction to forget in: a new endpoint that nobody thought about is closed, not open.
