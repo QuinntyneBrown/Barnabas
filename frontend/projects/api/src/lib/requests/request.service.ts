@@ -3,17 +3,17 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../api-base-url';
-import { IRequestsApi } from '../contracts/requests-api';
 import { AcceptedRequest } from '../models/accepted-request';
 import { DeclinedRequest } from '../models/declined-request';
 import { IncomingRequest } from '../models/incoming-request';
 import { MadeRequest } from '../models/made-request';
 import { MakeLoanRequest } from '../models/make-loan-request';
 import { MyRequest } from '../models/my-request';
+import { IRequestService } from './request.service.contract';
 
 /** @inheritdoc */
 @Injectable()
-export class RequestsApi extends IRequestsApi {
+export class RequestService implements IRequestService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
 

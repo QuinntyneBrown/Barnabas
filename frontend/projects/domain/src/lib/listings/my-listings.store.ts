@@ -1,10 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { IListingsApi, MyListing } from '@barnabas/api';
+import { LISTING_SERVICE, MyListing } from '@barnabas/api';
 
 /** The listings a member owns, and the close-out that takes one off the board. */
 @Injectable({ providedIn: 'root' })
 export class MyListingsStore {
-  private readonly listings = inject(IListingsApi);
+  private readonly listings = inject(LISTING_SERVICE);
 
   private readonly own = signal<readonly MyListing[]>([]);
 

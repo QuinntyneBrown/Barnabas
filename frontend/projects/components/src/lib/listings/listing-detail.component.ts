@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { IListingsApi, ListingDetail } from '@barnabas/api';
+import { LISTING_SERVICE, ListingDetail } from '@barnabas/api';
 
 import { ConfirmDialogComponent } from '../dialogs/confirm-dialog.component';
 
@@ -20,7 +20,7 @@ import { ConfirmDialogComponent } from '../dialogs/confirm-dialog.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListingDetailComponent {
-  private readonly listings = inject(IListingsApi);
+  private readonly listings = inject(LISTING_SERVICE);
   private readonly router = inject(Router);
 
   readonly listingId = input.required<string>();

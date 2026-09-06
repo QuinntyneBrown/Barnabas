@@ -3,14 +3,14 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../api-base-url';
-import { IThreadsApi } from '../contracts/threads-api';
 import { Message } from '../models/message';
 import { ThreadDetail } from '../models/thread-detail';
 import { ThreadSummary } from '../models/thread-summary';
+import { IThreadService } from './thread.service.contract';
 
 /** @inheritdoc */
 @Injectable()
-export class ThreadsApi extends IThreadsApi {
+export class ThreadService implements IThreadService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
 

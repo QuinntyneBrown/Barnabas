@@ -3,7 +3,6 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../api-base-url';
-import { IListingsApi } from '../contracts/listings-api';
 import { BoardPage } from '../models/board-page';
 import { ClosedOutListing } from '../models/closed-out-listing';
 import { ListingDetail } from '../models/listing-detail';
@@ -11,10 +10,11 @@ import { ListingKind } from '../models/listing-kind';
 import { MyListing } from '../models/my-listing';
 import { PostLendListing } from '../models/post-lend-listing';
 import { PostedListing } from '../models/posted-listing';
+import { IListingService } from './listing.service.contract';
 
 /** @inheritdoc */
 @Injectable()
-export class ListingsApi extends IListingsApi {
+export class ListingService implements IListingService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
 

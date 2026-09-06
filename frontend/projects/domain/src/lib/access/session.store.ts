@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { ISessionsApi, ITokenSource } from '@barnabas/api';
+import { ITokenService, SESSION_SERVICE } from '@barnabas/api';
 
 /**
  * The member's session, and the only thing that knows the access token.
@@ -9,13 +9,13 @@ import { ISessionsApi, ITokenSource } from '@barnabas/api';
  * cookie the browser returns on its own, which is what keeps it out of reach of script on the
  * page.
  *
- * This implements `ITokenSource` so the refresh interceptor in `@barnabas/api` can reach it
+ * This implements `ITokenService` so the refresh interceptor in `@barnabas/api` can reach it
  * without that library depending on this one. The dependency runs the right way round: the api
  * library declares what it needs, this implements it, and the application binds the two.
  */
 @Injectable({ providedIn: 'root' })
-export class SessionStore extends ITokenSource {
-  private readonly sessions = inject(ISessionsApi);
+export class SessionStore implements ITokenService {
+  private readonly sessions = inject(SESSION_SERVICE);
   private readonly accessToken = signal<string | null>(null);
 
   /** The renewal in flight, shared by everyone who asks for one while it runs. */

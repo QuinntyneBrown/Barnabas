@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 
 /**
  * The board, as a mosaic of placards.
@@ -34,6 +34,18 @@ export class BoardPage {
 
   async goto(): Promise<void> {
     await this.page.goto('/board');
+  }
+
+  /**
+   * Waits for the mosaic to arrive.
+   *
+   * The board renders and then fetches, so anything that reads the placards imperatively -
+   * counting them, or measuring where they sit - has to wait first or it measures an empty
+   * mosaic. A `expect(locator)` assertion retries on its own and needs none of this; a `count()`
+   * or a `page.evaluate` does not.
+   */
+  async waitForPlacards(): Promise<void> {
+    await expect(this.placards.first()).toBeVisible();
   }
 
   async open(title: string): Promise<void> {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { IListingsApi, IRequestsApi, ListingDetail } from '@barnabas/api';
+import { LISTING_SERVICE, REQUEST_SERVICE, ListingDetail } from '@barnabas/api';
 
 import { FieldErrors } from '../forms/field-errors';
 import { focusFirstInvalid } from '../forms/focus-first-invalid';
@@ -23,8 +23,8 @@ import { focusFirstInvalid } from '../forms/focus-first-invalid';
 export class RequestLendComponent {
   private static readonly FieldOrder = ['message', 'pickupOn', 'returnBy', 'loanAcknowledged'];
 
-  private readonly listings = inject(IListingsApi);
-  private readonly requests = inject(IRequestsApi);
+  private readonly listings = inject(LISTING_SERVICE);
+  private readonly requests = inject(REQUEST_SERVICE);
   private readonly router = inject(Router);
 
   readonly listingId = input.required<string>();

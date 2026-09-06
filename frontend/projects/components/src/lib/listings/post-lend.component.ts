@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { IListingsApi } from '@barnabas/api';
+import { LISTING_SERVICE } from '@barnabas/api';
 
 import { FieldErrors } from '../forms/field-errors';
 import { focusFirstInvalid } from '../forms/focus-first-invalid';
@@ -26,7 +26,7 @@ export class PostLendComponent {
   /** The order the form declares its controls, which is the order faults are reported in. */
   private static readonly FieldOrder = ['title', 'category', 'description', 'returnBy', 'hood'];
 
-  private readonly listings = inject(IListingsApi);
+  private readonly listings = inject(LISTING_SERVICE);
   private readonly router = inject(Router);
 
   readonly title = signal('');

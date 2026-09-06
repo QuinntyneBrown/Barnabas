@@ -69,6 +69,7 @@ for (const band of bands) {
 test('the board is a single column on a phone', async ({ page, board }) => {
   await page.setViewportSize({ width: 375, height: 900 });
   await board.goto();
+  await board.waitForPlacards();
 
   expect(await columnsInTheMosaic(page)).toBe(1);
 });

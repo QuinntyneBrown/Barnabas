@@ -3,13 +3,13 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { API_BASE_URL } from '../api-base-url';
-import { ISessionsApi } from '../contracts/sessions-api';
 import { SKIP_REFRESH } from '../interceptors/skip-refresh';
 import { Session } from '../models/session';
+import { ISessionService } from './session.service.contract';
 
 /** @inheritdoc */
 @Injectable()
-export class SessionsApi extends ISessionsApi {
+export class SessionService implements ISessionService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
 

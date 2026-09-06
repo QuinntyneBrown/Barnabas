@@ -7,16 +7,16 @@
 
 export * from './lib/api-base-url';
 
-export * from './lib/contracts/token-source';
-export * from './lib/contracts/sessions-api';
-export * from './lib/contracts/listings-api';
-export * from './lib/contracts/requests-api';
-export * from './lib/contracts/threads-api';
+export * from './lib/tokens/token.service.contract';
+export * from './lib/sessions/session.service.contract';
+export * from './lib/listings/listing.service.contract';
+export * from './lib/requests/request.service.contract';
+export * from './lib/threads/thread.service.contract';
 
-export * from './lib/clients/sessions-api.client';
-export * from './lib/clients/listings-api.client';
-export * from './lib/clients/requests-api.client';
-export * from './lib/clients/threads-api.client';
+export * from './lib/sessions/session.service';
+export * from './lib/listings/listing.service';
+export * from './lib/requests/request.service';
+export * from './lib/threads/thread.service';
 
 export * from './lib/interceptors/skip-refresh';
 export * from './lib/interceptors/auth.interceptor';

@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, from, switchMap, throwError } from 'rxjs';
 
-import { ITokenSource } from '../contracts/token-source';
+import { TOKEN_SERVICE } from '../tokens/token.service.contract';
 import { SKIP_REFRESH } from './skip-refresh';
 
 /**
@@ -17,7 +17,7 @@ import { SKIP_REFRESH } from './skip-refresh';
  * mid-session.
  */
 export const refreshInterceptor: HttpInterceptorFn = (request, next) => {
-  const tokens = inject(ITokenSource);
+  const tokens = inject(TOKEN_SERVICE);
 
   if (request.context.get(SKIP_REFRESH)) {
     return next(request);

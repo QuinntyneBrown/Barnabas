@@ -1,3 +1,5 @@
+import { InjectionToken } from '@angular/core';
+
 import { Message } from '../models/message';
 import { ThreadDetail } from '../models/thread-detail';
 import { ThreadSummary } from '../models/thread-summary';
@@ -8,11 +10,13 @@ import { ThreadSummary } from '../models/thread-summary';
  * There is nothing here that creates a thread. One exists only as a consequence of an accepted
  * request, which is what guarantees every conversation has a subject.
  */
-export abstract class IThreadsApi {
-  abstract mine(): Promise<readonly ThreadSummary[]>;
+export interface IThreadService {
+  mine(): Promise<readonly ThreadSummary[]>;
 
   /** Opening a thread marks it read, for the member opening it alone. */
-  abstract get(threadId: string): Promise<ThreadDetail>;
+  get(threadId: string): Promise<ThreadDetail>;
 
-  abstract send(threadId: string, body: string): Promise<Message>;
+  send(threadId: string, body: string): Promise<Message>;
 }
+
+export const THREAD_SERVICE = new InjectionToken<IThreadService>('THREAD_SERVICE');

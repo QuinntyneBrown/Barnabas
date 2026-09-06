@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { IThreadsApi, Message, ThreadDetail, ThreadSummary } from '@barnabas/api';
+import { THREAD_SERVICE, Message, ThreadDetail, ThreadSummary } from '@barnabas/api';
 
 /**
  * A member's conversations, and the one they are reading.
@@ -9,7 +9,7 @@ import { IThreadsApi, Message, ThreadDetail, ThreadSummary } from '@barnabas/api
  */
 @Injectable({ providedIn: 'root' })
 export class ThreadStore {
-  private readonly threads = inject(IThreadsApi);
+  private readonly threads = inject(THREAD_SERVICE);
 
   private readonly summaries = signal<readonly ThreadSummary[]>([]);
   private readonly open = signal<ThreadDetail | null>(null);

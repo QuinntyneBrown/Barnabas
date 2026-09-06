@@ -27,6 +27,7 @@ test('a placard opens its listing', async ({ page, board }) => {
 // text within the listing.
 test('every placard names its kind in words', async ({ board }) => {
   await board.goto();
+  await board.waitForPlacards();
 
   const placards = await board.placards.count();
 

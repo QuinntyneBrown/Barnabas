@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { ApiError, BoardListing, IListingsApi, ListingKind } from '@barnabas/api';
+import { ApiError, BoardListing, LISTING_SERVICE, ListingKind } from '@barnabas/api';
 
 /**
  * The board, as three signals the screen reads rather than subscribes to.
@@ -11,7 +11,7 @@ import { ApiError, BoardListing, IListingsApi, ListingKind } from '@barnabas/api
  */
 @Injectable({ providedIn: 'root' })
 export class BoardStore {
-  private readonly listings = inject(IListingsApi);
+  private readonly listings = inject(LISTING_SERVICE);
 
   private readonly all = signal<readonly BoardListing[]>([]);
   private readonly counts = signal<Readonly<Partial<Record<ListingKind, number>>>>({});

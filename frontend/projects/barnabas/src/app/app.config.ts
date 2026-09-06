@@ -2,15 +2,15 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
 import {
-  IListingsApi,
-  IRequestsApi,
-  ISessionsApi,
-  IThreadsApi,
-  ITokenSource,
-  ListingsApi,
-  RequestsApi,
-  SessionsApi,
-  ThreadsApi,
+  LISTING_SERVICE,
+  ListingService,
+  REQUEST_SERVICE,
+  RequestService,
+  SESSION_SERVICE,
+  SessionService,
+  THREAD_SERVICE,
+  TOKEN_SERVICE,
+  ThreadService,
   authInterceptor,
   problemDetailsInterceptor,
   refreshInterceptor,
@@ -41,13 +41,16 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([problemDetailsInterceptor, refreshInterceptor, authInterceptor]),
     ),
 
-    { provide: ISessionsApi, useClass: SessionsApi },
-    { provide: IListingsApi, useClass: ListingsApi },
-    { provide: IRequestsApi, useClass: RequestsApi },
-    { provide: IThreadsApi, useClass: ThreadsApi },
+    // The one place in the workspace that names both a contract and an implementation. Nothing
+    // beneath the host knows which class answers a token, which is what makes the seam a real
+    // one: a test host binds a mock here and nothing else changes.
+    { provide: SESSION_SERVICE, useClass: SessionService },
+    { provide: LISTING_SERVICE, useClass: ListingService },
+    { provide: REQUEST_SERVICE, useClass: RequestService },
+    { provide: THREAD_SERVICE, useClass: ThreadService },
 
     // The api library declares that it needs a token and a way to renew one; the domain library
     // implements it. Binding them here is what keeps that dependency running the right way.
-    { provide: ITokenSource, useExisting: SessionStore },
+    { provide: TOKEN_SERVICE, useExisting: SessionStore },
   ],
 };

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IRequestsApi, MyRequest } from '@barnabas/api';
+import { REQUEST_SERVICE, MyRequest } from '@barnabas/api';
 
 /**
  * The request is on its way.
@@ -17,7 +17,7 @@ import { IRequestsApi, MyRequest } from '@barnabas/api';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RequestSentComponent {
-  private readonly requests = inject(IRequestsApi);
+  private readonly requests = inject(REQUEST_SERVICE);
 
   readonly requestId = input.required<string>();
 

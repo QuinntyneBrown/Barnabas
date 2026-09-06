@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { IRequestsApi, IncomingRequest, MyRequest } from '@barnabas/api';
+import { REQUEST_SERVICE, IncomingRequest, MyRequest } from '@barnabas/api';
 
 /**
  * Both sides of the inbox.
@@ -9,7 +9,7 @@ import { IRequestsApi, IncomingRequest, MyRequest } from '@barnabas/api';
  */
 @Injectable({ providedIn: 'root' })
 export class RequestStore {
-  private readonly requests = inject(IRequestsApi);
+  private readonly requests = inject(REQUEST_SERVICE);
 
   private readonly incomingRequests = signal<readonly IncomingRequest[]>([]);
   private readonly outgoingRequests = signal<readonly MyRequest[]>([]);
