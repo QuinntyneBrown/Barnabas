@@ -29,23 +29,15 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
     /// <summary>Shared with the forged tokens, so "correctly signed" means the same thing to both.</summary>
     public const string SigningKey = "integration-tests-signing-key-not-for-any-real-deployment";
 
-    private static readonly string[] TablesInDeletionOrder =
-    [
-        "Messages",
-        "ThreadReadMarks",
-        "MessageThreads",
-        "ListingRequests",
-        "AvailabilityWindows",
-        "Listings",
-        "RefreshTokens",
-        "Sessions",
-        "SignInTokens",
-        "JoiningSessions",
-        "InviteCodes",
-        "MemberHelpTags",
-        "Members",
-        "Congregations",
-    ];
+    /// <summary>
+    /// The same list the development reset uses.
+    /// </summary>
+    /// <remarks>
+    /// Shared rather than copied. This was two lists, and they drifted: tables added for joining,
+    /// help tags, availability windows and notifications were emptied here and left standing in
+    /// the Playwright suite, where leaked state reads as a product defect.
+    /// </remarks>
+    private static readonly string[] TablesInDeletionOrder = DatabaseReset.TablesInDeletionOrder;
 
     private readonly TestDatabase _database = new();
 

@@ -41,6 +41,7 @@ import { ThreadsComponent } from './messaging/threads.component';
 import { InviteSomeoneComponent } from './moderation/invite-someone.component';
 
 import { DirectoryComponent } from './members/directory.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 import { SearchComponent } from './search/search.component';
 import { MemberProfileComponent } from './members/member-profile.component';
 
@@ -193,15 +194,7 @@ export const routes: Routes = [
 
       // Reachable so the five destinations are five at every width, and honest about being empty.
       { path: 'search', component: SearchComponent, title: 'Search · Barnabas' },
-      {
-        path: 'notifications',
-        component: ComingSoonComponent,
-        title: 'Notifications · Barnabas',
-        data: {
-          heading: 'Notifications are on their way',
-          body: 'Requests and replies are in your inbox in the meantime.',
-        },
-      },
+      { path: 'notifications', component: NotificationsComponent, title: 'Notifications · Barnabas' },
       { path: 'directory', component: DirectoryComponent, title: 'Directory · Barnabas' },
       { path: 'members/:memberId', component: MemberProfileComponent, title: 'Member · Barnabas' },
     ],

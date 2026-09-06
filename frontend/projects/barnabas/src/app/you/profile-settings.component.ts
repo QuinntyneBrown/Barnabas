@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { ConfirmDialogComponent } from '@barnabas/components';
 import { FieldErrors, ProfileStore, SessionStore, focusFirstInvalid } from '@barnabas/domain';
+import { NOTIFICATION_SERVICE, NotificationPreference } from '@barnabas/api';
 
 /**
  * Profile and settings, on one screen.
@@ -26,6 +27,7 @@ export class ProfileSettingsComponent {
   private static readonly FieldOrder = ['displayName', 'hood', 'description'];
 
   private readonly store = inject(ProfileStore);
+  private readonly notifications = inject(NOTIFICATION_SERVICE);
   private readonly session = inject(SessionStore);
   private readonly router = inject(Router);
 
@@ -43,8 +45,18 @@ export class ProfileSettingsComponent {
 
   readonly errors = signal(FieldErrors.none());
 
+  /**
+   * Which kinds of notification this member wants.
+   *
+   * On the settings screen because that is where L2-075 puts it - a member deciding what to hear
+   * about is doing the same sort of thing as deciding what the congregation sees of them.
+   */
+  readonly preferences = signal<readonly NotificationPreference[]>([]);
+  readonly preferencesSaved = signal(false);
+
   constructor() {
     void this.store.load();
+    void this.loadPreferences();
 
     effect(() => {
       const profile = this.profile();
@@ -58,6 +70,30 @@ export class ProfileSettingsComponent {
       this.description.set(profile.description ?? '');
       this.helpTags.set(profile.helpTags);
     });
+  }
+
+  /** The words a member reads, rather than the enum name the API speaks. */
+  labelFor(kind: string): string {
+    const said: Record<string, string> = {
+      RequestReceived: 'Somebody asks for something of mine',
+      RequestAccepted: 'A request of mine is accepted',
+      RequestDeclined: 'A request of mine is declined',
+      MessageReceived: 'Somebody writes to me',
+    };
+
+    return said[kind] ?? kind;
+  }
+
+  async togglePreference(kind: string, enabled: boolean): Promise<void> {
+    this.preferencesSaved.set(false);
+
+    const next = this.preferences().map((preference) =>
+      preference.kind === kind ? { ...preference, enabled } : preference,
+    );
+
+    this.preferences.set(next);
+    this.preferences.set(await this.notifications.setPreferences(next));
+    this.preferencesSaved.set(true);
   }
 
   offers(tag: string): boolean {
@@ -96,6 +132,14 @@ export class ProfileSettingsComponent {
       this.errors.set(errors);
 
       focusFirstInvalid(errors, ProfileSettingsComponent.FieldOrder);
+    }
+  }
+
+  private async loadPreferences(): Promise<void> {
+    try {
+      this.preferences.set(await this.notifications.preferences());
+    } catch {
+      this.preferences.set([]);
     }
   }
 

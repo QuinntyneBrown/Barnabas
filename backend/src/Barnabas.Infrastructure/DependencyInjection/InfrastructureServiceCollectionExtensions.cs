@@ -4,6 +4,7 @@ using Barnabas.Application.Common.Email;
 using Barnabas.Application.Common.Persistence;
 using Barnabas.Application.Common.Security;
 using Barnabas.Application.Joining.Common;
+using Barnabas.Application.Notifications.Common;
 using Barnabas.Application.Requests.Common;
 using Barnabas.Infrastructure.Email;
 using Barnabas.Infrastructure.Persistence;
@@ -42,6 +43,10 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IAuthenticationStore, AuthenticationStore>();
         services.AddScoped<IProvisioningStore, ProvisioningStore>();
         services.AddScoped<IInvitationStore, InvitationStore>();
+
+        // Scoped, because it stages into the calling handler's own unit of work rather than
+        // holding any state of its own.
+        services.AddScoped<INotifier, Notifier>();
 
         // A singleton, because the count it keeps is per address across every request rather than
         // per request. Its clock is the injected one, so an acceptance test can move fifteen

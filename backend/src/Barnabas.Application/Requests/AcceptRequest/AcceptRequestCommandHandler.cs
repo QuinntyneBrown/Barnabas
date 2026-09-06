@@ -2,6 +2,7 @@ using Barnabas.Application.Common.Exceptions;
 using Barnabas.Application.Common.Persistence;
 using Barnabas.Domain.Messaging;
 using Barnabas.Domain.Requests;
+using Barnabas.Application.Notifications.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,11 +24,16 @@ namespace Barnabas.Application.Requests.AcceptRequest;
 public sealed class AcceptRequestCommandHandler : IRequestHandler<AcceptRequestCommand, AcceptRequestResult>
 {
     private readonly IBarnabasDbContext _context;
+    private readonly INotifier _notifier;
     private readonly TimeProvider _time;
 
-    public AcceptRequestCommandHandler(IBarnabasDbContext context, TimeProvider time)
+    public AcceptRequestCommandHandler(
+        IBarnabasDbContext context,
+        INotifier notifier,
+        TimeProvider time)
     {
         _context = context;
+        _notifier = notifier;
         _time = time;
     }
 
@@ -58,6 +64,10 @@ public sealed class AcceptRequestCommandHandler : IRequestHandler<AcceptRequestC
             now);
 
         _context.MessageThreads.Add(thread);
+
+        // Staged before the save, so a decision the row version refuses leaves no notification
+        // behind. The thread travels with it, because an acceptance leads somewhere - L2-071.
+        await _notifier.RequestDecidedAsync(listing, listingRequest, thread.Id, accepted: true, cancellationToken);
 
         try
         {

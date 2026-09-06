@@ -2,6 +2,7 @@ using Barnabas.Application.Common.Exceptions;
 using Barnabas.Application.Common.Persistence;
 using Barnabas.Application.Common.Tenancy;
 using Barnabas.Application.Messaging.GetThread;
+using Barnabas.Application.Notifications.Common;
 using Barnabas.Domain.Messaging;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -19,15 +20,18 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
 {
     private readonly IBarnabasDbContext _context;
     private readonly ICongregationContext _congregation;
+    private readonly INotifier _notifier;
     private readonly TimeProvider _time;
 
     public SendMessageCommandHandler(
         IBarnabasDbContext context,
         ICongregationContext congregation,
+        INotifier notifier,
         TimeProvider time)
     {
         _context = context;
         _congregation = congregation;
+        _notifier = notifier;
         _time = time;
     }
 
@@ -44,6 +48,19 @@ public sealed class SendMessageCommandHandler : IRequestHandler<SendMessageComma
 
         // Raises if the caller is not one of the two, and the API reports that as not found.
         var message = thread.Append(Guid.NewGuid(), caller, request.Body, _time.GetUtcNow());
+
+        var listing = await _context.Listings
+            .FirstOrDefaultAsync(listing => listing.Id == thread.ListingId, cancellationToken);
+
+        // The other party, and only them. The thread knows which of its two members that is, so
+        // L2-072 is settled by asking it rather than by filtering a list afterwards.
+        await _notifier.MessageSentAsync(
+            thread.Id,
+            thread.ListingId,
+            listing?.Title ?? string.Empty,
+            caller,
+            thread.OtherParty(caller),
+            cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

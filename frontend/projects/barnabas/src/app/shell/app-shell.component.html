@@ -17,11 +17,23 @@
         The bell lives in the header at every width, which is how the notification count stays
         reachable below the medium band where the header nav is not. L2-109 asks for that.
       -->
-      <a class="bell" routerLink="/notifications" aria-label="Notifications">
+      <a
+        class="bell"
+        routerLink="/notifications"
+        [attr.aria-label]="unread() > 0 ? 'Notifications, ' + unread() + ' unread' : 'Notifications'"
+      >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9z" />
           <path d="M10 18.5a2 2 0 0 0 4 0" />
         </svg>
+
+        <!--
+          Read out as part of the link's own name as well as drawn, so a member who cannot see
+          the badge is still told there is something waiting.
+        -->
+        @if (unread() > 0) {
+          <span class="bell-count" aria-hidden="true">{{ unread() }}</span>
+        }
       </a>
     </div>
   </div>

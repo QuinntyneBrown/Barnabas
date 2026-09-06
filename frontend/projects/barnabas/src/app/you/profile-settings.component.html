@@ -89,6 +89,32 @@
         }
       </fieldset>
 
+      <fieldset class="field">
+        <legend>What to tell me about</legend>
+        <p class="field-hint">
+          A kind you turn off is never recorded, so nothing piles up waiting while it is off.
+        </p>
+
+        <div class="check-grid">
+          @for (preference of preferences(); track preference.kind) {
+            <div class="choice">
+              <input
+                type="checkbox"
+                [attr.id]="'notify-' + preference.kind"
+                [name]="'notify-' + preference.kind"
+                [ngModel]="preference.enabled"
+                (ngModelChange)="togglePreference(preference.kind, $event)"
+              />
+              <label [attr.for]="'notify-' + preference.kind">{{ labelFor(preference.kind) }}</label>
+            </div>
+          }
+        </div>
+
+        @if (preferencesSaved()) {
+          <p class="note" role="status">Saved</p>
+        }
+      </fieldset>
+
       <div class="field">
         <label for="email">Email address</label>
         <p class="field-hint">

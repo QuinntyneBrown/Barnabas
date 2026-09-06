@@ -1,0 +1,46 @@
+<div class="masthead masthead--stone masthead--short">
+  <div class="container row-between">
+    <h1 class="masthead-title">Notifications</h1>
+
+    @if (hasUnread()) {
+      <button class="btn btn-ghost btn-sm" type="button" (click)="markAllRead()">Mark all read</button>
+    }
+  </div>
+</div>
+
+<div class="container section">
+  @if (loading() && notifications().length === 0) {
+    <p role="status">Loading your notifications.</p>
+  } @else if (notifications().length === 0) {
+    <div class="state stack-4">
+      <h2>Nothing yet</h2>
+      <p>When somebody asks for one of your listings, or replies to you, it will be here.</p>
+      <div class="btn-group">
+        <a class="btn btn-primary" routerLink="/board">Back to the board</a>
+      </div>
+    </div>
+  } @else {
+    <div class="rows">
+      @for (notification of notifications(); track notification.notificationId) {
+        <div class="list-row" [class.list-row--unread]="notification.unread">
+          <div class="list-row__body stack-2">
+            <!-- Every row leads somewhere. A notification with no destination cannot be made. -->
+            <a
+              class="list-row__title link"
+              [routerLink]="destinationFor(notification)"
+              (click)="open(notification)"
+              >{{ wordsFor(notification) }}</a
+            >
+
+            @if (notification.subjectMemberId) {
+              <!-- L2-074 AC2: the member it names opens their profile. -->
+              <a class="list-row__meta link" [routerLink]="['/members', notification.subjectMemberId]">{{
+                notification.subjectMemberDisplayName
+              }}</a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
