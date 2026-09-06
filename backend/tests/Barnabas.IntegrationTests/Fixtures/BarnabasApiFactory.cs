@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Time.Testing;
 
 namespace Barnabas.IntegrationTests.Fixtures;
@@ -54,6 +55,9 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
 
     public IEmailOutbox Outbox => Services.GetRequiredService<IEmailOutbox>();
 
+    /// <summary>Whatever the API logged as an error during this test, ready to be reported.</summary>
+    public ServerErrorLog ServerErrors { get; } = new();
+
     public async ValueTask InitializeAsync()
     {
         await _harness.StartAsync();
@@ -78,6 +82,7 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         // nothing here needs it to: every assertion about time is relative to when the test
         // itself created the row it is reasoning about.
         Outbox.Clear();
+        ServerErrors.Clear();
 
         await using var scope = Services.CreateAsyncScope();
 
@@ -174,6 +179,8 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         builder.UseSetting("Database:ResetOnStart", "false");
         builder.UseSetting("Jwt:SigningKey", SigningKey);
         builder.UseSetting("Auth:RefreshCookie:Secure", "false");
+
+        builder.ConfigureLogging(logging => logging.AddProvider(ServerErrors));
 
         builder.ConfigureServices(services => services.Replace(
             ServiceDescriptor.Singleton<TimeProvider>(Clock)));

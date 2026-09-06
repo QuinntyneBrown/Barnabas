@@ -79,3 +79,30 @@ public sealed record MyRequestBody(
 public sealed record AcceptedRequest(Guid RequestId, Guid ThreadId);
 
 public sealed record DeclinedRequest(Guid RequestId, string Status);
+
+public sealed record ThreadSummaryBody(
+    Guid ThreadId,
+    Guid OtherMemberId,
+    string OtherMemberDisplayName,
+    Guid ListingId,
+    string ListingTitle,
+    string LatestMessage,
+    DateTimeOffset? LatestAt,
+    bool Unread);
+
+public sealed record MessageBody(
+    Guid MessageId,
+    Guid SenderId,
+    string SenderDisplayName,
+    string Body,
+    DateTimeOffset SentAt,
+    bool SentByCaller);
+
+public sealed record ThreadDetailBody(
+    Guid ThreadId,
+    Guid ListingId,
+    string ListingTitle,
+    Guid OtherMemberId,
+    string OtherMemberDisplayName,
+    string RequestStatus,
+    IReadOnlyList<MessageBody> Messages);

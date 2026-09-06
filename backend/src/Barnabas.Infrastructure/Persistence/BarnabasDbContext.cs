@@ -89,6 +89,8 @@ public sealed class BarnabasDbContext : DbContext, IBarnabasDbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BarnabasDbContext).Assembly);
 
+        ConfigureAssignedKeys(modelBuilder);
+
         ConfigureConcurrencyToken(modelBuilder);
 
         if (Database.IsSqlite())
@@ -107,6 +109,35 @@ public sealed class BarnabasDbContext : DbContext, IBarnabasDbContext
             }
 
             applyFilter.MakeGenericMethod(entityType.ClrType).Invoke(this, [modelBuilder]);
+        }
+    }
+
+    /// <summary>
+    /// Declares that identifiers come from the code that creates the entity, never the store.
+    /// </summary>
+    /// <remarks>
+    /// By convention a Guid key is treated as store-generated, and EF then reads a non-default
+    /// key on an untracked entity as evidence that the row already exists. Every entity here is
+    /// constructed with its identifier already set, so that inference is exactly wrong: a message
+    /// appended to a loaded thread was being saved as an UPDATE against a row that had never been
+    /// inserted, and the save failed having written nothing.
+    /// <para>
+    /// Saying so once, here, is better than remembering it per entity - the failure only appears
+    /// for entities reached through a navigation, which is a thin slice of the model and an easy
+    /// one to add to without noticing.
+    /// </para>
+    /// </remarks>
+    private static void ConfigureAssignedKeys(ModelBuilder modelBuilder)
+    {
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var key in entityType.GetKeys())
+            {
+                foreach (var property in key.Properties.Where(p => p.ClrType == typeof(Guid)))
+                {
+                    property.ValueGenerated = Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.Never;
+                }
+            }
         }
     }
 
