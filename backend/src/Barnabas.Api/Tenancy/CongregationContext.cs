@@ -34,6 +34,8 @@ public sealed class CongregationContext : ICongregationContext
 
     public MemberRole Role => Require().Role;
 
+    public MemberStatus Status => Require().Status;
+
     private static Identity? Read(ClaimsPrincipal? principal)
     {
         if (principal?.Identity?.IsAuthenticated != true)
@@ -49,12 +51,22 @@ public sealed class CongregationContext : ICongregationContext
             return null;
         }
 
-        return new Identity(congregationId, memberId, sessionId, role);
+        // Absent on a token minted before the claim existed. Approved is the safe reading there:
+        // such a caller already holds a validated session, and the membership behaviour refuses a
+        // member who is not approved on the strength of the record rather than of the claim.
+        _ = Enum.TryParse<MemberStatus>(principal.FindFirstValue(BarnabasClaims.Status), out var status);
+
+        return new Identity(congregationId, memberId, sessionId, role, status);
     }
 
     private Identity Require() =>
         _identity.Value ?? throw new InvalidOperationException(
             "No congregation is in scope. Check IsResolved before reading the caller's identity.");
 
-    private sealed record Identity(Guid CongregationId, Guid MemberId, Guid SessionId, MemberRole Role);
+    private sealed record Identity(
+        Guid CongregationId,
+        Guid MemberId,
+        Guid SessionId,
+        MemberRole Role,
+        MemberStatus Status);
 }

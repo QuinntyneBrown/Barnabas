@@ -1,7 +1,9 @@
+using Barnabas.Application.Common.Abuse;
 using Barnabas.Application.Common.Authorisation;
 using Barnabas.Application.Common.Email;
 using Barnabas.Application.Common.Persistence;
 using Barnabas.Application.Common.Security;
+using Barnabas.Application.Joining.Common;
 using Barnabas.Application.Requests.Common;
 using Barnabas.Infrastructure.Email;
 using Barnabas.Infrastructure.Persistence;
@@ -26,6 +28,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.Configure<SignInLinkOptions>(configuration.GetSection(SignInLinkOptions.SectionName));
+        services.Configure<InviteCodeOptions>(configuration.GetSection(InviteCodeOptions.Section));
 
         var database = configuration.GetSection(DatabaseOptions.SectionName).Get<DatabaseOptions>() ?? new DatabaseOptions();
 
@@ -38,6 +41,16 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IBarnabasDbContext>(provider => provider.GetRequiredService<BarnabasDbContext>());
         services.AddScoped<IAuthenticationStore, AuthenticationStore>();
         services.AddScoped<IProvisioningStore, ProvisioningStore>();
+        services.AddScoped<IInvitationStore, InvitationStore>();
+
+        // A singleton, because the count it keeps is per address across every request rather than
+        // per request. Its clock is the injected one, so an acceptance test can move fifteen
+        // minutes without waiting a quarter of an hour.
+        services.AddSingleton<SignInLinkThrottle>();
+        services.AddSingleton<ISignInLinkThrottle>(provider => provider.GetRequiredService<SignInLinkThrottle>());
+
+        services.AddSingleton<RedemptionThrottle>();
+        services.AddSingleton<IRedemptionThrottle>(provider => provider.GetRequiredService<RedemptionThrottle>());
         services.AddScoped(typeof(IOwnerLookup<>), typeof(OwnerLookup<>));
 
         // Registered after the open generic so it wins for this one closed type. Deciding a

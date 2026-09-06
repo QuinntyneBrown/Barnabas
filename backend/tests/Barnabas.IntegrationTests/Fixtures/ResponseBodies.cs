@@ -27,6 +27,16 @@ public sealed record CongregationBody(
 
 public sealed record DesignatedModerator(Guid MemberId, string Role);
 
+public sealed record IssuedInviteCode(Guid InviteCodeId, string Code, DateTimeOffset ExpiresAt);
+
+public sealed record RedeemedInviteCode(
+    string CongregationName,
+    IReadOnlyList<string> Neighbourhoods,
+    string JoiningToken,
+    DateTimeOffset ExpiresAt);
+
+public sealed record JoinedCongregation(Guid MemberId, string CongregationName, string Status);
+
 public sealed record BoardListingBody(
     Guid ListingId,
     string Kind,

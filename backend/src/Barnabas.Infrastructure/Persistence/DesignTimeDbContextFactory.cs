@@ -34,5 +34,7 @@ public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Bar
         public Guid SessionId => Guid.Empty;
 
         public MemberRole Role => MemberRole.Member;
+
+        public MemberStatus Status => throw new NotSupportedException();
     }
 }

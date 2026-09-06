@@ -4,6 +4,7 @@ using Barnabas.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Barnabas.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(BarnabasDbContext))]
-    partial class BarnabasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260906144040_JoinACongregation")]
+    partial class JoinACongregation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

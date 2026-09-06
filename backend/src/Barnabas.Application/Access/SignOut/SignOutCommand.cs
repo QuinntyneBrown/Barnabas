@@ -1,3 +1,4 @@
+using Barnabas.Application.Common.Authorisation;
 using MediatR;
 
 namespace Barnabas.Application.Access.SignOut;
@@ -9,4 +10,4 @@ namespace Barnabas.Application.Access.SignOut;
 /// It carries no payload on purpose. The session is taken from the token's own claim, so a
 /// member cannot sign anybody else out by naming them.
 /// </remarks>
-public sealed record SignOutCommand : IRequest;
+public sealed record SignOutCommand : IRequest, IAllowUnapproved;

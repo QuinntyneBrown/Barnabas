@@ -21,6 +21,11 @@ public static class ApplicationServiceCollectionExtensions
         // runs first, so a request that is both malformed and unauthorised is reported as
         // malformed rather than disclosing anything about the resource.
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+
+        // Membership sits between the two. A member a moderator has not let in yet is refused
+        // before any ownership lookup runs, so nothing about a resource is disclosed to somebody
+        // who is not on the board at all.
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MembershipBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorisationBehaviour<,>));
 
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);

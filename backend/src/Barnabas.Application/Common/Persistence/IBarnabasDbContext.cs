@@ -25,6 +25,8 @@ public interface IBarnabasDbContext
 
     DbSet<InviteCode> InviteCodes { get; }
 
+    DbSet<JoiningSession> JoiningSessions { get; }
+
     DbSet<SignInToken> SignInTokens { get; }
 
     DbSet<Session> Sessions { get; }

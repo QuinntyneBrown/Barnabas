@@ -61,6 +61,8 @@ public sealed class BarnabasDbContext : DbContext, IBarnabasDbContext
 
     public DbSet<InviteCode> InviteCodes => Scoped<InviteCode>();
 
+    public DbSet<JoiningSession> JoiningSessions => Scoped<JoiningSession>();
+
     public DbSet<SignInToken> SignInTokens => Scoped<SignInToken>();
 
     public DbSet<Session> Sessions => Scoped<Session>();
