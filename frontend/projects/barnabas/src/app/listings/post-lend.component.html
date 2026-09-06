@@ -70,7 +70,7 @@
     <div class="field">
       <label for="hood">Neighbourhood</label>
       <select id="hood" name="hood" [ngModel]="neighbourhood()" (ngModelChange)="neighbourhood.set($event)">
-        @for (option of neighbourhoods; track option) {
+        @for (option of neighbourhoods(); track option) {
           <option [value]="option">{{ option }}</option>
         }
       </select>

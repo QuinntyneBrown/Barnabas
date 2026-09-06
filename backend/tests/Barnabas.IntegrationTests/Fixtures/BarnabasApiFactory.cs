@@ -68,6 +68,15 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
     /// <summary>Whatever the API logged as an error during this test, ready to be reported.</summary>
     public ServerErrorLog ServerErrors { get; } = new();
 
+    /// <summary>
+    /// Everything the API logged, with its scopes.
+    /// </summary>
+    /// <remarks>
+    /// Separate from <see cref="ServerErrors"/> because they answer opposite questions: that one
+    /// is a debugging aid, and this is what L2-117 and L2-119 are asserted against.
+    /// </remarks>
+    public LogCapture Logs { get; } = new();
+
     public async ValueTask InitializeAsync()
     {
         // Touching the client forces the host to build, which applies the migration.
@@ -101,6 +110,8 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         // itself created the row it is reasoning about.
         Outbox.Clear();
         ServerErrors.Clear();
+        Logs.Clear();
+        Services.GetRequiredService<Barnabas.Api.Observability.MetricsSnapshot>().Clear();
 
         await using var scope = Services.CreateAsyncScope();
 
@@ -206,7 +217,16 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         // in the developer's temp directory afterwards.
         builder.UseSetting("Photos:Root", PhotoRoot);
 
-        builder.ConfigureLogging(logging => logging.AddProvider(ServerErrors));
+        builder.ConfigureLogging(logging =>
+        {
+            logging.AddProvider(ServerErrors);
+            logging.AddProvider(Logs);
+
+            // Information, because that is where the correlation scope and the refusal messages
+            // are. The default for the Microsoft categories is Warning, which would leave every
+            // framework entry out of exactly the assertion that says every entry carries one.
+            logging.SetMinimumLevel(LogLevel.Information);
+        });
 
         builder.ConfigureServices(services => services.Replace(
             ServiceDescriptor.Singleton<TimeProvider>(Clock)));

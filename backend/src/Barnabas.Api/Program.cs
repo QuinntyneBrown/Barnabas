@@ -2,6 +2,7 @@ using Barnabas.Api.Controllers;
 using Barnabas.Api.Errors;
 using Barnabas.Api.Filters;
 using Barnabas.Api.Middleware;
+using Barnabas.Api.Observability;
 using Barnabas.Api.Security;
 using Barnabas.Api.Tenancy;
 using Barnabas.Application.Common.Abuse;
@@ -66,6 +67,16 @@ builder.Services.Configure<SecurityHeaderOptions>(
     builder.Configuration.GetSection(SecurityHeaderOptions.SectionName));
 
 builder.Services.AddSingleton(TimeProvider.System);
+
+// Observability. The meter is the platform's own, so a deployment that wants OpenTelemetry adds
+// the exporter and points it at the same name; the snapshot exists so L2-118's "when metrics are
+// scraped" is answerable without the product having chosen a monitoring vendor.
+builder.Services.AddMetrics();
+builder.Services.AddSingleton<BarnabasMetrics>();
+builder.Services.AddSingleton<MetricsSnapshot>();
+
+// One check per dependency, named. There is one dependency.
+builder.Services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("database");
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICongregationContext, CongregationContext>();
 builder.Services.AddScoped<ICallerSource, CallerSource>();
@@ -116,19 +127,29 @@ var app = builder.Build();
 
 var security = app.Services.GetRequiredService<IOptions<SecurityHeaderOptions>>().Value;
 
+// Outermost of all, so every entry any of the rest produces is inside the scope it opens.
+app.UseMiddleware<CorrelationMiddleware>();
+
+// Explicit, and first of the rest, for two reasons. The body-limit middleware reads the limit
+// the endpoint declared, and the metrics middleware records the route pattern rather than the
+// path - neither exists until routing has run.
+app.UseRouting();
+
+// After routing, so it can read the route on the way in; outside the exception handler, so the
+// status it records on the way out is the one the caller was actually given. The handler clears
+// the endpoint when it handles something, which is why the route is captured before `next` and
+// not after.
+app.UseMiddleware<MetricsMiddleware>();
+
 app.UseExceptionHandler();
 
-// Outermost, so an exception handler's response carries them too.
+// Outside the handler, so an error response carries them too.
 app.UseMiddleware<SecurityHeadersMiddleware>();
 
 if (security.RequireHttps)
 {
     app.UseHttpsRedirection();
 }
-
-// Explicit, and ahead of the body limit, because that middleware reads the endpoint's declared
-// limit and there is no endpoint until routing has run.
-app.UseRouting();
 
 app.UseMiddleware<RequestBodyLimitMiddleware>();
 
@@ -137,7 +158,19 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
+// Anonymous, because a monitor cannot sign in - which is why the writer is careful about what
+// it says. L2-116.
+app.MapHealthChecks("/health", HealthReport.Options()).AllowAnonymous();
+
+// Anonymous for the same reason a health endpoint is: a scraper holds no session. It carries
+// counts and durations by endpoint and nothing about any member.
+app.MapGet("/metrics", (MetricsSnapshot snapshot) =>
+        Results.Text(snapshot.Render(), "text/plain; version=0.0.4"))
+    .AllowAnonymous();
+
+// Started here rather than lazily, so the listener is attached before the first request rather
+// than before the first scrape - measurements taken in between would otherwise be lost.
+app.Services.GetRequiredService<MetricsSnapshot>();
 
 await using (var scope = app.Services.CreateAsyncScope())
 {

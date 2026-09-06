@@ -108,7 +108,14 @@ async function latestSignInLink(request: APIRequestContext, emailAddress: string
     .poll(async () => (await request.get(route)).status(), { timeout: 5_000 })
     .toBe(200);
 
-  return (await request.get(route)).json().then((message) => message.url as string);
+  const dispatched = (await (await request.get(route)).json()) as { url: string };
+
+  // The path, not the whole address. The API builds the link from a template it was configured
+  // with, and a suite running on another port - the budgets serve the production build on one of
+  // their own - would otherwise be sent to a server that is not there. What matters is the token.
+  const link = new URL(dispatched.url);
+
+  return `${link.pathname}${link.search}`;
 }
 
 /** Reads the link a member would have received, for the specs that follow one by hand. */

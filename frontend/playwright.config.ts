@@ -18,6 +18,16 @@ const port = 4300;
 
 export default defineConfig({
   testDir: './tests/e2e/specs',
+
+  /**
+   * The budget suite does not gate the ordinary run.
+   *
+   * L2-104 asserts wall-clock paint budgets, which can fail on a developer machine for reasons
+   * that have nothing to do with correctness - a build running in another window, a laptop on
+   * battery. Excluded here and run deliberately with `--grep @budget`, which reports the measured
+   * numbers rather than only pass or fail.
+   */
+  grepInvert: process.env['BARNABAS_BUDGETS'] ? undefined : /@budget/,
   fullyParallel: false,
   workers: 1,
   forbidOnly: !!process.env['CI'],

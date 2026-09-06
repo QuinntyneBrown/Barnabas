@@ -74,3 +74,71 @@
   object-fit: cover;
   border: var(--hairline);
 }
+
+// --------------------------------------------------------------------------
+// Touch targets
+//
+// L2-110 asks for 44 by 44 CSS pixels, or equivalent separating space. Three controls the
+// design system carries are under it and none of them can claim the spacing exception: the
+// filter chips sit in a row touching one another, the bell sits beside the brand, and the
+// brand sits beside the bell.
+//
+// Here rather than in barnabas.css so that file stays a clean carry of docs/mocks/styles.css.
+// The mocks are a visual authority, not an accessibility one, and this is the one place the
+// two disagree.
+//
+// `button.chip` and not `.chip`: the same class labels a member's help tags, which are text
+// rather than targets, and padding those would put gaps in a row of words.
+// --------------------------------------------------------------------------
+
+// A chip that is a control, whichever element it is drawn as. The directory's tag filters are
+// links because they are addresses; the board's are buttons because they are not.
+button.chip,
+a.chip {
+  min-height: 44px;
+}
+
+// The file input is the platform's own control and comes with the platform's own height, which
+// is 21 pixels of text beside a button. It is the only control in the product the design system
+// never drew.
+input[type='file'] {
+  min-height: 44px;
+  padding-block: var(--s-2);
+}
+
+.bell {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+// --------------------------------------------------------------------------
+// Board skeletons
+//
+// A placard-shaped space held open while the board is on its way. The masthead already said
+// "Loading listings" and already described skeletons; these are them.
+//
+// Nothing in the design system draws one, because the mocks are static and never load.
+//
+// A class of its own rather than a modifier on .placard, and that is not cosmetic: `.placard`
+// means "a listing" to every page object and every spec in the acceptance suite, and a skeleton
+// answering to it made the board appear to hold twelve listings with no titles. The dimensions
+// are repeated here rather than inherited, which is the price of that.
+// --------------------------------------------------------------------------
+
+.placard-skeleton {
+  min-height: 21rem;
+  background: var(--stone);
+  opacity: 0.35;
+  border-right: var(--hairline);
+  border-bottom: var(--hairline);
+}
+
+@media (min-width: 768px) {
+  .placard-skeleton { min-height: 23rem; }
+}
