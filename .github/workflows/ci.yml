@@ -48,7 +48,7 @@ jobs:
           --health-start-period 30s
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v5
@@ -92,7 +92,7 @@ jobs:
           --health-start-period 30s
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       # Playwright drives the real product: the Angular application, the API behind a proxy, and a
       # real database. Both runtimes are needed.
