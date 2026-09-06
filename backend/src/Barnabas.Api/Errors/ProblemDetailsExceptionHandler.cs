@@ -1,5 +1,6 @@
 using System.Globalization;
 using Barnabas.Application.Common.Exceptions;
+using Barnabas.Application.Common.Tenancy;
 using Barnabas.Domain.Congregations;
 using Barnabas.Domain.Members;
 using Barnabas.Domain.Access;
@@ -53,11 +54,20 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
             return false;
         }
 
-        _logger.LogInformation(
-            "Request to {Path} refused with {Status}: {Reason}",
-            httpContext.Request.Path,
-            problem.Status,
-            exception.GetType().Name);
+        // The congregation goes on a scope rather than into the message, because it is a fact
+        // about the request rather than part of the sentence - and because a log processor
+        // groups by a field and greps a message. L2-117 AC3.
+        //
+        // The type's name and nothing else. A refusal's message is written for the member and
+        // often carries what they typed, and L2-119 keeps that out of the log.
+        using (_logger.BeginScope(CongregationOf(httpContext)))
+        {
+            _logger.LogInformation(
+                "Request to {Path} refused with {Status}: {Reason}",
+                httpContext.Request.Path,
+                problem.Status,
+                exception.GetType().Name);
+        }
 
         httpContext.Response.StatusCode = problem.Status ?? StatusCodes.Status500InternalServerError;
 
@@ -75,6 +85,23 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
             ProblemDetails = problem,
             Exception = exception,
         });
+    }
+
+    /// <summary>
+    /// The congregation this request belongs to, when one has been resolved.
+    /// </summary>
+    /// <remarks>
+    /// Read from the request's own services rather than injected, because this handler is a
+    /// singleton and the congregation context is per request. An unauthenticated caller has none,
+    /// and the scope is then empty rather than carrying a made-up value.
+    /// </remarks>
+    private static Dictionary<string, object> CongregationOf(HttpContext httpContext)
+    {
+        var congregation = httpContext.RequestServices.GetService<ICongregationContext>();
+
+        return congregation is { IsResolved: true }
+            ? new Dictionary<string, object> { ["CongregationId"] = congregation.CongregationId }
+            : [];
     }
 
     private static ProblemDetails? Describe(Exception exception) => exception switch

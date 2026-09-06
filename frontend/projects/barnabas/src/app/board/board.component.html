@@ -45,7 +45,23 @@
     }
   </nav>
 
-  @if (failed()) {
+  @if (loading() && placards().length === 0) {
+    <!--
+      A mosaic of the right shape, held open while the first one is on its way.
+      L2-104 AC2 asks for a layout shift under 0.1, and a board that renders nothing and then
+      renders thirty placards shoves everything below it down the page - which measured 0.18.
+      These reserve exactly the space the placards will take.
+
+      Only when there is nothing to show. Changing a filter reloads the board, and replacing the
+      placards a member is looking at with grey blocks for a tenth of a second is a flash they did
+      not ask for - the old ones stay until the new ones arrive.
+    -->
+    <div class="mosaic" aria-hidden="true">
+      @for (skeleton of skeletons; track skeleton) {
+        <span class="placard-skeleton"></span>
+      }
+    </div>
+  } @else if (failed()) {
     <div class="state stack-4">
       <h2>The board did not load</h2>
       <p>Something went wrong between here and the board. Nothing you posted has been lost.</p>

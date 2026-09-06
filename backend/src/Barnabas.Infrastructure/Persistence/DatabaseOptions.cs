@@ -19,4 +19,15 @@ public sealed class DatabaseOptions
     public bool ResetOnStart { get; set; }
 
     public bool Seed { get; set; }
+
+    /// <summary>
+    /// Applies the migrations when the API starts.
+    /// </summary>
+    /// <remarks>
+    /// On by default, because a schema that drifts from the model unnoticed is the failure this
+    /// prevents. Off is for a deployment that applies migrations from a job of its own - and for
+    /// the one acceptance test that starts the API against a database deliberately not there,
+    /// which could not otherwise reach the health endpoint to find out what it says.
+    /// </remarks>
+    public bool MigrateOnStart { get; set; } = true;
 }

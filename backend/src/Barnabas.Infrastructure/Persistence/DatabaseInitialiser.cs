@@ -35,7 +35,10 @@ public sealed class DatabaseInitialiser
             await _context.Database.EnsureDeletedAsync(cancellationToken);
         }
 
-        await _context.Database.MigrateAsync(cancellationToken);
+        if (_options.MigrateOnStart)
+        {
+            await _context.Database.MigrateAsync(cancellationToken);
+        }
 
         if (_options.Seed)
         {

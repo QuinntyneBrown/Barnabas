@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AvailabilityWindowInput, LISTING_SERVICE } from '@barnabas/api';
 
-import { FieldErrors, focusFirstInvalid } from '@barnabas/domain';
+import { CongregationStore, FieldErrors, focusFirstInvalid } from '@barnabas/domain';
 
 /** One row of the windows editor, before it is worth sending. */
 interface WindowRow {
@@ -34,11 +34,12 @@ export class PostHelpComponent {
 
   private readonly listings = inject(LISTING_SERVICE);
   private readonly router = inject(Router);
+  private readonly congregations = inject(CongregationStore);
 
   readonly title = signal('');
   readonly description = signal('');
   readonly category = signal('Rides');
-  readonly neighbourhood = signal('Riverdale');
+  readonly neighbourhood = signal('');
 
   /** One window to begin with, because an offer with none cannot be posted. */
   readonly windows = signal<readonly WindowRow[]>([{ day: 'Tuesday', startsAt: '09:00', endsAt: '12:00' }]);
@@ -47,16 +48,14 @@ export class PostHelpComponent {
 
   readonly days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-  readonly neighbourhoods = [
-    'Riverdale',
-    'Leslieville',
-    'The Danforth',
-    'Scarborough',
-    'The Beaches',
-    'East York',
-    'Cabbagetown',
-    'North York',
-  ];
+  /**
+   * The congregation's own neighbourhoods, read from the API rather than written here.
+   *
+   * L2-022 asks a member to choose from their parish's list and no other's, and a literal cannot
+   * promise that - it was St. Aidan's eight for every member of every parish, and the API would
+   * have refused a Parkdale member's own neighbourhood as one their congregation does not offer.
+   */
+  readonly neighbourhoods = this.congregations.neighbourhoods;
 
   readonly errors = signal(FieldErrors.none());
   readonly posting = signal(false);
@@ -87,6 +86,19 @@ export class PostHelpComponent {
     this.updateWindow(index, (window) => ({ ...window, endsAt }));
   }
 
+  constructor() {
+    // The congregation's neighbourhoods are not written into this form, so it has to ask for
+    // them - and it is not the screen a member arrives on, so nothing else will have.
+    void this.congregations.ensureLoaded();
+
+    effect(() => {
+      const offered = this.neighbourhoods();
+
+      if (offered.length > 0 && this.neighbourhood() === '') {
+        this.neighbourhood.set(offered[0]);
+      }
+    });
+  }
   async submit(): Promise<void> {
     if (this.posting()) {
       return;

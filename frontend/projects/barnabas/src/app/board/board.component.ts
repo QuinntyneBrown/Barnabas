@@ -35,6 +35,15 @@ export class BoardComponent {
    */
   readonly congregationName = this.congregations.name;
 
+  /**
+   * How many placard-shaped spaces to hold open while the board loads.
+   *
+   * Twelve, which fills three rows at the widest band and more than a screen at every other. The
+   * number does not have to match what arrives - it has to be enough that nothing below the
+   * mosaic moves when it does.
+   */
+  readonly skeletons = Array.from({ length: 12 }, (_, index) => index);
+
   readonly placards = this.store.placards;
   readonly loading = this.store.loading;
   readonly failed = this.store.failed;

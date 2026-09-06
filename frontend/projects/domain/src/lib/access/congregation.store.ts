@@ -15,12 +15,35 @@ export class CongregationStore {
 
   private readonly current = signal<Congregation | null>(null);
 
+  /** The attempt in progress, so five screens asking at once make one call. */
+  private inFlight: Promise<void> | null = null;
+
   readonly congregation = this.current.asReadonly();
 
   /** The parish's name, or nothing at all rather than a guess at one. */
   readonly name = computed(() => this.current()?.name ?? '');
 
   readonly neighbourhoods = computed(() => this.current()?.neighbourhoods ?? []);
+
+  /**
+   * Loads it once, and shares the attempt with whoever asks meanwhile.
+   *
+   * For screens that need the parish without owning it — the four post forms and the edit form
+   * all offer its neighbourhoods, and none of them is the screen a member arrives on. Without
+   * this each would either fetch it again or render an empty list depending on where the member
+   * came from.
+   */
+  async ensureLoaded(): Promise<void> {
+    if (this.current()) {
+      return;
+    }
+
+    this.inFlight ??= this.load().finally(() => {
+      this.inFlight = null;
+    });
+
+    await this.inFlight;
+  }
 
   async load(): Promise<void> {
     try {
