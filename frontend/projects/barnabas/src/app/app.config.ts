@@ -9,6 +9,8 @@ import {
   InvitationService,
   InviteService,
   LISTING_SERVICE,
+  MEMBER_SERVICE,
+  MemberService,
   ListingService,
   REQUEST_SERVICE,
   RequestService,
@@ -55,6 +57,7 @@ export const appConfig: ApplicationConfig = {
     { provide: INVITATION_SERVICE, useClass: InvitationService },
     { provide: INVITE_SERVICE, useClass: InviteService },
     { provide: LISTING_SERVICE, useClass: ListingService },
+    { provide: MEMBER_SERVICE, useClass: MemberService },
     { provide: REQUEST_SERVICE, useClass: RequestService },
     { provide: THREAD_SERVICE, useClass: ThreadService },
 

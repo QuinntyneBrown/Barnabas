@@ -1,0 +1,71 @@
+<div class="masthead masthead--stone masthead--short">
+  <div class="container stack-2">
+    <h1 class="masthead-title">Congregation directory</h1>
+    <p class="masthead-note">Who is here, and what they can help with.</p>
+  </div>
+</div>
+
+<div class="container section stack-5">
+  <form class="form" (ngSubmit)="search()">
+    <div class="field">
+      <label for="term">Search by name</label>
+      <input
+        type="search"
+        id="term"
+        name="term"
+        [ngModel]="term()"
+        (ngModelChange)="term.set($event)"
+      />
+    </div>
+  </form>
+
+  @if (helpTag(); as tag) {
+    <div class="chip-row">
+      <button class="chip" type="button" aria-pressed="true" (click)="filterBy(tag)">
+        {{ tag }}
+      </button>
+      <button class="btn btn-ghost btn-sm" type="button" (click)="clear()">Show everyone</button>
+    </div>
+  }
+
+  @if (loading() && rows().length === 0) {
+    <p role="status">Loading the directory.</p>
+  } @else if (failed()) {
+    <div class="state stack-4">
+      <h2>The directory did not load</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" type="button" (click)="search()">Try again</button>
+      </div>
+    </div>
+  } @else if (rows().length === 0) {
+    <div class="state stack-4">
+      <h2>Nobody matched</h2>
+      <p>Try a different name, or show everyone.</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" type="button" (click)="clear()">Show everyone</button>
+      </div>
+    </div>
+  } @else {
+    <div class="rows">
+      @for (member of rows(); track member.memberId) {
+        <div class="list-row">
+          <div class="list-row__body stack-2">
+            <!-- Every row opens a profile. A name with no way to act on it is a dead end. -->
+            <a class="list-row__title link" [routerLink]="['/members', member.memberId]">{{
+              member.displayName
+            }}</a>
+            <span class="list-row__meta">{{ member.neighbourhood }}</span>
+
+            @if (member.helpTags.length > 0) {
+              <div class="chip-row">
+                @for (tag of member.helpTags; track tag) {
+                  <button class="chip" type="button" (click)="filterBy(tag)">{{ tag }}</button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

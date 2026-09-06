@@ -1,0 +1,67 @@
+<div class="container section">
+  @if (missing()) {
+    <div class="state stack-4">
+      <h1>That member is not here</h1>
+      <p>They may have left, or they may belong to another congregation.</p>
+      <a class="btn btn-primary" routerLink="/directory">Back to the directory</a>
+    </div>
+  } @else if (member(); as profile) {
+    <a class="back-link" routerLink="/directory">&larr; Directory</a>
+
+    <div class="stack-6">
+      <div class="stack-2">
+        <h1 class="detail__title">{{ profile.displayName }}</h1>
+        <span class="person__meta">{{ profile.neighbourhood }}</span>
+      </div>
+
+      @if (profile.description) {
+        <blockquote class="quote">{{ profile.description }}</blockquote>
+      }
+
+      @if (profile.helpTags.length > 0) {
+        <div class="stack-2">
+          <h2>Can help with</h2>
+          <div class="chip-row">
+            @for (tag of profile.helpTags; track tag) {
+              <span class="chip">{{ tag }}</span>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="stack-3">
+        <h2>On the board</h2>
+
+        @if (profile.activeListings.length === 0) {
+          <p class="muted">Nothing at the moment.</p>
+        } @else {
+          <div class="rows">
+            @for (listing of profile.activeListings; track listing.listingId) {
+              <div class="list-row">
+                <div class="list-row__body stack-2">
+                  <div class="row-between">
+                    <a class="list-row__title link" [routerLink]="['/listings', listing.listingId]">{{
+                      listing.title
+                    }}</a>
+                    <span class="kind kind--{{ listing.kind.toLowerCase() }}">{{ listing.kind }}</span>
+                  </div>
+                  @if (listing.price !== null) {
+                    <span class="list-row__meta">${{ listing.price }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!--
+        No way to message them. Asking happens against a listing, and the thread follows the
+        acceptance - there is no endpoint here that would do otherwise.
+      -->
+      <p class="muted small">
+        To get in touch, ask for something they have posted. Accepting opens the conversation.
+      </p>
+    </div>
+  }
+</div>

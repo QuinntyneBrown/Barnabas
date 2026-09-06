@@ -2,7 +2,13 @@
   <div class="masthead masthead--stone masthead--short">
     <div class="container stack-2">
       <a class="back-link" routerLink="/inbox/messages">&larr; All messages</a>
-      <h1 class="masthead-title">{{ conversation.otherMemberDisplayName }}</h1>
+      <!-- The name opens their profile. A conversation with somebody you cannot look up is a
+           name and nothing else - L2-068. -->
+      <h1 class="masthead-title">
+        <a class="link" [routerLink]="['/members', conversation.otherMemberId]">{{
+          conversation.otherMemberDisplayName
+        }}</a>
+      </h1>
     </div>
   </div>
 

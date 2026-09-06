@@ -20,7 +20,11 @@
         <div class="list-row">
           <div class="list-row__body stack-2">
             <div class="row-between">
-              <span class="list-row__title">{{ request.requesterDisplayName }}</span>
+              <!-- The requester's name opens their profile, so an owner deciding can see who is
+                   asking - L2-059. -->
+              <a class="list-row__title link" [routerLink]="['/members', request.requesterId]">{{
+                request.requesterDisplayName
+              }}</a>
               <span class="status status--{{ request.status.toLowerCase() }}">{{ request.status }}</span>
             </div>
 
