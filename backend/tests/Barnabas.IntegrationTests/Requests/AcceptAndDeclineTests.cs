@@ -144,7 +144,7 @@ public sealed class AcceptAndDeclineTests : AcceptanceTest
 
     // L2-060 AC4: Given a pending request accepted and declined concurrently, when both complete,
     // then exactly one transition succeeds, the other receives 409, and at most one thread exists.
-    [RequiresPostgresFact]
+    [Fact]
     public async Task An_accept_racing_a_decline_produces_one_decision()
     {
         var requestId = await AskToBorrowAsync();

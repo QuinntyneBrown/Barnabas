@@ -59,8 +59,13 @@ export const test = base.extend<{
     await use(async (emailAddress: string) => {
       const signInPage = new SignInPage(page);
 
-      // Start from nobody. A spec that hands the browser from one member to another is doing
-      // something no member does, and leaving the previous refresh cookie in place makes which
+      // Let whatever the previous member did finish first. Handing the browser from one member
+      // to another is not something a member ever does, and doing it with a request in flight
+      // aborts that request - which reads later as the product having lost the write rather
+      // than as the test having raced it.
+      await page.waitForLoadState('networkidle').catch(() => undefined);
+
+      // Then start from nobody. Leaving the previous refresh cookie in place would make which
       // identity the next page load recovers a matter of timing.
       await page.context().clearCookies();
 

@@ -49,7 +49,7 @@ public sealed class DatabaseReset
         {
             // The names are the fixed list above, not anything a caller supplies.
 #pragma warning disable EF1002
-            await _context.Database.ExecuteSqlRawAsync($"DELETE FROM \"{table}\"", cancellationToken);
+            await _context.Database.ExecuteSqlRawAsync($"DELETE FROM [{table}]", cancellationToken);
 #pragma warning restore EF1002
         }
 

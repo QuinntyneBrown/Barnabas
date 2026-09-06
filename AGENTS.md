@@ -20,6 +20,11 @@ say what it cost rather than quietly narrowing scope.
   - Dependency injection (DI)
   - Options
   - Configuration
+- Persist to SQL Server, and to one provider only. Development and both acceptance suites use
+  the same engine as production, so a filtered index, a `rowversion` and a conditional update
+  behave in a test exactly as they will in a deployment. A second provider bought portability
+  once and cost four acceptance criteria that could not run under it. See
+  `docs/adr/backend/0001-use-sql-server-for-persistence.md`.
 - Use Angular for the web client.
 - Authenticate with JWT.
 

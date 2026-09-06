@@ -11,14 +11,13 @@ namespace Barnabas.Infrastructure.Persistence;
 /// <remarks>
 /// Migrations describe the schema, and the schema is the same for every congregation, so the
 /// unresolved context this supplies is not a gap - there is nothing here for a filter to do.
-/// PostgreSQL is always the target: SQLite is created from the model rather than migrated.
 /// </remarks>
 public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<BarnabasDbContext>
 {
     public BarnabasDbContext CreateDbContext(string[] args)
     {
         var options = new DbContextOptionsBuilder<BarnabasDbContext>()
-            .UseNpgsql("Host=localhost;Database=barnabas;Username=barnabas;Password=barnabas")
+            .UseSqlServer(@"Server=.\SQLEXPRESS;Database=Barnabas;Trusted_Connection=True;TrustServerCertificate=True")
             .Options;
 
         return new BarnabasDbContext(options, new UnresolvedCongregationContext());

@@ -15,9 +15,9 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "Congregations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Neighbourhoods = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Neighbourhoods = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,11 +28,11 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "InviteCodes",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Code = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    RedeemedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    RedeemedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,17 +43,17 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "ListingRequests",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ListingId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RequesterId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Message = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    MadeAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    DecidedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ListingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequesterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    MadeAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    DecidedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     PickupOn = table.Column<DateOnly>(type: "date", nullable: true),
                     RequestedReturnBy = table.Column<DateOnly>(type: "date", nullable: true),
-                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,19 +64,19 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "Listings",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Kind = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
-                    Description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
-                    Category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Neighbourhood = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    PostedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ClosedOutAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Kind = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Neighbourhood = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    PostedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ClosedOutAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     ReturnBy = table.Column<DateOnly>(type: "date", nullable: true),
-                    Price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true)
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -87,13 +87,13 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "Members",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EmailAddress = table.Column<string>(type: "character varying(320)", maxLength: 320, nullable: false),
-                    DisplayName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Neighbourhood = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmailAddress = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Neighbourhood = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,13 +104,13 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "MessageThreads",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RequestId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ListingId = table.Column<Guid>(type: "uuid", nullable: false),
-                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RequesterId = table.Column<Guid>(type: "uuid", nullable: false),
-                    OpenedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ListingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequesterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OpenedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -121,14 +121,14 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "RefreshTokens",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SessionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TokenHash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    IssuedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    RevokedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ReplacedByTokenId = table.Column<Guid>(type: "uuid", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SessionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TokenHash = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    IssuedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    RevokedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ReplacedByTokenId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -139,12 +139,12 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "Sessions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MemberId = table.Column<Guid>(type: "uuid", nullable: false),
-                    OpenedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    RevokedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MemberId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OpenedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    RevokedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -155,13 +155,13 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "SignInTokens",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MemberId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TokenHash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    IssuedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ConsumedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MemberId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TokenHash = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    IssuedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ConsumedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -172,12 +172,12 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "Messages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ThreadId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SenderId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Body = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
-                    SentAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ThreadId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SenderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Body = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    SentAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -194,11 +194,11 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 name: "ThreadReadMarks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ThreadId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MemberId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReadAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CongregationId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ThreadId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MemberId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReadAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CongregationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -227,7 +227,7 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                 table: "ListingRequests",
                 columns: new[] { "ListingId", "RequesterId" },
                 unique: true,
-                filter: "\"Status\" = 0");
+                filter: "[Status] = 0");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ListingRequests_RequesterId",

@@ -43,15 +43,13 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         "Congregations",
     ];
 
-    private readonly DatabaseHarness _harness = DatabaseHarness.Create();
+    private readonly TestDatabase _database = new();
 
     /// <summary>
     /// A clock the tests move deliberately. Expiry is a rule about elapsed time, and a test that
     /// waited for it would be slow and flaky in equal measure.
     /// </summary>
     public FakeTimeProvider Clock { get; } = new(new DateTimeOffset(2026, 9, 5, 9, 0, 0, TimeSpan.Zero));
-
-    public bool SupportsRowVersions => _harness.SupportsRowVersions;
 
     public IEmailOutbox Outbox => Services.GetRequiredService<IEmailOutbox>();
 
@@ -60,9 +58,7 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
 
     public async ValueTask InitializeAsync()
     {
-        await _harness.StartAsync();
-
-        // Touching the client forces the host to build, which applies the schema.
+        // Touching the client forces the host to build, which applies the migration.
         using var client = CreateClient();
 
         await ResetAsync();
@@ -72,7 +68,7 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
     {
         await base.DisposeAsync();
 
-        await _harness.DisposeAsync();
+        await _database.DisposeAsync();
     }
 
     /// <summary>Empties every table and re-seeds, so each test starts from the same board.</summary>
@@ -173,8 +169,7 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
 
         builder.UseEnvironment("Testing");
 
-        builder.UseSetting("Database:Provider", _harness.Provider);
-        builder.UseSetting("Database:ConnectionString", _harness.ConnectionString);
+        builder.UseSetting("Database:ConnectionString", _database.ConnectionString);
         builder.UseSetting("Database:Seed", "false");
         builder.UseSetting("Database:ResetOnStart", "false");
         builder.UseSetting("Jwt:SigningKey", SigningKey);

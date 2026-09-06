@@ -19,15 +19,6 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// The acceptance suites choose a provider without editing configuration, so that a machine
-// with no container runtime can still run them.
-var providerOverride = Environment.GetEnvironmentVariable("BARNABAS_TEST_DB");
-
-if (!string.IsNullOrWhiteSpace(providerOverride))
-{
-    builder.Configuration["Database:Provider"] = providerOverride;
-}
-
 builder.WebHost.ConfigureKestrel(kestrel => kestrel.Limits.MaxRequestBodySize = RequestBodyLimitMiddleware.MaxBytes);
 
 builder.Services

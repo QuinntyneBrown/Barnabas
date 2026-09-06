@@ -8,9 +8,9 @@ namespace Barnabas.Infrastructure.Persistence;
 /// Brings the schema up to date and seeds the congregation, once, at startup.
 /// </summary>
 /// <remarks>
-/// Migrations are the PostgreSQL story. SQLite gets the model created directly, because
-/// maintaining a second migration set for a provider that exists to keep the acceptance suite
-/// runnable would cost more than it returns and would drift the moment nobody looked.
+/// Always through migrations, never <c>EnsureCreated</c>. One provider means one migration set,
+/// and applying it on every start - including on every acceptance run - is what keeps it from
+/// drifting away from the model unnoticed.
 /// </remarks>
 public sealed class DatabaseInitialiser
 {
@@ -35,14 +35,7 @@ public sealed class DatabaseInitialiser
             await _context.Database.EnsureDeletedAsync(cancellationToken);
         }
 
-        if (_context.Database.IsNpgsql())
-        {
-            await _context.Database.MigrateAsync(cancellationToken);
-        }
-        else
-        {
-            await _context.Database.EnsureCreatedAsync(cancellationToken);
-        }
+        await _context.Database.MigrateAsync(cancellationToken);
 
         if (_options.Seed)
         {

@@ -16,6 +16,11 @@ public sealed class ListingRequestConfiguration : IEntityTypeConfiguration<Listi
         builder.Property(r => r.Message).IsRequired().HasMaxLength(ListingRequest.MessageMaxLength);
         builder.Property(r => r.Status).HasConversion<int>();
 
+        // A real rowversion column, which the server advances on every update. Nothing in
+        // application code has to remember to move it, and that is the point: it decides an
+        // accept racing a decline, and a check made before the save could not.
+        builder.Property(r => r.RowVersion).IsRowVersion();
+
         builder.OwnsOne(r => r.LoanTerms, terms =>
         {
             terms.Property(t => t.PickupOn).HasColumnName("PickupOn");
@@ -28,7 +33,7 @@ public sealed class ListingRequestConfiguration : IEntityTypeConfiguration<Listi
         // requests: a declined request must not block a second attempt.
         builder.HasIndex(r => new { r.ListingId, r.RequesterId })
             .IsUnique()
-            .HasFilter(@"""Status"" = 0")
+            .HasFilter("[Status] = 0")
             .HasDatabaseName("IX_ListingRequests_OneOpenRequestPerMember");
 
         builder.HasIndex(r => new { r.ListingId, r.Status });

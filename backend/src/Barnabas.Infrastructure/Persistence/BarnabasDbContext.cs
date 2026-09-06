@@ -91,13 +91,6 @@ public sealed class BarnabasDbContext : DbContext, IBarnabasDbContext
 
         ConfigureAssignedKeys(modelBuilder);
 
-        ConfigureConcurrencyToken(modelBuilder);
-
-        if (Database.IsSqlite())
-        {
-            SqliteTimestamps.Apply(modelBuilder);
-        }
-
         var applyFilter = typeof(BarnabasDbContext)
             .GetMethod(nameof(ApplyCongregationFilter), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
 
@@ -139,38 +132,6 @@ public sealed class BarnabasDbContext : DbContext, IBarnabasDbContext
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// Maps the request's row version onto whatever the provider can offer.
-    /// </summary>
-    /// <remarks>
-    /// On PostgreSQL the token is the <c>xmin</c> system column, which the server advances on
-    /// every update at no storage cost. That is what decides an accept racing a decline:
-    /// exactly one transition survives and the other is told 409, which a status check made
-    /// before the save cannot promise.
-    /// <para>
-    /// SQLite has no equivalent, so the column is an ordinary one there and the race is not
-    /// detected. The acceptance tests that turn on it are marked to require PostgreSQL rather
-    /// than passing vacuously on a provider that cannot express the rule.
-    /// </para>
-    /// </remarks>
-    private void ConfigureConcurrencyToken(ModelBuilder modelBuilder)
-    {
-        var rowVersion = modelBuilder.Entity<ListingRequest>().Property(r => r.RowVersion);
-
-        if (Database.IsNpgsql())
-        {
-            rowVersion
-                .HasColumnName("xmin")
-                .HasColumnType("xid")
-                .ValueGeneratedOnAddOrUpdate()
-                .IsConcurrencyToken();
-
-            return;
-        }
-
-        rowVersion.HasDefaultValue(0u);
     }
 
     private void ApplyCongregationFilter<TEntity>(ModelBuilder modelBuilder)

@@ -20,17 +20,6 @@ public sealed class AuthenticationStore : IAuthenticationStore
 
     public AuthenticationStore(BarnabasDbContext context) => _context = context;
 
-    /// <summary>
-    /// The instant, in the shape this provider stores it.
-    /// </summary>
-    /// <remarks>
-    /// The conditional updates below are written as SQL, which goes around the value converters
-    /// the model applies. On SQLite timestamps are stored as UTC DateTime so they can be sorted,
-    /// so a raw statement has to write one too, or the value it writes will not read back.
-    /// </remarks>
-    private object Timestamp(DateTimeOffset value) =>
-        _context.Database.IsSqlite() ? value.UtcDateTime : value;
-
     public Task<Member?> FindApprovedMemberByEmailAsync(string emailAddress, CancellationToken cancellationToken)
     {
         var normalised = Member.Normalise(emailAddress);
@@ -71,9 +60,9 @@ public sealed class AuthenticationStore : IAuthenticationStore
         // clock reading is not something two callers can disagree about.
         var consumed = await _context.Database.ExecuteSqlInterpolatedAsync(
             $"""
-             UPDATE "SignInTokens"
-             SET "ConsumedAt" = {Timestamp(asOf)}
-             WHERE "TokenHash" = {tokenHash} AND "ConsumedAt" IS NULL
+             UPDATE [SignInTokens]
+             SET [ConsumedAt] = {asOf}
+             WHERE [TokenHash] = {tokenHash} AND [ConsumedAt] IS NULL
              """,
             cancellationToken);
 
@@ -126,9 +115,9 @@ public sealed class AuthenticationStore : IAuthenticationStore
     {
         var rotated = await _context.Database.ExecuteSqlInterpolatedAsync(
             $"""
-             UPDATE "RefreshTokens"
-             SET "ReplacedByTokenId" = {replacementTokenId}, "RevokedAt" = {Timestamp(asOf)}
-             WHERE "Id" = {tokenId} AND "RevokedAt" IS NULL AND "ReplacedByTokenId" IS NULL
+             UPDATE [RefreshTokens]
+             SET [ReplacedByTokenId] = {replacementTokenId}, [RevokedAt] = {asOf}
+             WHERE [Id] = {tokenId} AND [RevokedAt] IS NULL AND [ReplacedByTokenId] IS NULL
              """,
             cancellationToken);
 
@@ -151,15 +140,15 @@ public sealed class AuthenticationStore : IAuthenticationStore
     {
         await _context.Database.ExecuteSqlInterpolatedAsync(
             $"""
-             UPDATE "Sessions" SET "RevokedAt" = {Timestamp(asOf)}
-             WHERE "Id" = {sessionId} AND "RevokedAt" IS NULL
+             UPDATE [Sessions] SET [RevokedAt] = {asOf}
+             WHERE [Id] = {sessionId} AND [RevokedAt] IS NULL
              """,
             cancellationToken);
 
         await _context.Database.ExecuteSqlInterpolatedAsync(
             $"""
-             UPDATE "RefreshTokens" SET "RevokedAt" = {Timestamp(asOf)}
-             WHERE "SessionId" = {sessionId} AND "RevokedAt" IS NULL
+             UPDATE [RefreshTokens] SET [RevokedAt] = {asOf}
+             WHERE [SessionId] = {sessionId} AND [RevokedAt] IS NULL
              """,
             cancellationToken);
     }

@@ -129,7 +129,7 @@ public sealed class ExchangeASignInLinkTests : AcceptanceTest
 
     // L2-016 AC2: Given a sign-in token exchanged concurrently by two callers, when both
     // complete, then exactly one session is created.
-    [RequiresPostgresFact]
+    [Fact]
     public async Task Two_callers_racing_one_link_produce_one_session()
     {
         using var client = Api.CreateClient();

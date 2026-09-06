@@ -150,7 +150,7 @@ public sealed class MakeARequestTests : AcceptanceTest
 
     // L2-062 AC5: Given two identical requests on one listing submitted concurrently by the same
     // member, when both complete, then exactly one is created and the other receives 409.
-    [RequiresPostgresFact]
+    [Fact]
     public async Task Two_identical_requests_at_once_produce_one_request()
     {
         using var priya = await Api.ClientForAsync(SeedData.Priya.Id);

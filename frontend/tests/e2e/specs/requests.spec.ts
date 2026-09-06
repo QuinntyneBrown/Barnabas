@@ -148,6 +148,9 @@ test('declining is confirmed first, and the requester is told', async ({ page, s
   await incoming.decline(Members.priya.displayName).click();
   await dialog.getByRole('button', { name: 'Decline' }).click();
 
+  // The owner sees the decision before anyone goes looking for it elsewhere.
+  await expect(incoming.from(Members.priya.displayName)).toContainText('Declined');
+
   await signInAs(Members.priya.emailAddress);
   await outgoing.goto();
 

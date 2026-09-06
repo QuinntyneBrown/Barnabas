@@ -51,7 +51,7 @@ public sealed class RenewASessionTests : AcceptanceTest
 
     // L2-018 AC4: Given one refresh token presented concurrently by two callers, when both
     // complete, then exactly one rotation succeeds and the other receives 401.
-    [RequiresPostgresFact]
+    [Fact]
     public async Task Two_callers_racing_one_refresh_token_produce_one_winner()
     {
         var device = await Device.SignInAsync(Api, SeedData.Priya.EmailAddress);

@@ -61,7 +61,7 @@ public sealed class ListingRequest : ITenantOwned
     /// would silently win. L2-060 requires exactly one transition to survive, and the
     /// status check below cannot deliver that on its own — it runs before the save.
     /// </remarks>
-    public uint RowVersion { get; private set; }
+    public byte[] RowVersion { get; private set; } = [];
 
     public bool IsPending => Status == RequestStatus.Pending;
 

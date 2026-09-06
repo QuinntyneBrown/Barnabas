@@ -29,23 +29,11 @@ public static class InfrastructureServiceCollectionExtensions
 
         var database = configuration.GetSection(DatabaseOptions.SectionName).Get<DatabaseOptions>() ?? new DatabaseOptions();
 
-        var sqlite = string.Equals(database.Provider, DatabaseProviders.Sqlite, StringComparison.OrdinalIgnoreCase);
-
         var connectionString = string.IsNullOrWhiteSpace(database.ConnectionString)
-            ? DefaultConnectionString(sqlite)
+            ? DefaultConnectionString
             : database.ConnectionString;
 
-        services.AddDbContext<BarnabasDbContext>(options =>
-        {
-            if (sqlite)
-            {
-                options.UseSqlite(connectionString);
-
-                return;
-            }
-
-            options.UseNpgsql(connectionString);
-        });
+        services.AddDbContext<BarnabasDbContext>(options => options.UseSqlServer(connectionString));
 
         services.AddScoped<IBarnabasDbContext>(provider => provider.GetRequiredService<BarnabasDbContext>());
         services.AddScoped<IAuthenticationStore, AuthenticationStore>();
@@ -72,7 +60,18 @@ public static class InfrastructureServiceCollectionExtensions
         return services;
     }
 
-    private static string DefaultConnectionString(bool sqlite) => sqlite
-        ? "Data Source=barnabas.db"
-        : "Host=localhost;Database=barnabas;Username=barnabas;Password=barnabas";
+    /// <summary>
+    /// SQL Express, the instance running on this machine.
+    /// </summary>
+    /// <remarks>
+    /// Overridden by <c>Database:ConnectionString</c> for a container or a deployed instance.
+    /// Only the address changes; nothing above here knows the difference.
+    /// <para>
+    /// Not LocalDB. LocalDB is loaded into the calling process through SQLUserInstance.dll, which
+    /// ships x64 only, so an ARM64 host cannot open it at all. SQL Express is a service reached
+    /// over a pipe, so the architecture of the caller does not arise.
+    /// </para>
+    /// </remarks>
+    private const string DefaultConnectionString =
+        @"Server=.\SQLEXPRESS;Database=Barnabas;Trusted_Connection=True;TrustServerCertificate=True";
 }
