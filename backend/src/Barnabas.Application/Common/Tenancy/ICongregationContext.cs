@@ -24,4 +24,13 @@ public interface ICongregationContext
     Guid SessionId { get; }
 
     Barnabas.Domain.Members.MemberRole Role { get; }
+
+    /// <summary>
+    /// Whether the caller has been let into their congregation.
+    /// </summary>
+    /// <remarks>
+    /// Read from the member record on every request rather than from the token, so an approval
+    /// takes effect on the next visit rather than the next sign-in.
+    /// </remarks>
+    Barnabas.Domain.Members.MemberStatus Status { get; }
 }

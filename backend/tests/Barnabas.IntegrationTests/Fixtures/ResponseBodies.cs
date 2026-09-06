@@ -11,6 +11,32 @@ namespace Barnabas.IntegrationTests.Fixtures;
 /// </remarks>
 public sealed record PostedListing(Guid ListingId);
 
+public sealed record ProvisionedCongregation(Guid CongregationId, string Name, string Slug);
+
+public sealed record ConfiguredCongregation(
+    Guid CongregationId,
+    string Name,
+    string Slug,
+    IReadOnlyList<string> Neighbourhoods);
+
+public sealed record CongregationBody(
+    Guid CongregationId,
+    string Name,
+    string Slug,
+    IReadOnlyList<string> Neighbourhoods);
+
+public sealed record DesignatedModerator(Guid MemberId, string Role);
+
+public sealed record IssuedInviteCode(Guid InviteCodeId, string Code, DateTimeOffset ExpiresAt);
+
+public sealed record RedeemedInviteCode(
+    string CongregationName,
+    IReadOnlyList<string> Neighbourhoods,
+    string JoiningToken,
+    DateTimeOffset ExpiresAt);
+
+public sealed record JoinedCongregation(Guid MemberId, string CongregationName, string Status);
+
 public sealed record BoardListingBody(
     Guid ListingId,
     string Kind,

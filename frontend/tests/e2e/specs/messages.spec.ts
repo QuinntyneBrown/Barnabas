@@ -42,6 +42,11 @@ test('a thread is listed with the other member, the listing, and whether it is u
   page,
   signInAs,
 }) => {
+  // Two members, a request, an acceptance and a message before it can assert anything. It fits
+  // the default timeout alone and has exceeded it in a full run, which is a slow test rather
+  // than a failing one.
+  test.slow();
+
   const accepted = new RequestAcceptedPage(page);
   const thread = new ThreadPage(page);
   const threads = new ThreadsPage(page);

@@ -16,6 +16,7 @@ public sealed class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(m => m.Neighbourhood).IsRequired().HasMaxLength(200);
         builder.Property(m => m.Role).HasConversion<int>();
         builder.Property(m => m.Status).HasConversion<int>();
+        builder.Property(m => m.ReasonForJoining).HasMaxLength(Member.ReasonForJoiningMaxLength);
 
         // Globally unique, not unique per congregation. Signing in resolves a member from an
         // address alone, before any congregation is known, so two members sharing an address

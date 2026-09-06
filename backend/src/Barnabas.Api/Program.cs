@@ -4,6 +4,7 @@ using Barnabas.Api.Filters;
 using Barnabas.Api.Middleware;
 using Barnabas.Api.Security;
 using Barnabas.Api.Tenancy;
+using Barnabas.Application.Common.Abuse;
 using Barnabas.Application.Common.Tenancy;
 using Barnabas.Application.DependencyInjection;
 using Barnabas.Infrastructure.DependencyInjection;
@@ -45,6 +46,7 @@ builder.Services.Configure<RefreshCookieOptions>(
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICongregationContext, CongregationContext>();
+builder.Services.AddScoped<ICallerSource, CallerSource>();
 
 builder.Services.AddBarnabasApplication();
 builder.Services.AddBarnabasInfrastructure(builder.Configuration);

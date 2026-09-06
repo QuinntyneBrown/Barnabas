@@ -1,0 +1,20 @@
+<div class="container section">
+  <div class="state stack-4">
+    <h1>You are on the list</h1>
+
+    @if (congregationName()) {
+      <p>
+        Your request to join {{ congregationName() }} is with the moderators. They will let you in,
+        and the board opens as soon as they do.
+      </p>
+    } @else {
+      <p>Your request to join is with the moderators. The board opens as soon as they let you in.</p>
+    }
+
+    <p class="muted">Nothing else is needed from you. There is no email to wait for.</p>
+
+    <div class="btn-group">
+      <a class="btn btn-ghost" routerLink="/you">Your account</a>
+    </div>
+  </div>
+</div>

@@ -134,7 +134,16 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Congregations_Slug");
 
                     b.ToTable("Congregations", (string)null);
                 });
@@ -155,7 +164,16 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset>("IssuedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("IssuedByMemberId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset?>("RedeemedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
@@ -164,6 +182,39 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("InviteCodes", (string)null);
+                });
+
+            modelBuilder.Entity("Barnabas.Domain.Congregations.JoiningSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CongregationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ConsumedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("InviteCodeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("IssuedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("JoiningSessions", (string)null);
                 });
 
             modelBuilder.Entity("Barnabas.Domain.Listings.Listing", b =>
@@ -251,6 +302,10 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ReasonForJoining")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");

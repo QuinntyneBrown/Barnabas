@@ -105,7 +105,12 @@ public sealed class SessionsController : ControllerBase
     {
         Response.Cookies.Append(RefreshCookieOptions.CookieName, session.RefreshToken, CookieSettings(expired: false));
 
-        return Ok(new SessionResponse(session.SessionId, session.AccessToken, session.ExpiresOn));
+        return Ok(new SessionResponse(
+            session.SessionId,
+            session.AccessToken,
+            session.ExpiresOn,
+            session.Status.ToString(),
+            session.Role.ToString()));
     }
 
     private CookieOptions CookieSettings(bool expired) => new()

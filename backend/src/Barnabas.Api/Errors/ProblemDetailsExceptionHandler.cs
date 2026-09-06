@@ -1,4 +1,7 @@
+using System.Globalization;
 using Barnabas.Application.Common.Exceptions;
+using Barnabas.Domain.Congregations;
+using Barnabas.Domain.Members;
 using Barnabas.Domain.Access;
 using Barnabas.Domain.Common;
 using Barnabas.Domain.Listings;
@@ -56,6 +59,14 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
 
         httpContext.Response.StatusCode = problem.Status ?? StatusCodes.Status500InternalServerError;
 
+        // A 429 that does not say when to come back leaves a client guessing, and a guessing
+        // client retries sooner than it should. L2-099 AC1 asks for the header by name.
+        if (exception is TooManyRequestsException limited)
+        {
+            httpContext.Response.Headers.RetryAfter =
+                ((int)Math.Ceiling(limited.RetryAfter.TotalSeconds)).ToString(CultureInfo.InvariantCulture);
+        }
+
         return await _problemDetails.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,
@@ -89,6 +100,50 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
             "The sign-in link has expired or has already been used."),
 
         RefreshTokenNotActiveException => Problem(StatusCodes.Status401Unauthorized, "The session could not be renewed."),
+
+        // Expired, spent and revoked are one answer. Which of the three it was would say
+        // something about a code the caller is not entitled to know about - L2-007 AC3.
+        TooManyRequestsException => Problem(
+            StatusCodes.Status429TooManyRequests,
+            "That has been asked for too often. Try again shortly."),
+
+        InviteCodeNotRedeemableException => Problem(
+            StatusCodes.Status410Gone,
+            "That code cannot be used."),
+
+        JoiningSessionNotUsableException => Problem(
+            StatusCodes.Status410Gone,
+            "That joining session is no longer open."),
+
+        NeighbourhoodNotOfferedException => new ValidationProblemDetails(
+            new Dictionary<string, string[]>
+            {
+                ["neighbourhood"] = ["That is not one of your congregation's neighbourhoods."],
+            })
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "One or more fields are invalid.",
+        },
+
+        SlugAlreadyTakenException => Problem(
+            StatusCodes.Status409Conflict,
+            "Another congregation already uses that slug."),
+
+        EmailAlreadyRegisteredException => Problem(
+            StatusCodes.Status409Conflict,
+            "That email address is already in use."),
+
+        MemberNotAwaitingApprovalException => Problem(
+            StatusCodes.Status409Conflict,
+            "That member is not waiting to be approved."),
+
+        MemberNotApprovedException => Problem(
+            StatusCodes.Status409Conflict,
+            "That member has not been approved yet."),
+
+        RoleNotGrantableException => Problem(
+            StatusCodes.Status400BadRequest,
+            "That role cannot be granted here."),
 
         ListingNotActiveException => Problem(StatusCodes.Status409Conflict, "The listing is no longer active."),
 

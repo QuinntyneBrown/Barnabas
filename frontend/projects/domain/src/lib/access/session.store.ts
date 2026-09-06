@@ -17,11 +17,31 @@ import { ITokenService, SESSION_SERVICE } from '@barnabas/api';
 export class SessionStore implements ITokenService {
   private readonly sessions = inject(SESSION_SERVICE);
   private readonly accessToken = signal<string | null>(null);
+  private readonly memberStatus = signal<string | null>(null);
+  private readonly memberRole = signal<string | null>(null);
 
   /** The renewal in flight, shared by everyone who asks for one while it runs. */
   private renewal: Promise<boolean> | null = null;
 
   readonly isSignedIn = computed(() => this.accessToken() !== null);
+
+  /**
+   * Whether a moderator has let this member in.
+   *
+   * Refreshed with the session, and the guard refreshes on every navigation, so an approval takes
+   * effect on the member's next visit rather than their next sign-in.
+   */
+  readonly isApproved = computed(() => this.memberStatus() === 'Approved');
+
+  /**
+   * Whether this member may moderate.
+   *
+   * An administrator can too: the roles are ordered, and the gate is the lower one. Hiding the
+   * entry is presentation; the API refuses an ordinary member the queue regardless.
+   */
+  readonly isModerator = computed(
+    () => this.memberRole() === 'Moderator' || this.memberRole() === 'Administrator',
+  );
 
   token(): string | null {
     return this.accessToken();
@@ -37,6 +57,8 @@ export class SessionStore implements ITokenService {
     const session = await this.sessions.exchange(token);
 
     this.accessToken.set(session.accessToken);
+    this.memberStatus.set(session.status);
+    this.memberRole.set(session.role);
   }
 
   /**
@@ -65,6 +87,8 @@ export class SessionStore implements ITokenService {
 
   clear(): void {
     this.accessToken.set(null);
+    this.memberStatus.set(null);
+    this.memberRole.set(null);
   }
 
   /** Ends the session, and forgets it locally whatever the server said. */
@@ -81,6 +105,8 @@ export class SessionStore implements ITokenService {
       const session = await this.sessions.refresh();
 
       this.accessToken.set(session.accessToken);
+      this.memberStatus.set(session.status);
+      this.memberRole.set(session.role);
 
       return true;
     } catch {

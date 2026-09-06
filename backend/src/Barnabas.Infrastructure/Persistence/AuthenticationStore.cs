@@ -20,14 +20,26 @@ public sealed class AuthenticationStore : IAuthenticationStore
 
     public AuthenticationStore(BarnabasDbContext context) => _context = context;
 
-    public Task<Member?> FindApprovedMemberByEmailAsync(string emailAddress, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    /// <remarks>
+    /// Approved <em>or</em> awaiting approval. A member waiting on a moderator has to be able to
+    /// sign in, or L2-011's awaiting-approval screen is unreachable and they are left with no way
+    /// to find out where they stand. What they may then do is a question for the membership
+    /// behaviour, not for the lookup.
+    /// <para>
+    /// A declined member is not signable. They were considered and refused, and a sign-in link
+    /// would be an invitation to keep trying.
+    /// </para>
+    /// </remarks>
+    public Task<Member?> FindSignableMemberByEmailAsync(string emailAddress, CancellationToken cancellationToken)
     {
         var normalised = Member.Normalise(emailAddress);
 
         return _context.Set<Member>()
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(
-                m => m.EmailAddress == normalised && m.Status == MemberStatus.Approved,
+                m => m.EmailAddress == normalised
+                    && (m.Status == MemberStatus.Approved || m.Status == MemberStatus.AwaitingApproval),
                 cancellationToken);
     }
 

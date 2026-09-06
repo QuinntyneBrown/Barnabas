@@ -19,7 +19,7 @@ namespace Barnabas.Application.Common.Persistence;
 public interface IAuthenticationStore
 {
     /// <summary>Finds an approved member by email address, across all congregations.</summary>
-    Task<Member?> FindApprovedMemberByEmailAsync(string emailAddress, CancellationToken cancellationToken);
+    Task<Member?> FindSignableMemberByEmailAsync(string emailAddress, CancellationToken cancellationToken);
 
     Task AddSignInTokenAsync(SignInToken token, CancellationToken cancellationToken);
 

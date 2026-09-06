@@ -10,6 +10,8 @@ export * from './lib/platform/viewport.service';
 
 export * from './lib/access/session.store';
 export * from './lib/access/auth.guard';
+export * from './lib/access/congregation.store';
+export * from './lib/access/joining.store';
 
 export * from './lib/board/board.store';
 export * from './lib/listings/my-listings.store';

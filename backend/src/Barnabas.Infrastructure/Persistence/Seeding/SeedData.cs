@@ -23,6 +23,8 @@ public static class SeedData
 
         public const string Name = "St. Aidan's";
 
+        public const string Slug = "st-aidans";
+
         public static readonly string[] Neighbourhoods =
         [
             "Riverdale",
@@ -46,11 +48,45 @@ public static class SeedData
 
         public const string Name = "St. Brigid's";
 
+        public const string Slug = "st-brigids";
+
         public static readonly string[] Neighbourhoods = ["Parkdale", "High Park"];
 
         public static readonly Guid InviteCodeId = new("b0000000-0000-0000-0000-0000000c0de2");
 
         public const string InviteCode = "BRIGID-2026";
+    }
+
+    /// <summary>
+    /// The congregation administrators belong to, and nobody else.
+    /// </summary>
+    /// <remarks>
+    /// A <see cref="Members.Member"/> is congregation-owned, so an administrator has to belong to
+    /// one. Giving them a congregation of their own is what lets provisioning work through the
+    /// ordinary sign-in and the ordinary role gate, with no second authentication scheme and no
+    /// anonymous route. See ADR-0002.
+    /// </remarks>
+    public static class Platform
+    {
+        public static readonly Guid Id = new("f0000000-0000-0000-0000-00000000f1a7");
+
+        public const string Name = "Barnabas";
+
+        public const string Slug = "barnabas";
+
+        public static readonly string[] Neighbourhoods = ["Everywhere"];
+    }
+
+    /// <summary>Provisions congregations. Belongs to the platform congregation and to no parish.</summary>
+    public static class Ada
+    {
+        public static readonly Guid Id = new("f0000000-0000-0000-0000-00000000ad11");
+
+        public const string EmailAddress = "ada@example.com";
+
+        public const string DisplayName = "Ada B.";
+
+        public const string Neighbourhood = "Everywhere";
     }
 
     /// <summary>Owns the ladder. Every ownership assertion is written from her side.</summary>

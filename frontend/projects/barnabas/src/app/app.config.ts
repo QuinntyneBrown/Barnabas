@@ -2,6 +2,12 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
 import {
+  CONGREGATION_SERVICE,
+  CongregationService,
+  INVITATION_SERVICE,
+  INVITE_SERVICE,
+  InvitationService,
+  InviteService,
   LISTING_SERVICE,
   ListingService,
   REQUEST_SERVICE,
@@ -45,6 +51,9 @@ export const appConfig: ApplicationConfig = {
     // beneath the host knows which class answers a token, which is what makes the seam a real
     // one: a test host binds a mock here and nothing else changes.
     { provide: SESSION_SERVICE, useClass: SessionService },
+    { provide: CONGREGATION_SERVICE, useClass: CongregationService },
+    { provide: INVITATION_SERVICE, useClass: InvitationService },
+    { provide: INVITE_SERVICE, useClass: InviteService },
     { provide: LISTING_SERVICE, useClass: ListingService },
     { provide: REQUEST_SERVICE, useClass: RequestService },
     { provide: THREAD_SERVICE, useClass: ThreadService },

@@ -34,8 +34,21 @@ public sealed class CongregationSeeder
         var now = _time.GetUtcNow();
 
         _context.AddRange(
-            new Congregation(SeedData.StAidans.Id, SeedData.StAidans.Name, SeedData.StAidans.Neighbourhoods),
-            new Congregation(SeedData.StBrigids.Id, SeedData.StBrigids.Name, SeedData.StBrigids.Neighbourhoods));
+            Congregation.Provision(
+                SeedData.Platform.Id,
+                SeedData.Platform.Name,
+                SeedData.Platform.Slug,
+                SeedData.Platform.Neighbourhoods),
+            Congregation.Provision(
+                SeedData.StAidans.Id,
+                SeedData.StAidans.Name,
+                SeedData.StAidans.Slug,
+                SeedData.StAidans.Neighbourhoods),
+            Congregation.Provision(
+                SeedData.StBrigids.Id,
+                SeedData.StBrigids.Name,
+                SeedData.StBrigids.Slug,
+                SeedData.StBrigids.Neighbourhoods));
 
         _context.AddRange(
             new InviteCode(
@@ -50,10 +63,30 @@ public sealed class CongregationSeeder
                 now.AddYears(1)));
 
         _context.AddRange(
-            Approved(SeedData.Marion.Id, SeedData.StAidans.Id, SeedData.Marion.EmailAddress, SeedData.Marion.DisplayName, SeedData.Marion.Neighbourhood),
             Approved(SeedData.Priya.Id, SeedData.StAidans.Id, SeedData.Priya.EmailAddress, SeedData.Priya.DisplayName, SeedData.Priya.Neighbourhood),
             Approved(SeedData.Grace.Id, SeedData.StAidans.Id, SeedData.Grace.EmailAddress, SeedData.Grace.DisplayName, SeedData.Grace.Neighbourhood),
-            Approved(SeedData.Hank.Id, SeedData.StBrigids.Id, SeedData.Hank.EmailAddress, SeedData.Hank.DisplayName, SeedData.Hank.Neighbourhood));
+            Approved(SeedData.Hank.Id, SeedData.StBrigids.Id, SeedData.Hank.EmailAddress, SeedData.Hank.DisplayName, SeedData.Hank.Neighbourhood),
+
+            // The administrator, in the platform congregation. Everything a congregation needs to
+            // exist comes from somebody holding this role, so a deployment with none could never
+            // provision its first parish. ADR-0002.
+            WithRole(
+                SeedData.Ada.Id,
+                SeedData.Platform.Id,
+                SeedData.Ada.EmailAddress,
+                SeedData.Ada.DisplayName,
+                SeedData.Ada.Neighbourhood,
+                MemberRole.Administrator),
+
+            // A moderator of St. Aidan's, so issuing an invite and reviewing the queue have
+            // somebody entitled to do them.
+            WithRole(
+                SeedData.Marion.Id,
+                SeedData.StAidans.Id,
+                SeedData.Marion.EmailAddress,
+                SeedData.Marion.DisplayName,
+                SeedData.Marion.Neighbourhood,
+                MemberRole.Moderator));
 
         _context.AddRange(
             Listing.PostLend(
@@ -98,4 +131,13 @@ public sealed class CongregationSeeder
         string displayName,
         string neighbourhood) =>
         new(id, congregationId, emailAddress, displayName, neighbourhood, SeedData.DefaultRole, MemberStatus.Approved);
+
+    private static Member WithRole(
+        Guid id,
+        Guid congregationId,
+        string emailAddress,
+        string displayName,
+        string neighbourhood,
+        MemberRole role) =>
+        new(id, congregationId, emailAddress, displayName, neighbourhood, role, MemberStatus.Approved);
 }

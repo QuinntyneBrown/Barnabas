@@ -1,4 +1,5 @@
 using Barnabas.Infrastructure.Email;
+using Barnabas.Infrastructure.Security;
 using Barnabas.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,11 +27,19 @@ public sealed class DevelopmentController : ControllerBase
 {
     private readonly IEmailOutbox _outbox;
     private readonly DatabaseReset _reset;
+    private readonly SignInLinkThrottle _signInLinks;
+    private readonly RedemptionThrottle _redemptions;
 
-    public DevelopmentController(IEmailOutbox outbox, DatabaseReset reset)
+    public DevelopmentController(
+        IEmailOutbox outbox,
+        DatabaseReset reset,
+        SignInLinkThrottle signInLinks,
+        RedemptionThrottle redemptions)
     {
         _outbox = outbox;
         _reset = reset;
+        _signInLinks = signInLinks;
+        _redemptions = redemptions;
     }
 
     [HttpGet("sign-in-links/{emailAddress}")]
@@ -58,6 +67,13 @@ public sealed class DevelopmentController : ControllerBase
         await _reset.ResetAsync(cancellationToken);
 
         _outbox.Clear();
+
+        // The throttles count in memory across requests rather than in the database, so emptying
+        // the tables alone would leave one spec's five sign-ins as the next spec's head start.
+        // A suite that signs the same member in fifty times would otherwise meet a limit that is
+        // working exactly as intended.
+        _signInLinks.Clear();
+        _redemptions.Clear();
 
         return NoContent();
     }

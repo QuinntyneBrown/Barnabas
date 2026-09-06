@@ -3,6 +3,7 @@ using Barnabas.Domain.Access;
 using Barnabas.Domain.Members;
 using Barnabas.Infrastructure.Email;
 using Barnabas.Infrastructure.Persistence;
+using Barnabas.Infrastructure.Security;
 using Barnabas.Infrastructure.Persistence.Seeding;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -39,6 +40,7 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         "RefreshTokens",
         "Sessions",
         "SignInTokens",
+        "JoiningSessions",
         "InviteCodes",
         "Members",
         "Congregations",
@@ -75,6 +77,11 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
     /// <summary>Empties every table and re-seeds, so each test starts from the same board.</summary>
     public async Task ResetAsync()
     {
+        // The throttle counts in memory across requests, so one test's five attempts would
+        // otherwise be the next test's head start.
+        Services.GetRequiredService<SignInLinkThrottle>().Clear();
+        Services.GetRequiredService<RedemptionThrottle>().Clear();
+
         // The clock is not rewound between tests. A fake clock refuses to go backwards, and
         // nothing here needs it to: every assertion about time is relative to when the test
         // itself created the row it is reasoning about.

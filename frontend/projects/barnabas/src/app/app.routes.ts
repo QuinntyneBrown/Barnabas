@@ -10,6 +10,11 @@ import { SignInLandingComponent } from './access/sign-in-landing.component';
 
 import { BoardComponent } from './board/board.component';
 
+import { AwaitingApprovalComponent } from './joining/awaiting-approval.component';
+import { CreateProfileComponent } from './joining/create-profile.component';
+import { InviteInvalidComponent } from './joining/invite-invalid.component';
+import { JoinComponent } from './joining/join.component';
+
 import { ChooseKindComponent } from './listings/choose-kind.component';
 import { EditListingComponent } from './listings/edit-listing.component';
 import { PostGiveComponent } from './listings/post-give.component';
@@ -33,11 +38,13 @@ import { OutgoingRequestsComponent } from './inbox/outgoing-requests.component';
 import { ThreadComponent } from './messaging/thread.component';
 import { ThreadsComponent } from './messaging/threads.component';
 
+import { InviteSomeoneComponent } from './moderation/invite-someone.component';
+
 import { YouComponent } from './you/you.component';
 
 import { ComingSoonComponent } from './placeholders/coming-soon.component';
 import { NotFoundComponent } from './placeholders/not-found.component';
-import { authGuard } from '@barnabas/domain';
+import { approvedGuard } from '@barnabas/domain';
 
 /**
  * Two shells, chosen by the route.
@@ -69,12 +76,30 @@ export const routes: Routes = [
         title: 'That link has expired · Barnabas',
       },
       { path: 'sign-in/:token', component: SignInLandingComponent, title: 'Signing you in · Barnabas' },
+
+      // Joining is public: nobody is signed in, and the code is what reveals which congregation
+      // is being joined.
+      { path: 'join', component: JoinComponent, title: 'Join · Barnabas' },
+      { path: 'join/profile', component: CreateProfileComponent, title: 'Your profile · Barnabas' },
+      {
+        path: 'join/invalid',
+        component: InviteInvalidComponent,
+        title: 'That code did not work · Barnabas',
+      },
+
+      // Reached two ways: straight after joining, with no session at all, and by a pending member
+      // signing in later. Public, so the first of those works.
+      {
+        path: 'join/pending',
+        component: AwaitingApprovalComponent,
+        title: 'Waiting for approval · Barnabas',
+      },
     ],
   },
   {
     path: '',
     component: AppShellComponent,
-    canActivate: [authGuard],
+    canActivate: [approvedGuard],
     children: [
       { path: 'board', component: BoardComponent, title: 'Board · Barnabas' },
 
@@ -149,6 +174,12 @@ export const routes: Routes = [
       { path: 'threads/:threadId', component: ThreadComponent, title: 'Messages · Barnabas' },
 
       { path: 'you', component: YouComponent, title: 'You · Barnabas' },
+
+      {
+        path: 'moderation/invite',
+        component: InviteSomeoneComponent,
+        title: 'Invite someone · Barnabas',
+      },
 
       // Reachable so the five destinations are five at every width, and honest about being empty.
       {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ListingKind } from '@barnabas/api';
-import { BoardStore, wordsFor } from '@barnabas/domain';
+import { BoardStore, CongregationStore, wordsFor } from '@barnabas/domain';
 
 import { PlacardComponent } from '@barnabas/domain';
 
@@ -25,6 +25,15 @@ import { PlacardComponent } from '@barnabas/domain';
 })
 export class BoardComponent {
   private readonly store = inject(BoardStore);
+  private readonly congregations = inject(CongregationStore);
+
+  /**
+   * The parish this board belongs to, read from the API rather than written into the template.
+   *
+   * L2-004 requires the heading to name the member's own congregation and never another's, and a
+   * literal cannot promise that - it was St. Aidan's for every member of every parish.
+   */
+  readonly congregationName = this.congregations.name;
 
   readonly placards = this.store.placards;
   readonly loading = this.store.loading;
@@ -46,6 +55,7 @@ export class BoardComponent {
 
   constructor() {
     void this.store.load(null);
+    void this.congregations.load();
   }
 
   countOf(kind: ListingKind): number {
