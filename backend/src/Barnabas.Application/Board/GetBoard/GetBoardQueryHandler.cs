@@ -73,7 +73,18 @@ public sealed class GetBoardQueryHandler : IRequestHandler<GetBoardQuery, BoardP
 
                 // Help offers time rather than a thing, so a placard carries the offer in the
                 // member's own words where the other kinds carry a drawing.
-                row.Listing.Kind == ListingKind.Help ? row.Listing.Description : null))
+                row.Listing.Kind == ListingKind.Help ? row.Listing.Description : null,
+
+                // The days the offer is open, in the order the week runs. Null on every other
+                // kind, which have nothing of the sort.
+                row.Listing.Kind == ListingKind.Help
+                    ? string.Join(
+                        ", ",
+                        row.Listing.AvailabilityWindows
+                            .OrderBy(window => window.Day)
+                            .Select(window => window.Day.ToString())
+                            .Distinct())
+                    : null))
             .ToList();
 
         var next = hasMore && listings.Count > 0

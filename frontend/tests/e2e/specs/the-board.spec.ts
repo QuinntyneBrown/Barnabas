@@ -37,7 +37,7 @@ test('every placard names its kind in words', async ({ board }) => {
     const kind = board.placards.nth(index).locator('.placard__kind');
 
     await expect(kind).toBeVisible();
-    await expect(kind).toHaveText(/^(Lend|Give|Sell|Help)$/);
+    await expect(kind).toHaveText(/^(Lending|Giving away|For sale|Offers of help)$/);
   }
 });
 
@@ -52,8 +52,8 @@ test('a listing keeps its kind when colour is removed', async ({ page, board }) 
 
   await page.addStyleTag({ content: 'html { filter: grayscale(100%) !important; }' });
 
-  await expect(board.kindOf(SeededListings.ladder)).toHaveText('Lend');
-  await expect(board.kindOf(SeededListings.drill)).toHaveText('Sell');
+  await expect(board.kindOf(SeededListings.ladder)).toHaveText('Lending');
+  await expect(board.kindOf(SeededListings.drill)).toHaveText('For sale');
 });
 
 // L2-042 AC1 in its visible half: a placard carries what a member needs to decide whether to

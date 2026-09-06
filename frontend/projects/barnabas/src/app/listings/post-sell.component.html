@@ -1,0 +1,111 @@
+<div class="masthead masthead--stone masthead--short">
+  <div class="container stack-2">
+    <p class="step-marker">Step 2 of 2</p>
+    <h1 class="masthead-title">What are you selling?</h1>
+  </div>
+</div>
+
+<div class="container section">
+  <form class="form stack-7" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="title">Title</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        placeholder="Say plainly what it is"
+        [ngModel]="title()"
+        (ngModelChange)="title.set($event)"
+        [attr.aria-invalid]="errors().has('title') ? 'true' : null"
+        [attr.aria-describedby]="errors().has('title') ? 'title-error' : null"
+      />
+      @if (errors().messageFor('title'); as message) {
+        <p class="field-error" id="title-error">{{ message }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="category">Category</label>
+      <select id="category" name="category" [ngModel]="category()" (ngModelChange)="category.set($event)">
+        @for (option of categories; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="description">Description</label>
+      <p class="field-hint">Written in your own words, and shown that way to the congregation.</p>
+      <textarea
+        id="description"
+        name="description"
+        rows="5"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        [attr.aria-invalid]="errors().has('description') ? 'true' : null"
+        [attr.aria-describedby]="errors().has('description') ? 'description-error' : null"
+      ></textarea>
+      @if (errors().messageFor('description'); as message) {
+        <p class="field-error" id="description-error">{{ message }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="condition">Condition</label>
+      <select
+        id="condition"
+        name="condition"
+        [ngModel]="condition()"
+        (ngModelChange)="condition.set($event)"
+        [attr.aria-invalid]="errors().has('condition') ? 'true' : null"
+        [attr.aria-describedby]="errors().has('condition') ? 'condition-error' : null"
+      >
+        @for (option of conditions; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+      @if (errors().messageFor('condition'); as message) {
+        <p class="field-error" id="condition-error">{{ message }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="price">Asking price</label>
+      <input
+        type="number"
+        id="price"
+        name="price"
+        min="0"
+        step="0.01"
+        placeholder="45.00"
+        [ngModel]="price()"
+        (ngModelChange)="price.set($event)"
+        [attr.aria-invalid]="errors().has('price') ? 'true' : null"
+        [attr.aria-describedby]="errors().has('price') ? 'price-error' : 'price-hint'"
+      />
+      <p class="field-hint" id="price-hint">In Canadian dollars.</p>
+      @if (errors().messageFor('price'); as message) {
+        <p class="field-error" id="price-error">{{ message }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="hood">Neighbourhood</label>
+      <select id="hood" name="hood" [ngModel]="neighbourhood()" (ngModelChange)="neighbourhood.set($event)">
+        @for (option of neighbourhoods; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+    </div>
+
+    <p class="note">
+      The price is what you are asking. Payment is arranged directly between members — Barnabas
+      does not take payment, hold a deposit, or arrange delivery.
+    </p>
+
+    <div class="btn-group">
+      <button class="btn btn-primary btn-lg" type="submit" [disabled]="posting()">Post listing</button>
+      <a class="btn btn-ghost btn-lg" routerLink="/post">Back</a>
+    </div>
+  </form>
+</div>

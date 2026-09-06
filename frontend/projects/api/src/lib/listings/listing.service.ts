@@ -8,7 +8,10 @@ import { ClosedOutListing } from '../models/closed-out-listing';
 import { ListingDetail } from '../models/listing-detail';
 import { ListingKind } from '../models/listing-kind';
 import { MyListing } from '../models/my-listing';
+import { PostGiveListing } from '../models/post-give-listing';
+import { PostHelpListing } from '../models/post-help-listing';
 import { PostLendListing } from '../models/post-lend-listing';
+import { PostSellListing } from '../models/post-sell-listing';
 import { PostedListing } from '../models/posted-listing';
 import { IListingService } from './listing.service.contract';
 
@@ -42,6 +45,18 @@ export class ListingService implements IListingService {
 
   postLend(listing: PostLendListing): Promise<PostedListing> {
     return firstValueFrom(this.http.post<PostedListing>(`${this.baseUrl}/listings/lend`, listing));
+  }
+
+  postGive(listing: PostGiveListing): Promise<PostedListing> {
+    return firstValueFrom(this.http.post<PostedListing>(`${this.baseUrl}/listings/give`, listing));
+  }
+
+  postSell(listing: PostSellListing): Promise<PostedListing> {
+    return firstValueFrom(this.http.post<PostedListing>(`${this.baseUrl}/listings/sell`, listing));
+  }
+
+  postHelp(listing: PostHelpListing): Promise<PostedListing> {
+    return firstValueFrom(this.http.post<PostedListing>(`${this.baseUrl}/listings/help`, listing));
   }
 
   closeOut(listingId: string): Promise<ClosedOutListing> {

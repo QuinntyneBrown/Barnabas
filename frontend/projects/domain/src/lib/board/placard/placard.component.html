@@ -1,5 +1,5 @@
 <a [class]="fieldClass()" [routerLink]="['/listings', listing().listingId]">
-  <span class="placard__kind">{{ listing().kind }}</span>
+  <span class="placard__kind">{{ kindLabel() }}</span>
 
   @if (isHelp()) {
     <span class="placard__words">&ldquo;{{ listing().offerInOwnWords }}&rdquo;</span>
@@ -10,6 +10,11 @@
 
     @if (listing().price !== null) {
       <span class="placard__price">${{ listing().price }}</span>
+    }
+
+    @if (listing().availability; as availability) {
+      <!-- An offer of time that does not say when is not much of an offer. -->
+      <span class="placard__meta">{{ availability }}</span>
     }
 
     <span class="placard__meta">{{ listing().ownerDisplayName }}</span>

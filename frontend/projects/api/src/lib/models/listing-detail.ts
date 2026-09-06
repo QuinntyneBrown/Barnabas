@@ -1,3 +1,4 @@
+import { AvailabilityWindow } from './availability-window';
 import { ListingKind } from './listing-kind';
 import { ListingStatus } from './listing-status';
 
@@ -20,6 +21,8 @@ export interface ListingDetail {
   readonly ownerDisplayName: string;
   readonly price: number | null;
   readonly returnBy: string | null;
+  readonly condition: string | null;
+  readonly availabilityWindows: readonly AvailabilityWindow[];
   readonly postedAt: string;
   readonly isOwnedByCaller: boolean;
 }

@@ -1,0 +1,86 @@
+@if (listing(); as detail) {
+  <div class="masthead masthead--short masthead--plain">
+    <div class="container stack-2">
+      <a class="back-link" [routerLink]="['/listings', detail.listingId]">&larr; Back to the listing</a>
+      <h1 class="masthead-title">Ask {{ detail.ownerDisplayName }} for help</h1>
+    </div>
+  </div>
+
+  <div class="container section">
+    <form class="form stack-7" (ngSubmit)="submit()">
+      <a class="thread-context" [routerLink]="['/listings', detail.listingId]">
+        <span>
+          <span class="list-row__title">{{ detail.title }}</span><br />
+          <span class="list-row__meta"
+            >{{ detail.ownerDisplayName }} offers this, from {{ detail.neighbourhood }}</span
+          >
+        </span>
+      </a>
+
+      @if (refused(); as reason) {
+        <p class="field-error" role="alert">{{ reason }}</p>
+      }
+
+      <div class="field">
+        <label for="message">Your message to {{ detail.ownerDisplayName }}</label>
+        <p class="field-hint">Say what you need a hand with. A sentence or two is plenty.</p>
+        <textarea
+          id="message"
+          name="message"
+          rows="5"
+          [ngModel]="message()"
+          (ngModelChange)="message.set($event)"
+          [attr.aria-invalid]="errors().has('message') ? 'true' : null"
+          [attr.aria-describedby]="errors().has('message') ? 'message-error' : null"
+        ></textarea>
+        @if (errors().messageFor('message'); as error) {
+          <p class="field-error" id="message-error">{{ error }}</p>
+        }
+      </div>
+
+      <fieldset
+        class="field"
+        [attr.aria-describedby]="
+          errors().has('availabilityWindowId') ? 'window-error' : 'window-hint'
+        "
+      >
+        <legend>Which of {{ detail.ownerDisplayName }}'s windows suits you?</legend>
+        <p class="field-hint" id="window-hint">
+          Only the windows {{ detail.ownerDisplayName }} offered are shown.
+        </p>
+
+        <div class="choice-list">
+          @for (window of detail.availabilityWindows; track window.availabilityWindowId) {
+            <div class="choice">
+            <input
+              type="radio"
+              name="window"
+              [attr.id]="'window-' + window.availabilityWindowId"
+              [value]="window.availabilityWindowId"
+              [ngModel]="availabilityWindowId()"
+              (ngModelChange)="availabilityWindowId.set($event)"
+            />
+              <label [attr.for]="'window-' + window.availabilityWindowId">
+                {{ window.day }}, {{ window.startsAt }}&ndash;{{ window.endsAt }}
+              </label>
+            </div>
+          }
+        </div>
+
+        @if (errors().messageFor('availabilityWindowId'); as error) {
+          <p class="field-error" id="window-error">{{ error }}</p>
+        }
+      </fieldset>
+
+      <!--
+        No pickup field: help is time, not an object to collect. No payment, delivery, or
+        deposit field either.
+      -->
+
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg" type="submit" [disabled]="sending()">Request this help</button>
+        <a class="btn btn-ghost btn-lg" [routerLink]="['/listings', detail.listingId]">Cancel</a>
+      </div>
+    </form>
+  </div>
+}

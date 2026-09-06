@@ -5,7 +5,10 @@ import { ClosedOutListing } from '../models/closed-out-listing';
 import { ListingDetail } from '../models/listing-detail';
 import { ListingKind } from '../models/listing-kind';
 import { MyListing } from '../models/my-listing';
+import { PostGiveListing } from '../models/post-give-listing';
+import { PostHelpListing } from '../models/post-help-listing';
 import { PostLendListing } from '../models/post-lend-listing';
+import { PostSellListing } from '../models/post-sell-listing';
 import { PostedListing } from '../models/posted-listing';
 
 /** The board, and the listings on it. */
@@ -16,8 +19,19 @@ export interface IListingService {
 
   mine(): Promise<readonly MyListing[]>;
 
-  /** Only Lend can be posted in this slice. The other three kinds are a later one. */
+  /**
+   * One method per kind, because the four collect different fields.
+   *
+   * A single `post(kind, listing)` would take a union and hand the type system nothing to check:
+   * a price on a gift would compile. Four signatures make each kind's fields its own.
+   */
   postLend(listing: PostLendListing): Promise<PostedListing>;
+
+  postGive(listing: PostGiveListing): Promise<PostedListing>;
+
+  postSell(listing: PostSellListing): Promise<PostedListing>;
+
+  postHelp(listing: PostHelpListing): Promise<PostedListing>;
 
   /** Records that it has gone. The outcome is the listing's own kind to decide, not this one's. */
   closeOut(listingId: string): Promise<ClosedOutListing>;

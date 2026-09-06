@@ -14,6 +14,11 @@ namespace Barnabas.Application.Board.GetBoard;
 /// as a field colour, which is what L2-044 requires: colour alone cannot carry the meaning for a
 /// member with a colour vision deficiency, or for anyone reading in sunlight.
 /// </para>
+/// <para>
+/// <see cref="Availability"/> is present on Help placards and null on the others. An offer of
+/// time that does not say when is not much of an offer, so the days are on the board rather than
+/// one screen further in.
+/// </para>
 /// </remarks>
 public sealed record BoardListingDto(
     Guid ListingId,
@@ -22,4 +27,5 @@ public sealed record BoardListingDto(
     string OwnerDisplayName,
     string Neighbourhood,
     decimal? Price,
-    string? OfferInOwnWords);
+    string? OfferInOwnWords,
+    string? Availability);

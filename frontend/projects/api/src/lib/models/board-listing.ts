@@ -15,4 +15,7 @@ export interface BoardListing {
   readonly neighbourhood: string;
   readonly price: number | null;
   readonly offerInOwnWords: string | null;
+
+  /** The days a Help offer is open. Null on every other kind. */
+  readonly availability: string | null;
 }

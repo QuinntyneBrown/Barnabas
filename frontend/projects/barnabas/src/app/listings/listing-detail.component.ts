@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { LISTING_SERVICE, ListingDetail } from '@barnabas/api';
 
 import { ConfirmDialogComponent } from '@barnabas/components';
+import { wordsFor } from '@barnabas/domain';
 
 /**
  * One listing, shown two ways.
@@ -12,6 +13,10 @@ import { ConfirmDialogComponent } from '@barnabas/components';
  * and the screen does not offer them the chance to try.
  *
  * Which of the two is not decided here by comparing identifiers. The API says whose it is.
+ *
+ * Every verb on the screen comes from the listing's kind rather than being written into the
+ * template: an owner marks a sale *sold* and a gift *given away*, and a visitor asks to *borrow*
+ * a loan but to *buy* a sale. The server derives the outcome from the kind by the same rule.
  */
 @Component({
   selector: 'bar-listing-detail',
@@ -27,6 +32,15 @@ export class ListingDetailComponent {
 
   readonly listing = signal<ListingDetail | null>(null);
   readonly missing = signal(false);
+
+  /**
+   * The wording a kind is spoken about in, for the template to bind through `@let`.
+   *
+   * Exposed as the function rather than as a computed because the template already has the
+   * listing narrowed inside its `@if`, and a computed would have to answer null outside it for
+   * no reader's benefit.
+   */
+  readonly wordsFor = wordsFor;
 
   constructor() {
     effect(() => {

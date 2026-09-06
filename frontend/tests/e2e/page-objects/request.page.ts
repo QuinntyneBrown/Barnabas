@@ -78,3 +78,109 @@ export class RequestAcceptedPage {
     return this.page.getByRole('link', { name: 'Open the message thread' });
   }
 }
+
+/**
+ * What every request form has in common, and what none of them may have.
+ *
+ * The absent fields are exposed rather than merely unused. L2-063 requires that no request form
+ * contain a payment, delivery, or deposit field, and a page object with no way to look for one
+ * could not state that - the assertion would pass by having nothing to say.
+ */
+abstract class RequestFormPage {
+  constructor(protected readonly page: Page) {}
+
+  get message(): Locator {
+    return this.page.getByLabel(/Your message to/);
+  }
+
+  /** The action that sends it, named in the words its kind uses. */
+  abstract get send(): Locator;
+
+  get payment(): Locator {
+    return this.page.getByLabel(/card|payment|deposit/i);
+  }
+
+  get delivery(): Locator {
+    return this.page.getByLabel(/delivery|shipping|address/i);
+  }
+
+  get returnBy(): Locator {
+    return this.page.getByLabel(/back by|return/i);
+  }
+}
+
+/** Asking for something being given away. */
+export class RequestGivePage extends RequestFormPage {
+  get heading(): Locator {
+    return this.page.getByRole('heading', { name: /Ask .* for this/ });
+  }
+
+  get pickupAt(): Locator {
+    return this.page.getByLabel('When could you collect it?');
+  }
+
+  get send(): Locator {
+    return this.page.getByRole('button', { name: 'Request this', exact: true });
+  }
+
+  async fillAndSend(request: { message: string; pickupAt: string }): Promise<void> {
+    await this.message.fill(request.message);
+    await this.pickupAt.fill(request.pickupAt);
+    await this.send.click();
+  }
+}
+
+/** Asking to buy something. */
+export class RequestSellPage extends RequestFormPage {
+  get heading(): Locator {
+    return this.page.getByRole('heading', { name: /Ask .* to buy this/ });
+  }
+
+  get pickupAt(): Locator {
+    return this.page.getByLabel('When could you collect it?');
+  }
+
+  get send(): Locator {
+    return this.page.getByRole('button', { name: 'Request to buy' });
+  }
+
+  /** The sentence that says where the money actually changes hands. */
+  get paymentNote(): Locator {
+    return this.page.getByText(/paid in person/i);
+  }
+
+  async fillAndSend(request: { message: string; pickupAt: string }): Promise<void> {
+    await this.message.fill(request.message);
+    await this.pickupAt.fill(request.pickupAt);
+    await this.send.click();
+  }
+}
+
+/** Asking for help, in one of the windows the offer declared. */
+export class RequestHelpPage extends RequestFormPage {
+  get heading(): Locator {
+    return this.page.getByRole('heading', { name: /Ask .* for help/ });
+  }
+
+  /** Only the windows the listing declared, which is the whole point of the control. */
+  get windows(): Locator {
+    return this.page.getByRole('radio');
+  }
+
+  get windowLabels(): Locator {
+    return this.page.locator('.choice-list label');
+  }
+
+  get pickupAt(): Locator {
+    return this.page.getByLabel(/collect/i);
+  }
+
+  get send(): Locator {
+    return this.page.getByRole('button', { name: 'Request this help' });
+  }
+
+  async fillAndSend(request: { message: string }): Promise<void> {
+    await this.message.fill(request.message);
+    await this.send.click();
+  }
+}

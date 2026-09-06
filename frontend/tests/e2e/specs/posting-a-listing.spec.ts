@@ -5,7 +5,7 @@ import { Members } from '../support/members';
 import { expect, test } from '../support/barnabas';
 
 // Acceptance Test
-// Traces to: L2-027, L2-031, L2-033
+// Traces to: L2-026, L2-027, L2-031, L2-033
 // Description: The Lend form asks for what a loan needs and no more, marks what it refuses, and
 // confirms a posted listing with the three ways onward.
 
@@ -14,6 +14,8 @@ test.beforeEach(async ({ signInAs }) => {
 });
 
 // L2-027 AC3: Given the Lend form, when it is displayed, then no price field is present.
+// L2-026 AC2: Given the kind chooser, when the member chooses Lend, then the Lend detail form is
+// shown and it offers a return-by field.
 test('the lend form has no price field', async ({ page }) => {
   const chooseKind = new ChooseKindPage(page);
   const postLend = new PostLendPage(page);

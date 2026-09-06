@@ -29,6 +29,20 @@ export class BoardStore {
     Object.values(this.counts()).reduce((running, count) => running + count, 0),
   );
 
+  /**
+   * How many listings of a kind the board holds.
+   *
+   * Counted over the whole board rather than the page, because these label the filters rather
+   * than describe what is on screen - a chip reading "Lending 0" is what tells a member there is
+   * no point pressing it.
+   */
+  countOf(kind: ListingKind): number {
+    return this.counts()[kind] ?? 0;
+  }
+
+  /** Whether the board is showing everything, rather than one kind. */
+  readonly showingEverything = computed(() => this.filter() === null);
+
   async load(kind: ListingKind | null = this.filter()): Promise<void> {
     this.filter.set(kind);
     this.loading.set(true);

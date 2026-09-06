@@ -6,7 +6,7 @@ using Barnabas.Infrastructure.Persistence.Seeding;
 namespace Barnabas.IntegrationTests.Board;
 
 // Acceptance Test
-// Traces to: L2-042, L2-044
+// Traces to: L2-042, L2-043, L2-044
 // Description: The board shows the congregation's active listings with what a placard renders,
 // and carries each listing's kind as data rather than only as a colour.
 public sealed class BrowseTheBoardTests : AcceptanceTest
@@ -58,6 +58,34 @@ public sealed class BrowseTheBoardTests : AcceptanceTest
 
         page.Listings.ShouldNotContain(listing => listing.ListingId == SeedData.Listings.Drill);
         page.Counts.ShouldNotContainKey(nameof(ListingKind.Sell));
+    }
+
+    // L2-043 AC1: Given a board of mixed kinds, when it is requested filtered to Lend, then only
+    // Lend listings are returned.
+    //
+    // The filter is a predicate on the query rather than a screen hiding placards, which is what
+    // lets a filtered board page correctly and what makes this assertable at all.
+    [Fact]
+    public async Task The_board_filtered_to_a_kind_returns_only_that_kind()
+    {
+        using var client = await Api.ClientForAsync(SeedData.Marion.Id);
+
+        var everything = await (await client.GetAsync("/board", TestContext.Current.CancellationToken))
+            .ReadAsync<BoardPageBody>();
+
+        // The seed holds more than one kind, or this would prove nothing.
+        everything.Listings.Select(listing => listing.Kind).Distinct().Count().ShouldBeGreaterThan(1);
+
+        var lendOnly = await (await client.GetAsync("/board?kind=Lend", TestContext.Current.CancellationToken))
+            .ReadAsync<BoardPageBody>();
+
+        lendOnly.Listings.ShouldNotBeEmpty();
+        lendOnly.Listings.ShouldAllBe(listing => listing.Kind == nameof(ListingKind.Lend));
+
+        // The counts still describe the whole board, because they label the filters rather than
+        // the page. A count that shrank with the filter would tell a member the other kinds had
+        // gone.
+        lendOnly.Counts.ShouldBe(everything.Counts);
     }
 
     // L2-044 AC1: Given any listing on the board, when it is rendered, then its kind is present
