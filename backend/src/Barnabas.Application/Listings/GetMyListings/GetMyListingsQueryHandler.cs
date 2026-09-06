@@ -45,7 +45,8 @@ public sealed class GetMyListingsQueryHandler : IRequestHandler<GetMyListingsQue
                 listing.Status,
                 listing.Title,
                 listing.Price,
-                requests.Count(r => r.ListingId == listing.Id && r.Status == RequestStatus.Pending)))
+                requests.Count(r => r.ListingId == listing.Id && r.Status == RequestStatus.Pending),
+                listing.Status == ListingStatus.Archived && listing.ClosedOutAt == null))
             .ToListAsync(cancellationToken);
     }
 }

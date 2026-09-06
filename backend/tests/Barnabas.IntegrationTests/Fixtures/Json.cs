@@ -30,6 +30,21 @@ public static class Json
         CancellationToken cancellationToken = default) =>
         client.PostAsync(route, new StringContent(json, Encoding.UTF8, "application/json"), cancellationToken);
 
+    public static Task<HttpResponseMessage> PutJsonAsync(
+        this HttpClient client,
+        string route,
+        object payload,
+        CancellationToken cancellationToken = default) =>
+        client.PutAsJsonAsync(route, payload, Options, cancellationToken);
+
+    /// <summary>Puts a body the command has no property for, for the same reason as the post.</summary>
+    public static Task<HttpResponseMessage> PutRawJsonAsync(
+        this HttpClient client,
+        string route,
+        string json,
+        CancellationToken cancellationToken = default) =>
+        client.PutAsync(route, new StringContent(json, Encoding.UTF8, "application/json"), cancellationToken);
+
     /// <summary>Builds a JSON body for a request the tests assemble by hand.</summary>
     public static class From
     {

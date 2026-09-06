@@ -13,6 +13,10 @@ export class ListingDetailPage {
     return this.page.getByRole('heading', { level: 1 });
   }
 
+  get title(): Locator {
+    return this.page.locator('.detail__title');
+  }
+
   get kind(): Locator {
     return this.page.locator('.kind');
   }

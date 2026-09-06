@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { API_BASE_URL } from '../api-base-url';
 import { BoardPage } from '../models/board-page';
 import { ClosedOutListing } from '../models/closed-out-listing';
+import { EditListing } from '../models/edit-listing';
 import { ListingDetail } from '../models/listing-detail';
 import { ListingKind } from '../models/listing-kind';
 import { MyListing } from '../models/my-listing';
@@ -39,8 +40,10 @@ export class ListingService implements IListingService {
     return firstValueFrom(this.http.get<ListingDetail>(`${this.baseUrl}/listings/${listingId}`));
   }
 
-  mine(): Promise<readonly MyListing[]> {
-    return firstValueFrom(this.http.get<MyListing[]>(`${this.baseUrl}/listings/mine`));
+  mine(includeClosed = false): Promise<readonly MyListing[]> {
+    const params = new HttpParams().set('includeClosed', includeClosed);
+
+    return firstValueFrom(this.http.get<MyListing[]>(`${this.baseUrl}/listings/mine`, { params }));
   }
 
   postLend(listing: PostLendListing): Promise<PostedListing> {
@@ -57,6 +60,22 @@ export class ListingService implements IListingService {
 
   postHelp(listing: PostHelpListing): Promise<PostedListing> {
     return firstValueFrom(this.http.post<PostedListing>(`${this.baseUrl}/listings/help`, listing));
+  }
+
+  edit(listingId: string, listing: EditListing): Promise<void> {
+    return firstValueFrom(this.http.put<void>(`${this.baseUrl}/listings/${listingId}`, listing));
+  }
+
+  archive(listingId: string): Promise<void> {
+    return firstValueFrom(this.http.post<void>(`${this.baseUrl}/listings/${listingId}/archive`, {}));
+  }
+
+  restore(listingId: string): Promise<void> {
+    return firstValueFrom(this.http.post<void>(`${this.baseUrl}/listings/${listingId}/restore`, {}));
+  }
+
+  remove(listingId: string): Promise<void> {
+    return firstValueFrom(this.http.delete<void>(`${this.baseUrl}/listings/${listingId}`));
   }
 
   closeOut(listingId: string): Promise<ClosedOutListing> {

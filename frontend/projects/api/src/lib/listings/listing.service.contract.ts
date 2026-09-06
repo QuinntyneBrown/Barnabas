@@ -2,6 +2,7 @@ import { InjectionToken } from '@angular/core';
 
 import { BoardPage } from '../models/board-page';
 import { ClosedOutListing } from '../models/closed-out-listing';
+import { EditListing } from '../models/edit-listing';
 import { ListingDetail } from '../models/listing-detail';
 import { ListingKind } from '../models/listing-kind';
 import { MyListing } from '../models/my-listing';
@@ -17,7 +18,8 @@ export interface IListingService {
 
   get(listingId: string): Promise<ListingDetail>;
 
-  mine(): Promise<readonly MyListing[]>;
+  /** The caller's own listings. Closed and shelved ones are included on request. */
+  mine(includeClosed?: boolean): Promise<readonly MyListing[]>;
 
   /**
    * One method per kind, because the four collect different fields.
@@ -33,8 +35,24 @@ export interface IListingService {
 
   postHelp(listing: PostHelpListing): Promise<PostedListing>;
 
+  edit(listingId: string, listing: EditListing): Promise<void>;
+
   /** Records that it has gone. The outcome is the listing's own kind to decide, not this one's. */
   closeOut(listingId: string): Promise<ClosedOutListing>;
+
+  /** Takes it off the board without closing it out, so it can come back. */
+  archive(listingId: string): Promise<void>;
+
+  /**
+   * Puts a shelved listing back.
+   *
+   * A listing that was closed out is archived too, and the API refuses to restore that one - a
+   * returned loan has already finished.
+   */
+  restore(listingId: string): Promise<void>;
+
+  /** Removes it for good, along with the conversations it opened. */
+  remove(listingId: string): Promise<void>;
 }
 
 /**

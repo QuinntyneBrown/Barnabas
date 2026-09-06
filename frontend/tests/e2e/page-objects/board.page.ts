@@ -74,6 +74,23 @@ export class BoardPage {
     return this.page.getByRole('heading', { name: 'The board is empty' });
   }
 
+  /** What assistive technology is told while the board is on its way. */
+  get loadingAnnouncement(): Locator {
+    return this.page.getByRole('status');
+  }
+
+  get failed(): Locator {
+    return this.page.getByRole('heading', { name: 'The board did not load' });
+  }
+
+  get tryAgain(): Locator {
+    return this.page.getByRole('button', { name: 'Try again' });
+  }
+
+  get postTheFirstListing(): Locator {
+    return this.page.getByRole('link', { name: 'Post the first listing' });
+  }
+
   get postAListing(): Locator {
     return this.page.getByRole('link', { name: 'Post a listing' });
   }

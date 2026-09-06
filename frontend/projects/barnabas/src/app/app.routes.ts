@@ -11,6 +11,7 @@ import { SignInLandingComponent } from './access/sign-in-landing.component';
 import { BoardComponent } from './board/board.component';
 
 import { ChooseKindComponent } from './listings/choose-kind.component';
+import { EditListingComponent } from './listings/edit-listing.component';
 import { PostGiveComponent } from './listings/post-give.component';
 import { PostHelpComponent } from './listings/post-help.component';
 import { PostSellComponent } from './listings/post-sell.component';
@@ -35,6 +36,7 @@ import { ThreadsComponent } from './messaging/threads.component';
 import { YouComponent } from './you/you.component';
 
 import { ComingSoonComponent } from './placeholders/coming-soon.component';
+import { NotFoundComponent } from './placeholders/not-found.component';
 import { authGuard } from '@barnabas/domain';
 
 /**
@@ -81,6 +83,12 @@ export const routes: Routes = [
       { path: 'post/give', component: PostGiveComponent, title: 'Post — Give · Barnabas' },
       { path: 'post/sell', component: PostSellComponent, title: 'Post — Sell · Barnabas' },
       { path: 'post/help', component: PostHelpComponent, title: 'Post — Help · Barnabas' },
+
+      {
+        path: 'listings/:listingId/edit',
+        component: EditListingComponent,
+        title: 'Edit your listing · Barnabas',
+      },
 
       // Before the detail route, so "mine" is not read as an identifier.
       { path: 'my-listings', component: MyListingsComponent, title: 'My listings · Barnabas' },
@@ -172,5 +180,7 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '**', redirectTo: '' },
+  // Says so rather than redirecting. A member who mistyped an address was being shown the
+  // landing page, which looks like being signed out.
+  { path: '**', component: NotFoundComponent, title: 'Not found · Barnabas' },
 ];
