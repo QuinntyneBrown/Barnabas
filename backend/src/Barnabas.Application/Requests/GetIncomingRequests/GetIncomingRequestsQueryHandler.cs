@@ -53,7 +53,7 @@ public sealed class GetIncomingRequestsQueryHandler
             row.Listing.Title,
             row.Listing.Kind,
             row.Request.Message,
-            LoanTermsText.For(row.Request.LoanTerms),
+            RequestTermsText.For(row.Request, row.Listing),
             row.Request.Status,
             row.Request.MadeAt))];
     }

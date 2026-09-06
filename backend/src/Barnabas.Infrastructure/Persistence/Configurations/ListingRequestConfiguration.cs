@@ -27,6 +27,12 @@ public sealed class ListingRequestConfiguration : IEntityTypeConfiguration<Listi
             terms.Property(t => t.ReturnBy).HasColumnName("RequestedReturnBy");
         });
 
+        builder.OwnsOne(r => r.PickupTerms, terms =>
+            terms.Property(t => t.PickupAt).HasColumnName("PickupAt"));
+
+        builder.OwnsOne(r => r.HelpTerms, terms =>
+            terms.Property(t => t.AvailabilityWindowId).HasColumnName("AvailabilityWindowId"));
+
         // The one rule a policy cannot make true on its own. Two simultaneous requests both
         // pass an in-handler check before either commits, so L2-062 is settled here, in the
         // only place that can settle it. The filter is what makes it a rule about *open*

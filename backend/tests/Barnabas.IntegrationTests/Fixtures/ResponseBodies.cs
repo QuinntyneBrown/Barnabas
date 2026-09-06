@@ -38,7 +38,16 @@ public sealed record ListingDetailBody(
     decimal? Price,
     DateOnly? ReturnBy,
     DateTimeOffset PostedAt,
-    bool IsOwnedByCaller);
+    bool IsOwnedByCaller,
+    string? Condition = null,
+    IReadOnlyList<AvailabilityWindowBody>? AvailabilityWindows = null);
+
+/// <summary>One window a Help listing declares, and the identifier a request names it by.</summary>
+public sealed record AvailabilityWindowBody(
+    Guid AvailabilityWindowId,
+    string Day,
+    TimeOnly StartsAt,
+    TimeOnly EndsAt);
 
 public sealed record MyListingBody(
     Guid ListingId,

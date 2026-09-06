@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Barnabas.IntegrationTests.Listings;
 
 // Acceptance Test
-// Traces to: L2-037 (partial - AC3, the Lend branch)
-// Description: An owner marks a Lend listing taken, its status becomes Archived, and it leaves
-// the board.
+// Traces to: L2-037
+// Description: An owner closes out a listing and it leaves the board carrying the outcome its
+// own kind gives it - a loan is Archived, a sale is Sold, a gift is Given away, an offer of
+// time is Completed.
 //
-// L2-037 also names Sell, Give, and Help. Those posting flows are out of feature slice 1, so
-// this covers AC3 alone and the requirement stands as partially delivered. The transition itself
-// is kind-aware on the entity, so the other three need no new code when their forms arrive.
+// The four outcomes are one transition read four ways. CloseOut takes no status argument: the
+// entity reads its own kind, so no caller can mark a gift sold.
 public sealed class CloseOutAListingTests : AcceptanceTest
 {
     public CloseOutAListingTests(BarnabasApiFactory api)
@@ -65,6 +65,90 @@ public sealed class CloseOutAListingTests : AcceptanceTest
             TestContext.Current.CancellationToken);
 
         second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+    }
+
+    // L2-037 AC2: Given an active Give listing, when its owner marks it taken, then its status
+    // becomes Given away.
+    [Fact]
+    public async Task A_give_listing_closes_out_as_given_away()
+    {
+        using var marion = await Api.ClientForAsync(SeedData.Marion.Id);
+
+        var listingId = await PostAsync(marion, "give", new
+        {
+            title = "Wooden high chair",
+            description = "Our youngest has outgrown it.",
+            category = "Household",
+            neighbourhood = SeedData.Marion.Neighbourhood,
+        });
+
+        (await CloseOutAsync(marion, listingId)).Status.ShouldBe(nameof(ListingStatus.GivenAway));
+        (await StatusOfAsync(listingId)).ShouldBe(ListingStatus.GivenAway);
+    }
+
+    // L2-037 AC1: Given an active Sell listing, when its owner marks it sold, then its status
+    // becomes Sold.
+    [Fact]
+    public async Task A_sell_listing_closes_out_as_sold()
+    {
+        using var marion = await Api.ClientForAsync(SeedData.Marion.Id);
+
+        var listingId = await PostAsync(marion, "sell", new
+        {
+            title = "Raleigh three-speed",
+            description = "Rides well.",
+            category = "Outdoors",
+            neighbourhood = SeedData.Marion.Neighbourhood,
+            condition = "Good",
+            price = 45.00m,
+        });
+
+        (await CloseOutAsync(marion, listingId)).Status.ShouldBe(nameof(ListingStatus.Sold));
+        (await StatusOfAsync(listingId)).ShouldBe(ListingStatus.Sold);
+    }
+
+    // L2-037 AC4: Given an active Help listing, when its owner marks it booked, then its status
+    // becomes Completed.
+    [Fact]
+    public async Task A_help_listing_closes_out_as_completed()
+    {
+        using var marion = await Api.ClientForAsync(SeedData.Marion.Id);
+
+        var listingId = await PostAsync(marion, "help", new
+        {
+            title = "Lifts to appointments",
+            description = "Happy to drive within the east end.",
+            category = "Rides",
+            neighbourhood = SeedData.Marion.Neighbourhood,
+            windows = new[]
+            {
+                new { day = nameof(DayOfWeek.Tuesday), startsAt = "07:30", endsAt = "10:30" },
+            },
+        });
+
+        (await CloseOutAsync(marion, listingId)).Status.ShouldBe(nameof(ListingStatus.Completed));
+        (await StatusOfAsync(listingId)).ShouldBe(ListingStatus.Completed);
+    }
+
+    private static async Task<Guid> PostAsync(HttpClient client, string kind, object body)
+    {
+        var response = await client.PostJsonAsync($"/listings/{kind}", body, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        return (await response.ReadAsync<PostedListing>()).ListingId;
+    }
+
+    private static async Task<ClosedOutListing> CloseOutAsync(HttpClient client, Guid listingId)
+    {
+        var response = await client.PostJsonAsync(
+            $"/listings/{listingId}/close-out",
+            new { },
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        return await response.ReadAsync<ClosedOutListing>();
     }
 
     private Task<ListingStatus> StatusOfAsync(Guid listingId) =>

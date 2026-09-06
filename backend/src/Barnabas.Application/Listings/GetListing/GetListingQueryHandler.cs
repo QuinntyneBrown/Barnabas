@@ -49,6 +49,16 @@ public sealed class GetListingQueryHandler : IRequestHandler<GetListingQuery, Li
                     owner.DisplayName,
                     listing.Price,
                     listing.LoanTerms == null ? null : listing.LoanTerms.ReturnBy,
+                    listing.Condition,
+                    listing.AvailabilityWindows
+                        .OrderBy(window => window.Day)
+                        .ThenBy(window => window.StartsAt)
+                        .Select(window => new AvailabilityWindowDto(
+                            window.Id,
+                            window.Day,
+                            window.StartsAt,
+                            window.EndsAt))
+                        .ToList(),
                     listing.PostedAt,
                     listing.OwnerId == caller))
             .FirstOrDefaultAsync(cancellationToken);

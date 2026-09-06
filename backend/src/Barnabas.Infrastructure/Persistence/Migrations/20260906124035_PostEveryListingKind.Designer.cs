@@ -4,6 +4,7 @@ using Barnabas.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Barnabas.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(BarnabasDbContext))]
-    partial class BarnabasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260906124035_PostEveryListingKind")]
+    partial class PostEveryListingKind
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -473,23 +476,6 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Barnabas.Domain.Requests.ListingRequest", b =>
                 {
-                    b.OwnsOne("Barnabas.Domain.Requests.HelpRequestTerms", "HelpTerms", b1 =>
-                        {
-                            b1.Property<Guid>("ListingRequestId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<Guid>("AvailabilityWindowId")
-                                .HasColumnType("uniqueidentifier")
-                                .HasColumnName("AvailabilityWindowId");
-
-                            b1.HasKey("ListingRequestId");
-
-                            b1.ToTable("ListingRequests");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ListingRequestId");
-                        });
-
                     b.OwnsOne("Barnabas.Domain.Requests.LoanRequestTerms", "LoanTerms", b1 =>
                         {
                             b1.Property<Guid>("ListingRequestId")
@@ -511,28 +497,7 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("ListingRequestId");
                         });
 
-                    b.OwnsOne("Barnabas.Domain.Requests.PickupRequestTerms", "PickupTerms", b1 =>
-                        {
-                            b1.Property<Guid>("ListingRequestId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<DateTimeOffset>("PickupAt")
-                                .HasColumnType("datetimeoffset")
-                                .HasColumnName("PickupAt");
-
-                            b1.HasKey("ListingRequestId");
-
-                            b1.ToTable("ListingRequests");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ListingRequestId");
-                        });
-
-                    b.Navigation("HelpTerms");
-
                     b.Navigation("LoanTerms");
-
-                    b.Navigation("PickupTerms");
                 });
 
             modelBuilder.Entity("Barnabas.Domain.Messaging.MessageThread", b =>

@@ -34,6 +34,7 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         "ThreadReadMarks",
         "MessageThreads",
         "ListingRequests",
+        "AvailabilityWindows",
         "Listings",
         "RefreshTokens",
         "Sessions",

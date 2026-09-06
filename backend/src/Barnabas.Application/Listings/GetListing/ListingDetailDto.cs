@@ -24,5 +24,7 @@ public sealed record ListingDetailDto(
     string OwnerDisplayName,
     decimal? Price,
     DateOnly? ReturnBy,
+    string? Condition,
+    IReadOnlyList<AvailabilityWindowDto> AvailabilityWindows,
     DateTimeOffset PostedAt,
     bool IsOwnedByCaller);
