@@ -115,6 +115,16 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
             StatusCodes.Status410Gone,
             "That joining session is no longer open."),
 
+        HelpTagNotOfferedException => new ValidationProblemDetails(
+            new Dictionary<string, string[]>
+            {
+                ["helpTags"] = ["That is not one of your congregation's kinds of help."],
+            })
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "One or more fields are invalid.",
+        },
+
         NeighbourhoodNotOfferedException => new ValidationProblemDetails(
             new Dictionary<string, string[]>
             {

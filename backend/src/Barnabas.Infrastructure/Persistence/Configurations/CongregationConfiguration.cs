@@ -25,6 +25,18 @@ public sealed class CongregationConfiguration : IEntityTypeConfiguration<Congreg
         // by the factory - so uniqueness does not depend on the server's collation.
         builder.HasIndex(c => c.Slug).IsUnique().HasDatabaseName("IX_Congregations_Slug");
 
+        // Stored the same way the neighbourhoods are, and for the same reason: read whole, the
+        // order is part of the value, and nothing queries across congregations by tag.
+        builder.Property(c => c.HelpTags)
+            .IsRequired()
+            .HasConversion(
+                tags => string.Join(Separator, tags),
+                value => value.Split(Separator, StringSplitOptions.RemoveEmptyEntries),
+                new ValueComparer<IReadOnlyList<string>>(
+                    (left, right) => left != null && right != null && left.SequenceEqual(right),
+                    tags => tags.Aggregate(0, (hash, tag) => HashCode.Combine(hash, tag.GetHashCode(StringComparison.Ordinal))),
+                    tags => tags.ToArray()));
+
         // Stored as one delimited column rather than a child table. The order is part of the
         // value - members pick from the list as the parish office wrote it - and a child table
         // would need an ordinal column to preserve what a single string preserves for free.

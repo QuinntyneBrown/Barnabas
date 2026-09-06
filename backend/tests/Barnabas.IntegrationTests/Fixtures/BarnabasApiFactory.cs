@@ -42,6 +42,7 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         "SignInTokens",
         "JoiningSessions",
         "InviteCodes",
+        "MemberHelpTags",
         "Members",
         "Congregations",
     ];

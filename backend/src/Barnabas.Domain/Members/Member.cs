@@ -13,6 +13,18 @@ public sealed class Member : ITenantOwned
 {
     public const int DisplayNameMaxLength = 200;
     public const int ReasonForJoiningMaxLength = 500;
+    public const int DescriptionMaxLength = 1000;
+
+    /// <summary>
+    /// How many kinds of help one member may declare.
+    /// </summary>
+    /// <remarks>
+    /// Ten, so a profile says something. A member who has ticked everything has told the
+    /// congregation nothing, and the directory's tag search would return everybody.
+    /// </remarks>
+    public const int MaxHelpTags = 10;
+
+    private readonly List<MemberHelpTag> _helpTags = [];
 
     private Member()
     {
@@ -62,6 +74,15 @@ public sealed class Member : ITenantOwned
     /// <summary>Why they asked to join, for the moderator reading the queue. L2-085.</summary>
     public string? ReasonForJoining { get; private set; }
 
+    /// <summary>A few words in the member's own voice, shown on their public profile.</summary>
+    public string? Description { get; private set; }
+
+    /// <summary>The kinds of help they have said they can offer.</summary>
+    public IReadOnlyList<MemberHelpTag> HelpTags => _helpTags;
+
+    /// <summary>When they left. A departed member is on no board and in no directory.</summary>
+    public DateTimeOffset? LeftAt { get; private set; }
+
     /// <summary>
     /// Begins a membership, awaiting a moderator.
     /// </summary>
@@ -82,6 +103,50 @@ public sealed class Member : ITenantOwned
         {
             ReasonForJoining = reasonForJoining,
         };
+
+    /// <summary>
+    /// Changes what the congregation sees of them.
+    /// </summary>
+    /// <remarks>
+    /// The neighbourhood's membership of the congregation's set and the tags' membership of its
+    /// help-tag set are not checked here. Both are relationships between two aggregates, and this
+    /// one holds only itself - the handler that loaded the congregation settles them.
+    /// </remarks>
+    public void UpdateProfile(
+        string displayName,
+        string neighbourhood,
+        string? description,
+        IReadOnlyCollection<string> helpTags)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(displayName);
+        ArgumentNullException.ThrowIfNull(helpTags);
+
+        if (helpTags.Count > MaxHelpTags)
+        {
+            throw new ArgumentException($"Declare at most {MaxHelpTags} kinds of help.", nameof(helpTags));
+        }
+
+        DisplayName = displayName;
+        Neighbourhood = neighbourhood;
+        Description = description;
+
+        _helpTags.Clear();
+        _helpTags.AddRange(helpTags.Select(tag => new MemberHelpTag(Id, tag)));
+    }
+
+    /// <summary>
+    /// They leave.
+    /// </summary>
+    /// <remarks>
+    /// Their listings are withdrawn by the handler rather than here: a member holds no listings,
+    /// and reaching into them from this aggregate would be the coupling the boundary exists to
+    /// prevent. What this records is that they have gone.
+    /// </remarks>
+    public void Leave(DateTimeOffset asOf)
+    {
+        Status = MemberStatus.Left;
+        LeftAt = asOf;
+    }
 
     /// <summary>A moderator lets them in.</summary>
     public void Approve()

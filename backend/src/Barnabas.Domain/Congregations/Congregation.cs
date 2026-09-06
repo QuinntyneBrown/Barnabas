@@ -16,6 +16,8 @@ public sealed partial class Congregation
     public const int NameMaxLength = 200;
     public const int NeighbourhoodMaxLength = 100;
     public const int MaxNeighbourhoods = 50;
+    public const int HelpTagMaxLength = 50;
+    public const int MaxHelpTags = 50;
 
     private Congregation()
     {
@@ -28,6 +30,18 @@ public sealed partial class Congregation
         Slug = slug;
         Neighbourhoods = [.. neighbourhoods];
     }
+
+    /// <summary>
+    /// The kinds of help a member of this congregation may declare they offer.
+    /// </summary>
+    /// <remarks>
+    /// A configured set rather than free text, for the same reason the neighbourhoods are: what a
+    /// parish recognises is not the same as what a form will take, and a directory searchable by
+    /// tag needs the tags to be the same words each time. <c>L2-023</c>.
+    /// </remarks>
+    public IReadOnlyList<string> HelpTags { get; private set; } = [];
+
+    public bool HasHelpTag(string tag) => HelpTags.Contains(tag, StringComparer.OrdinalIgnoreCase);
 
     public Guid Id { get; private set; }
 
@@ -73,7 +87,8 @@ public sealed partial class Congregation
         Guid id,
         string name,
         string slug,
-        IReadOnlyCollection<string> neighbourhoods)
+        IReadOnlyCollection<string> neighbourhoods,
+        IReadOnlyCollection<string>? helpTags = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentNullException.ThrowIfNull(neighbourhoods);
@@ -88,8 +103,57 @@ public sealed partial class Congregation
         var congregation = new Congregation(id, name, normalised, []);
 
         congregation.SetNeighbourhoods(neighbourhoods);
+        congregation.SetHelpTags(helpTags ?? DefaultHelpTags);
 
         return congregation;
+    }
+
+    /// <summary>
+    /// What a parish offers each other when nobody has said otherwise.
+    /// </summary>
+    /// <remarks>
+    /// A default rather than an empty set, because a congregation with no tags configured would
+    /// leave <c>L2-023</c> with nothing to declare and the directory with nothing to search. An
+    /// administrator replaces them; these are only somewhere to start.
+    /// </remarks>
+    public static readonly string[] DefaultHelpTags =
+    [
+        "Rides",
+        "Tutoring",
+        "Moving help",
+        "Tech support",
+        "Companionship",
+        "Minor repairs",
+    ];
+
+    /// <summary>Replaces the kinds of help members may declare.</summary>
+    public void SetHelpTags(IReadOnlyCollection<string> tags)
+    {
+        ArgumentNullException.ThrowIfNull(tags);
+
+        if (tags.Count > MaxHelpTags)
+        {
+            throw new ArgumentException($"A congregation names at most {MaxHelpTags} kinds of help.", nameof(tags));
+        }
+
+        if (tags.Any(string.IsNullOrWhiteSpace))
+        {
+            throw new ArgumentException("A kind of help needs a name.", nameof(tags));
+        }
+
+        if (tags.Any(tag => tag.Length > HelpTagMaxLength))
+        {
+            throw new ArgumentException(
+                $"A kind of help is named in at most {HelpTagMaxLength} characters.",
+                nameof(tags));
+        }
+
+        if (tags.Distinct(StringComparer.OrdinalIgnoreCase).Count() != tags.Count)
+        {
+            throw new ArgumentException("Each kind of help is named once.", nameof(tags));
+        }
+
+        HelpTags = [.. tags];
     }
 
     public void Rename(string name)
