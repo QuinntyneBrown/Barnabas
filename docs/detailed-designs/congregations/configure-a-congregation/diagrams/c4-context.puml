@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Configure a congregation
+Person(actor, "Administrator / congregation member", "Configure a congregation")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Configure a congregation", "HTTPS")
+@enduml

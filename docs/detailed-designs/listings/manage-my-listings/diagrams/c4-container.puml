@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Manage my listings
+Person(actor, "Member", "Manage my listings")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "MyListingsComponent / planned EditListingComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Manage my listings")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Listing")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IListingService / LISTING_SERVICE", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

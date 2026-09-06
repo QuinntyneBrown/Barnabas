@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour - Leave a congregation: leave
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ProfileSettingsComponent / ConfirmDialogComponent" as page
+  participant "IMemberService / MEMBER_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "MembersController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "LeaveCongregationCommandHandler (planned)" as handler
+  participant "Member / Listing / Session" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Choose leave
+page -> page : Ask for confirmation [L2-025]
+alt Cancel
+  page --> actor : Keep membership and listings
+else Confirm
+  page -> client : leave()
+  client -> api : POST /members/me/leave
+  api -> handler : LeaveCongregationCommand; member from session
+  handler -> db : Begin transaction; lock member eligibility
+  handler -> entity : Mark membership Left; archive Active listings
+  handler -> db : Persist withdrawal and revoke membership sessions
+  alt Persistence failure
+    db --> handler : Roll back all changes
+    handler --> api : Safe server failure
+    api --> client : Failure
+    client --> page : Explain failure; offer retry
+  else Committed
+    db --> handler : Commit
+    handler --> api : Completed
+    api --> client : 204; clear refresh cookie
+    client --> page : Clear session and show landing
+  end
+end
+@enduml

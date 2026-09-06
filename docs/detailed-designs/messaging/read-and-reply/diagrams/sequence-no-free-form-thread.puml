@@ -1,0 +1,37 @@
+@startuml
+title UML sequence behaviour - Read and reply: no free form thread
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ThreadComponent" as page
+  participant "IThreadService / THREAD_SERVICE" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ThreadsController" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetThreadQueryHandler / SendMessageCommandHandler" as handler
+  participant "MessageThread / Message / ThreadReadMark" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : View another member profile [L2-069]
+page --> actor : Profile and listings; no direct-message action
+client -> api : Attempt POST /threads with arbitrary member identifier
+api --> client : 404; no matching create-thread endpoint [L2-069]
+note over handler, db : No handler executes and no thread is inserted
+@enduml

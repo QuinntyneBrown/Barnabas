@@ -1,57 +1,42 @@
 @startuml
-!pragma layout smetana
-title Class structure — Authorise a request
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
-interface IRequireRole {
-  +MemberRole Required
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
 }
-interface IRequireOwnership {
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Authorise a request
+interface IRequireRole {
+  +MemberRole RequiredRole
+}
+interface "IRequireOwnership<TResource>" as ownership {
   +Guid ResourceId
 }
-enum MemberRole {
-  Member
-  Moderator
-  Administrator
-}
-class AuthorisationBehaviour<TRequest, TResponse> {
-  +Handle(TRequest, RequestHandlerDelegate, CancellationToken) : Task<TResponse>
-  -EnsureRole(TRequest) : void
-  -EnsureOwnership(TRequest) : Task
-}
-interface ICongregationContext {
-  +bool IsResolved
-  +Guid CongregationId
-  +Guid MemberId
-  +Guid SessionId
-  +MemberRole Role
+class "AuthorisationBehaviour<TRequest,TResponse>" as auth {
+  +Handle(request: TRequest, next): Task<TResponse>
 }
 class SessionValidator {
-  +Validate(ClaimsPrincipal) : Task
+  +ValidateAsync(context: TokenValidatedContext): Task
 }
 class Session {
-  +Guid Id
   +Guid MemberId
-  +DateTimeOffset? RevokedOn
-  +IsLive(DateTimeOffset) : bool
+  +Guid CongregationId
+  +IsLive(asOf: DateTimeOffset): bool
 }
-class ForbiddenException {
-  +string Reason
-}
-class AcceptRequestCommand {
-  +Guid RequestId
-}
-
-AuthorisationBehaviour ..> IRequireRole : reads
-AuthorisationBehaviour ..> IRequireOwnership : reads
-AuthorisationBehaviour --> ICongregationContext : identifies the caller with
-AuthorisationBehaviour ..> ForbiddenException : raises
-IRequireRole --> MemberRole : demands
-IRequireOwnership <|.. AcceptRequestCommand
-SessionValidator --> Session : reads by the sid claim
-SessionValidator ..> ICongregationContext : populates on success
+auth ..> IRequireRole : checks declared role
+auth ..> ownership : loads declared owner
+SessionValidator --> Session : checks sid liveness
 @enduml

@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour - Designate moderators: grant
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Administrator" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ModeratorDesignationComponent / YouComponent" as page
+  participant "ICongregationService / CONGREGATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "CongregationsController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "DesignateModeratorCommandHandler (planned)" as handler
+  participant "Member / MemberRole" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Grant moderator role to approved member
+page -> client : designateModerator(congregationId, memberId)
+client -> api : POST /congregations/{id}/moderators/{memberId}
+api -> handler : Require Administrator; DesignateModeratorCommand
+handler -> db : Load target within named congregation
+db --> handler : Approved member or absent
+handler -> entity : Set moderator role [L2-003]
+handler -> db : Save checked member role
+db --> handler : Commit
+handler --> api : Role result
+api --> client : 200
+client --> page : Confirm grant
+page -> client : Reload own profile on account screen
+client -> api : GET /members/me
+api -> db : Read current role after JWT/session validation
+db --> api : Member role
+api --> client : Own profile
+client --> page : Show tools only when moderator
+note over api : Ordinary member queue access returns 403 [L2-003 AC2]
+@enduml

@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Signing out, and both tokens afterwards
+title UML sequence behaviour - End a session: sign out
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,49 +15,36 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "YouComponent" as page
-  participant "ConfirmSignOutDialog" as dialog
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "YouComponent / ConfirmDialogComponent" as page
+  participant "ISessionService / SESSION_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "SessionsController" as controller
-  participant "SessionValidator" as sv
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "SessionsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "SignOutCommandHandler" as handler
-  participant "Session" as session
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "RefreshSessionCommandHandler / SignOutCommandHandler" as handler
+  participant "Session / RefreshToken" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Choose Sign out
-page -> dialog : Ask to confirm
-actor -> dialog : Confirm
-dialog -> controller : DELETE /sessions
-controller -> handler : Send SignOutCommand, naming the session from the sid claim
-handler -> db : Load the session
-db --> handler : Session
-handler -> session : Revoke, per L2-019
-session --> handler : Revoked, and its refresh token with it
-handler -> db : Save
-handler --> controller : Done
-controller --> page : 204 No Content
-page -> page : Discard the access token held in memory
-page --> actor : The public landing screen
-== the access token from that session is presented again ==
-actor -> sv : GET /board with the still-unexpired access token
-sv -> db : Read the session named by sid
-db --> sv : Session, revoked
-sv --> actor : 401 Unauthorized
-== the refresh token from that session is presented again ==
-actor -> controller : POST /sessions/refresh with the revoked token
-controller -> db : Find the token by hash
-db --> controller : Token, on a revoked session
-controller --> actor : 401 Unauthorized
-== the member's other device is unaffected ==
-actor -> sv : GET /board with the access token from a second session
-sv -> db : Read that session
-db --> sv : Session, live
-sv --> actor : 200 OK
+actor -> page : Choose sign out
+page -> page : Open ConfirmDialogComponent
+alt Cancel
+  page --> actor : Keep session
+else Confirm
+  page -> client : signOut()
+  client -> api : DELETE /sessions
+  api -> handler : SignOutCommand; sid from verified context
+  handler -> db : Revoke Session by sid and its refresh tokens [L2-019]
+  db --> handler : Revocation committed
+  handler --> api : Completed
+  api --> client : 204; remove refresh cookie
+  client --> page : Clear token and show landing
+  client -> api : Attempt old access or refresh token
+  api -> db : Load session; revoked
+  db --> api : Not live
+  api --> client : 401 [L2-019]
+end
 @enduml

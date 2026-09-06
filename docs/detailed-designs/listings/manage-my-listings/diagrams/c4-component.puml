@@ -1,20 +1,18 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Component>
 LAYOUT_WITH_LEGEND()
-title Components — Manage my listings
-
+title Component - Manage my listings
+Container(web, "MyListingsComponent / planned EditListingComponent", "Angular barnabas application", "Screen composition; signal state behind service contracts")
 Container_Boundary(api, "Barnabas API") {
-  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Exposes the caller's own listings and the edit endpoint")
-  Component(query, "GetMyListingsQueryHandler", "MediatR handler", "Reads the caller's listings with their open request counts")
-  Component(edit, "EditListingCommandHandler", "MediatR handler", "Applies changes to a listing the caller owns")
-  Component(behaviour, "AuthorisationBehaviour", "MediatR pipeline behaviour", "Rejects an edit by a member who does not own the listing")
-  Component(dto, "MyListingDto", "Read model", "Title, kind, status, and open request count")
-  ComponentDb(db, "Barnabas database", "SQL Server", "Listings and requests")
+  Component(ctrl, "ListingsController", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "GetMyListingsQueryHandler / planned EditListingCommandHandler", "Application", "Manage my listings")
+  Component(entity, "Listing", "Domain", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
 }
-Rel(ctrl, query, "Sends GetMyListingsQuery")
-Rel(ctrl, edit, "Sends EditListingCommand")
-Rel(edit, behaviour, "Passes through")
-Rel(query, db, "Reads listings and counts requests", "EF Core")
-Rel(query, dto, "Projects to")
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through IListingService / LISTING_SERVICE", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
 @enduml

@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — A read inside the caller's own congregation
+title UML sequence behaviour - Scope queries to a congregation: in congregation
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,32 +14,38 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Member of St. Aidan's" as actor
-box "Backend — Barnabas API" #D1FADF
-  participant "JwtBearerMiddleware" as jwt
-  participant "ListingsController" as controller
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "BoardComponent / ListingDetailComponent" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "GetBoardQueryHandler" as handler
-  participant "CongregationContext" as ctx
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "BoardController / ListingsController / JWT pipeline" as api
 end box
-box "Backend — Infrastructure" #FFF4E5
-  participant "BarnabasDbContext" as db
-  database "Barnabas database" as store
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetBoardQueryHandler / scoped command handlers" as handler
+  participant "Listing / ITenantOwned" as entity
 end box
-
-actor -> jwt : GET /board with bearer token
-jwt -> jwt : Validate signature and expiry
-jwt -> ctx : Populate congregation and member from claims
-jwt -> controller : Authenticated request
-controller -> handler : Send GetBoardQuery
-handler -> db : Query listings, naming no congregation
-db -> ctx : Read the current congregation
-ctx --> db : St. Aidan's
-db -> store : SELECT ... WHERE CongregationId = @current
-note over db : The L2-088 filter is applied by the context,\nnot by the handler, so no handler can forget it
-store --> db : Rows from St. Aidan's only
-db --> handler : Listings
-handler --> controller : Read models
-controller --> actor : 200 OK
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open screen
+page -> client : Load; set loading signal
+client -> api : GET /board
+api -> api : Validate JWT and live session
+api -> handler : Send GetBoardQuery
+handler -> db : WHERE CongregationId = verified claim AND Active [L2-088]
+db --> handler : Scoped rows
+handler --> api : BoardPage
+api --> client : 200 / typed result
+client --> page : Set result and clear loading
+alt Empty collection
+  page --> actor : Explain empty state
+else Rows available
+  page --> actor : Present rows and destinations
+end
+opt Transport or server failure
+  client --> page : Failure; retain retry action
+  page --> actor : Explain failure; retry reloads the query
+end
 @enduml

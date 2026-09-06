@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Validate and bound input
+Person(actor, "Member", "Validate and bound input")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Validate and bound input", "HTTPS")
+@enduml

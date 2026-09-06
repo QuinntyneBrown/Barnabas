@@ -2,120 +2,76 @@
 
 ## Overview
 
-Barnabas is a lending, giving, selling, and helping board scoped to a single church congregation. A member posts a **listing** — offer of an item or of time, published to one congregation's board — and other members ask for it.
+A **request** — ask against one listing, carrying a message and kind-specific terms — lets a congregation member contact the listing owner. Lend asks for pickup and return dates with an ownership acknowledgement. Give and Sell ask for pickup time. Help selects a declared availability window.
 
-**request** — a member's ask against one listing, carrying a message to the owner and the terms that kind of listing needs
-
-This feature covers composing and sending that ask. It is the entry point to the coordination flow: a request is the only thing that opens a message thread between two members, so nothing else in the product connects a requester to an owner.
-
-A listing carries one of four kinds, and the four are not interchangeable. **Lend**, **Give**, and **Sell** offer goods; **Help** offers time. Each kind collects different terms, and each presents a different call to action — *Request to borrow*, *Request this*, *Request to buy*, *Request this help*. A Lend request needs to say when the item comes back. A Help request needs to name which of the offered windows the requester wants. Treating the four as one form was the defect this design exists to prevent.
-
-Barnabas brokers the introduction and nothing beyond it. The request flow settles no payment, arranges no delivery, and records no deposit; the two members meet in person and sort out the rest between themselves.
+The listing remains the subject throughout. Sending confirms the owner and next steps. A message thread opens only after acceptance. Barnabas does not accept payment, delivery addresses, or deposits.
 
 ## Description
 
-The slice runs from the Angular request screen to the database.
+**Implementation boundary: Existing Lend request; planned remaining kinds and active-state race guard.**
 
-- **`RequestLendComponent`**, **`RequestGiveComponent`**, **`RequestSellComponent`**, **`RequestHelpComponent`** — Angular page components in the Barnabas web application, one per listing kind. Each renders only the fields its kind collects. Template, styles, and class occupy separate files, and component state is held in signals.
-- **`IRequestsApi`** — the interface the components depend on. Components consume the abstraction; dependency injection supplies the implementation.
-- **`RequestsApi`** — typed HTTP client implementing `IRequestsApi`. It builds the request for the endpoint matching the kind and returns a typed result.
-- **`RequestStore`** — signal-backed store holding the in-progress request and the result of sending it.
-- **`RequestsController`** — ASP.NET Core controller in the Barnabas API. It exposes four endpoints under `/listings/{listingId}/requests`, authenticates the caller, applies the endpoint policy, and dispatches the matching command. It holds no logic of its own.
-- **`MakeLoanRequestCommand`**, **`MakeGiftRequestCommand`**, **`MakePurchaseRequestCommand`**, **`MakeHelpRequestCommand`** — request objects, one per kind. Each carries `ListingId` and `Message`, plus the terms its kind requires.
-- **`MakeLoanRequestCommandHandler`** and its three siblings — MediatR handlers holding the application logic. Each loads the listing within the caller's congregation, applies the eligibility policy, creates the request, and commits in one unit of work.
-- **`MakeLoanRequestCommandValidator`** and its three siblings — FluentValidation validators enforcing the per-kind field rules before a handler runs.
-- **`RequestEligibilityPolicy`** — domain service holding the four conditions a request has
-  to satisfy: the listing is not the caller's own, the listing is active, its kind matches
-  the endpoint the request arrived on, and the caller holds no open request against it
-  already.
+`RequestLendComponent` and `RequestSentComponent` exist in `barnabas`. The Lend form consumes `IRequestService` through `REQUEST_SERVICE`. `RequestStore` currently manages incoming and outgoing collections and decisions; it does not own the draft. A planned form service moves draft validation and submission behaviour out of the page class behind a contract.
 
-  The last two were absent from an earlier draft, and their absence left real behaviour
-  undefined. A listing that has been sold or archived is still reachable by its identifier,
-  so a request could be made against something already gone. And nothing tied the endpoint
-  to the listing's kind, so a Sell listing could acquire a request carrying loan terms and
-  no price.
-- **`ListingRequest`** — domain entity owning request state. Its `Accept()` and `Decline()` methods enforce the transitions used by the sibling features.
-- **`RequestStatus`** — enumeration of the states a request holds: `Pending`, `Accepted`, `Declined`.
-- **`LoanTerms`**, **`PickupTerms`**, **`AvailabilityWindow`** — value types carrying the per-kind terms.
+`RequestsController` binds `MakeLoanRequestRequest` at `POST /listings/{listingId}/requests/loan`. `MakeLoanRequestCommandHandler` reads the scoped listing, checks `RequestEligibilityPolicy`, queries for an existing pending request, and creates `ListingRequest.MakeLoanRequest`. `LoanRequestTerms` carries `PickupOn` and `ReturnBy`; `LoanTerms` belongs to the listing and is a different type. The command validator requires a message of at most 4000 characters, dates, and acknowledgement.
 
-The four handlers stay separate rather than collapsing behind one generic command. A single
-handler would need a conditional over the kind at every step, and that shape is what allowed
-the four kinds to drift into one form.
+`RequestEligibilityPolicy.Check` covers self-request, active state, and endpoint-kind matching. Duplicate detection belongs to the handler and the SQL Server filtered unique index `(ListingId, RequesterId) WHERE Status = 0`. Open currently means Pending. Self-request and kind mismatch return 400, inactive and duplicate requests return 409, and foreign or absent listings return 404. Two concurrent duplicates produce one row. A declined request permits another attempt. Current broad database-exception mapping is an implementation limitation; the target maps only the expected unique-index violation to duplicate conflict.
 
-**The duplicate rule lives in two places, and needs to.** `RequestEligibilityPolicy` checks
-for an open request so that the common case returns a clear 409 without touching the
-database twice. A unique index on `(ListingId, RequesterId)` where the status is `Pending`
-then enforces it, because two simultaneous requests both pass the check before either
-commits. A policy alone cannot make a rule true under concurrency; only the constraint can,
-and `L2-062` asks for exactly one request to survive.
+Planned `MakeGiftRequestCommand`, `MakePurchaseRequestCommand`, and `MakeHelpRequestCommand` have independent validators and handlers. Routes end in `/gift`, `/purchase`, and `/help`. `PickupTerms` is planned for Give and Sell; the Help request stores the declared window identifier and a snapshot of its terms. The handler validates membership in the listing's windows at write time. Give rejects price and return-date fields. Request DTOs declare no payment instrument, delivery address, or deposit field. The raw-payload forbidden-field contract also applies to bound request DTOs where the controller constructs a command.
+
+The target serialises request creation with listing close-out and Help window editing through a database transaction and a listing lock or checked row version. It rechecks Active and the selected window before insertion. This closes the read-to-write race without changing the pending-request index. Confirmation names the owner and links to `/inbox/my-requests` and `/board`, with the payment/delivery boundary stated.
+
+**Source anchors.** [MakeLoanRequestCommandHandler.cs](../../../../backend/src/Barnabas.Application/Requests/MakeLoanRequest/MakeLoanRequestCommandHandler.cs), [ListingRequestConfiguration.cs](../../../../backend/src/Barnabas.Infrastructure/Persistence/Configurations/ListingRequestConfiguration.cs), [request.store.ts](../../../../frontend/projects/domain/src/lib/requests/request.store.ts).
+
+**Acceptance verification.** [L2-054](../../../specs/L2.md#l2-054-compose-a-request-to-borrow-a-lend-listing): API AC 1, 2; E2E AC 3. [L2-055](../../../specs/L2.md#l2-055-compose-a-request-for-a-give-listing): API AC 1; E2E AC 2. [L2-056](../../../specs/L2.md#l2-056-compose-a-request-to-buy-a-sell-listing): API AC 1, 3; E2E AC 2. [L2-057](../../../specs/L2.md#l2-057-compose-a-request-for-a-help-listing): API AC 1, 2; E2E AC 3. [L2-058](../../../specs/L2.md#l2-058-send-a-request-and-confirm-it): E2E AC 1, 2, 3. [L2-062](../../../specs/L2.md#l2-062-reject-ineligible-requests): API AC 1, 2, 3, 5, 6, 7; E2E AC 4. [L2-063](../../../specs/L2.md#l2-063-do-not-handle-payment-delivery-or-deposits-in-a-request): API AC 1; E2E AC 2. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-054` | `L1-009` | 1 | A Lend request shall collect a message, a proposed pickup date, a proposed return date, and an acknowledgement that the item remains the owner's. |
-| `L2-055` | `L1-009` | &mdash; | A Give request shall collect a message and a proposed pickup time. It shall not collect a price or a return date. |
-| `L2-056` | `L1-009` | &mdash; | A Sell request shall collect a message and a proposed pickup time, and shall restate that payment is settled in person between the members. |
-| `L2-057` | `L1-009` | &mdash; | A Help request shall collect a message and require the requester to choose one of the availability windows the offer declared. |
-| `L2-058` | `L1-009` | 1 | Sending a request shall confirm to the requester that it was sent, name the owner, and say what happens next. |
-| `L2-062` | `L1-009` | 1 | A member shall not request their own listing, and shall not hold more than one open request against the same listing. A request shall name a listing that is active, and shall be made through the endpoint matching that listing's kind. |
-| `L2-063` | `L1-009` | &mdash; | The request flow shall not take payment details, arrange delivery, or record a deposit for any kind of listing. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-054` | `L1-009` | A Lend request shall collect a message, a proposed pickup date, a proposed return date, and an acknowledgement that the item remains the owner's. |
+| `L2-055` | `L1-009` | A Give request shall collect a message and a proposed pickup time. It shall not collect a price or a return date. |
+| `L2-056` | `L1-009` | A Sell request shall collect a message and a proposed pickup time, and shall restate that payment is settled in person between the members. |
+| `L2-057` | `L1-009` | A Help request shall collect a message and require the requester to choose one of the availability windows the offer declared. |
+| `L2-058` | `L1-009` | Sending a request shall confirm to the requester that it was sent, name the owner, and say what happens next. |
+| `L2-062` | `L1-009` | A member shall not request their own listing, and shall not hold more than one open request against the same listing. A request shall name a listing that is active, and shall be made through the endpoint matching that listing's kind. |
+| `L2-063` | `L1-009` | The request flow shall not take payment details, arrange delivery, or record a deposit for any kind of listing. |
 
 ## Diagrams
 
-### System context
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-The requester asks for a listing through Barnabas, which notifies the listing owner through an external email provider. Both members belong to the same congregation.
+![C4 context view for make a request](diagrams/c4-context.png)
 
-![C4 system context for making a request](diagrams/c4-context.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Containers
+![C4 container view for make a request](diagrams/c4-container.png)
 
-The request travels from the Barnabas web application to the Barnabas API, which persists it in the Barnabas database and queues the owner's notification.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![C4 container view for making a request](diagrams/c4-container.png)
+![C4 component view for make a request](diagrams/c4-component.png)
 
-### Components
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-Inside the API, `RequestsController` dispatches to the handler matching the listing kind. All four handlers consult `RequestEligibilityPolicy` before creating a `ListingRequest`.
+![Class structure for make a request](diagrams/class-structure.png)
 
-![C4 component view for making a request](diagrams/c4-component.png)
+The Lend request supplies dates and acknowledgement. The target write also guards against a listing closing after the initial read.
 
-### Class structure
+![Sequence for borrow](diagrams/sequence-borrow.png)
 
-The four commands share `ListingId` and `Message` and diverge in their terms. `ListingRequest` composes `LoanTerms` for a Lend request and `PickupTerms` for a Give or Sell request, and references the `AvailabilityWindow` chosen for a Help request.
+The planned Give form carries a pickup time without a return date or price.
 
-![Class diagram for making a request](diagrams/class-structure.png)
+![Sequence for gift](diagrams/sequence-gift.png)
 
-### Behaviour — request to borrow
+The planned Sell request restates the asking price and in-person payment. No payment instrument enters the command.
 
-The Lend path carries the fullest set of terms. `RequestLendComponent` collects the pickup date, return date, and acknowledgement required by `L2-054`; the handler applies the `L2-062` eligibility checks and commits in one unit of work. A missing return date or a withheld acknowledgement returns `ProblemDetails` naming the field, and the screen holds.
+![Sequence for purchase](diagrams/sequence-purchase.png)
 
-![Sequence diagram for requesting to borrow](diagrams/sequence-borrow.png)
+The planned Help handler accepts only a declared window. A missing or removed selection returns a field-named 400.
 
-### Behaviour — request to buy
+![Sequence for help](diagrams/sequence-help.png)
 
-The Sell path adds the `L2-056` restatement that payment is settled in person. No payment field is rendered and no payment field is accepted, per `L2-063`. The Give path follows this same shape without the payment restatement, since a Give listing carries no price.
+Self-requests, duplicate pending requests, inactive listings, and mismatched kinds have distinct outcomes required by L2-062.
 
-![Sequence diagram for requesting to buy](diagrams/sequence-purchase.png)
-
-### Behaviour — request help
-
-The Help path differs from the goods paths in one way that matters: the screen first reads the windows the listing declared and offers only those, and the handler rejects a window the listing did not declare. Help offers time, so there is no item and no pickup of an object.
-
-![Sequence diagram for requesting help](diagrams/sequence-help.png)
-
-### Behaviour — eligibility guards
-
-`L2-062` is enforced wherever it can be. The screen hides the action from the listing's own
-owner; the policy rejects a self-request, a closed listing, and a mismatched kind; and the
-unique index decides the duplicate case, which is the only one a policy cannot settle on its
-own. Self-request and kind mismatch return `400`; a closed listing and a duplicate return
-`409`.
-
-![Sequence diagram for the eligibility guards](diagrams/sequence-guards.png)
+![Sequence for guards](diagrams/sequence-guards.png)

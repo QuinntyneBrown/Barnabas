@@ -1,55 +1,41 @@
 @startuml
-!pragma layout smetana
-title Class structure — Validate and bound input
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
-class ValidationBehaviour<TRequest, TResponse> {
-  -IEnumerable<IValidator<TRequest>> validators
-  +Handle(TRequest, RequestHandlerDelegate, CancellationToken) : Task<TResponse>
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
 }
-interface IValidator<T> {
-  +Validate(T) : ValidationResult
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
 }
-class ValidationResult {
-  +bool IsValid
-  +IList<ValidationFailure> Errors
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
 }
-class ValidationFailure {
-  +string PropertyName
-  +string ErrorMessage
+title Class structure - Validate and bound input
+interface IForbidFields {
+  +static ForbiddenFields: IReadOnlySet<string>
+}
+class ForbiddenFieldInspector {
+  +OnResourceExecutionAsync(context, next): Task
+}
+class "ValidationBehaviour<TRequest,TResponse>" as validation {
+  +Handle(request: TRequest, next): Task<TResponse>
+}
+interface "IValidator<TRequest>" as validator {
+  +ValidateAsync(request: TRequest): Task<ValidationResult>
 }
 class ValidationProblemDetails {
   +int Status
-  +string Title
-  +IDictionary<string, string[]> Errors
+  +IDictionary<string,string[]> Errors
 }
-class MakeLoanRequestCommandValidator {
-  +MakeLoanRequestCommandValidator()
-}
-class PostLendListingCommandValidator {
-  +PostLendListingCommandValidator()
-}
-interface IForbidFields {
-  +string[] ForbiddenFields
-}
-class ForbiddenFieldInspector {
-  +Inspect(JsonElement, IForbidFields) : ValidationFailure[]
-}
-class PostLendListingCommand {
-  +string[] ForbiddenFields
-}
-
-IValidator <|.. MakeLoanRequestCommandValidator
-IValidator <|.. PostLendListingCommandValidator
-IForbidFields <|.. PostLendListingCommand
-ValidationBehaviour --> IValidator : resolves all registered
-IValidator --> ValidationResult : returns
-ValidationResult *-- ValidationFailure : collects
-ValidationBehaviour ..> ValidationProblemDetails : builds from failures
-ForbiddenFieldInspector ..> IForbidFields : reads the declared names from
-ForbiddenFieldInspector --> ValidationFailure : produces
+ForbiddenFieldInspector ..> IForbidFields : discovers bound type declaration
+validation --> validator : runs registered validators
+validation ..> ValidationProblemDetails : exception mapped by API
 @enduml

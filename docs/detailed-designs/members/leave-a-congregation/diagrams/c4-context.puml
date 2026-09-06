@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Leave a congregation
+Person(actor, "Member", "Leave a congregation")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Leave a congregation", "HTTPS")
+@enduml

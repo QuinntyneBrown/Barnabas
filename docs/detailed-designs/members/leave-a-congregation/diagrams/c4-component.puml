@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Component - Leave a congregation
+Container(web, "ProfileSettingsComponent / ConfirmDialogComponent", "Angular barnabas application", "Screen composition; signal state behind service contracts")
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "MembersController (planned)", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "LeaveCongregationCommandHandler (planned)", "Application", "Leave a congregation")
+  Component(entity, "Member / Listing / Session", "Domain", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
+}
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through IMemberService / MEMBER_SERVICE (planned)", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
+@enduml

@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Manage my listings
+Person(actor, "Member", "Manage my listings")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Manage my listings", "HTTPS")
+@enduml

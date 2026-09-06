@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — An empty board, and a board that fails to load
+title UML sequence behaviour - Browse the board: empty and failure
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,33 +15,33 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "BoardComponent" as page
-  participant "BoardStore" as store
-  participant "ListingsApi" as client
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "BoardComponent / PlacardComponent" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "BoardController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "BoardController" as api
 end box
-
-actor -> page : Open the board
-page -> store : Read the listings signal
-store -> client : Request the board
-client -> controller : GET /board
-alt the congregation has posted nothing
-  controller --> client : 200 OK with an empty collection
-  client --> store : Set an empty list
-  store --> page : Empty
-  page --> actor : Explain nothing is posted yet and offer to post the first listing
-  note over page : L2-045 treats an empty board as an invitation\nrather than an error.
-else the request fails
-  controller --> client : 5xx or no response
-  client --> store : Set the error state
-  store --> page : Error
-  page --> actor : State that the board failed to load and offer to try again
-else the request is still in flight
-  store --> page : Loading
-  page --> actor : Placard-shaped skeletons and a live region announcing the wait
-  note over page : L2-046 requires the wait be announced to\nassistive technology, not only drawn.
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetBoardQueryHandler" as handler
+  participant "Listing / Member" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open board
+page -> page : Announce loading in live region [L2-046]
+page -> client : board(kind)
+client -> api : GET /board
+alt Empty successful response
+  api --> client : 200; listings=[] [L2-045]
+  client --> page : Clear loading; set empty state
+  page --> actor : Offer to post first listing
+else Request failed
+  api --> client : Failure
+  client --> page : Clear loading; set failed signal
+  page --> actor : Explain failure and offer retry [L2-047]
+  actor -> page : Retry
+  page -> client : Reload same kind
 end
 @enduml

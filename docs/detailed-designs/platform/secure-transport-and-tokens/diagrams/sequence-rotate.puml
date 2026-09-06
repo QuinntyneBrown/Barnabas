@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour - Secure transport and tokens: rotate
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "SessionStore / routed pages" as page
+  participant "ISessionService / TOKEN_SERVICE" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "HTTPS hosting pipeline / SessionsController" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "RefreshSessionCommandHandler / JwtIssuer" as handler
+  participant "Session / RefreshToken" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : POST /sessions/refresh with current cookie
+api -> handler : RefreshSessionCommand
+handler -> db : Target atomic check, rotate, and replacement insert
+db --> handler : Commit
+handler --> api : New token pair
+api --> client : New Secure HttpOnly refresh cookie [L2-100]
+client -> api : Replay old refresh token
+api -> handler : RefreshSessionCommand
+handler -> db : Find old token
+db --> handler : ReplacedByTokenId present
+handler --> api : RefreshTokenNotActiveException
+api --> client : 401
+@enduml

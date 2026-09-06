@@ -1,20 +1,18 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Component>
 LAYOUT_WITH_LEGEND()
-title Components — Track my requests
-
+title Component - Track my requests
+Container(web, "OutgoingRequestsComponent", "Angular barnabas application", "Screen composition; signal state behind service contracts")
 Container_Boundary(api, "Barnabas API") {
-  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes GET /requests/mine")
-  Component(handler, "GetMyRequestsQueryHandler", "MediatR handler", "Reads the requests the caller made and projects them")
-  Component(dto, "MyRequestDto", "Read model", "Listing, owner, terms, status, and the thread where one exists")
-  Component(request, "ListingRequest", "Domain entity", "Holds the status the row reports")
-  Component(thread, "MessageThread", "Domain entity", "Named by an accepted request")
-  ComponentDb(db, "Barnabas database", "SQL Server", "Requests, listings, and threads")
+  Component(ctrl, "RequestsController", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "GetMyRequestsQueryHandler", "Application", "Track my requests")
+  Component(entity, "ListingRequest / Listing / Member", "Domain", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
 }
-Rel(ctrl, handler, "Sends GetMyRequestsQuery")
-Rel(handler, db, "Reads requests made by the caller", "EF Core")
-Rel(handler, dto, "Projects to")
-Rel(dto, request, "Reports the status of")
-Rel(dto, thread, "Carries the identifier of")
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through IRequestService / REQUEST_SERVICE", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
 @enduml

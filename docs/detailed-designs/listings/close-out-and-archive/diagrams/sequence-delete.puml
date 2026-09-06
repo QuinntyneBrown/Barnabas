@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Deleting a listing permanently
+title UML sequence behaviour - Close out and archive: delete
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,36 +14,37 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Owner" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "ArchivedListingsComponent" as page
-  participant "ConfirmDeleteDialog" as dialog
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "MyListingsComponent / planned ArchivedListingsComponent" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ListingsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ListingsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "DeleteListingCommandHandler" as handler
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "CloseOutListingCommandHandler / planned lifecycle handlers" as handler
+  participant "Listing / ListingStatus" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Choose Delete permanently
-page -> dialog : Ask to confirm, stating the action cannot be undone
-alt owner confirms
-  actor -> dialog : Confirm
-  dialog -> controller : DELETE /listings/{id}
-  controller -> handler : Send DeleteListingCommand
-  handler -> db : Remove the listing, its requests, and its threads in one unit of work
-  note over handler : L2-040 makes deletion irreversible, so it\ntakes the conversations with it rather than\nleaving threads about nothing.
-  db --> handler : Commit result
-  handler --> controller : Done
-  controller --> dialog : 204 No Content
-  dialog --> actor : The wrapped-up list, without that listing
-else owner cancels
-  actor -> dialog : Cancel
-  dialog --> page : Dismiss
-  page --> actor : The listing remains
+actor -> page : Delete listing
+page -> page : Confirm irreversible deletion and conversation removal [L2-040]
+alt Cancel
+  page --> actor : Listing remains
+else Confirm
+  page -> client : delete(listingId)
+  client -> api : DELETE /listings/{id}
+  api -> handler : Authorised DeleteListingCommand
+  handler -> db : Transaction: scoped listing and dependent rows
+  db --> handler : Delete notifications, read marks, messages, threads, requests, photos, listing
+  handler -> db : Commit
+  db --> handler : Committed
+  handler --> api : Completed
+  api --> client : 204
+  client --> page : Remove listing
+  client -> api : GET /listings/{id}
+  api --> client : 404
 end
 @enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Find a thread
+Person(actor, "Member", "Find a thread")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "ThreadsComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Find a thread")
+  ContainerDb(db, "Barnabas database", "SQL Server", "MessageThread")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IThreadService / THREAD_SERVICE", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

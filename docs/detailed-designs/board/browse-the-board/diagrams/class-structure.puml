@@ -1,24 +1,35 @@
 @startuml
-!pragma layout smetana
-title Class structure — Browse the board
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Browse the board
 class GetBoardQuery {
   +ListingKind? Kind
   +int Limit
   +string? Cursor
 }
 class GetBoardQueryHandler {
-  +Handle(GetBoardQuery) : BoardPage
+  +Handle(query: GetBoardQuery): Task<BoardPage>
 }
 class BoardPage {
-  +BoardListingDto[] Listings
+  +IReadOnlyList<BoardListingDto> Listings
   +string? NextCursor
-  +IDictionary<ListingKind, int> Counts
 }
 class BoardListingDto {
   +Guid ListingId
@@ -26,35 +37,13 @@ class BoardListingDto {
   +string Title
   +string OwnerDisplayName
   +string Neighbourhood
-  +decimal? Price
-  +string? OfferInOwnWords
 }
-class Listing {
-  +Guid Id
-  +Guid CongregationId
-  +Guid OwnerId
-  +ListingKind Kind
-  +ListingStatus Status
-  +string Title
+class BoardStore {
+  +loading: Signal<boolean>
+  +load(kind: ListingKind): Promise<void>
 }
-enum ListingKind {
-  Lend
-  Give
-  Sell
-  Help
-}
-enum ListingStatus {
-  Active
-  Sold
-  GivenAway
-  Archived
-  Completed
-}
-
 GetBoardQueryHandler ..> GetBoardQuery : handles
-GetBoardQueryHandler --> BoardPage : returns
-BoardPage *-- BoardListingDto : carries
-BoardListingDto ..> Listing : projects
-Listing --> ListingKind : holds
-Listing --> ListingStatus : holds
+GetBoardQueryHandler ..> BoardPage : returns
+BoardPage "1" *-- "*" BoardListingDto : contains
+BoardStore ..> BoardPage : receives through IListingService
 @enduml

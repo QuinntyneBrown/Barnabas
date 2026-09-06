@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Display member text safely
+Person(actor, "Member", "Display member text safely")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Display member text safely", "HTTPS")
+@enduml

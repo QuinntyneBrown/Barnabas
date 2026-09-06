@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - End a session
+Person(actor, "Member", "End a session")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "YouComponent / ConfirmDialogComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "End a session")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Session / RefreshToken")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through ISessionService / SESSION_SERVICE", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

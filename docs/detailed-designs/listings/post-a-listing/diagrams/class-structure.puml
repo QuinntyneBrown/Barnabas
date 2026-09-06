@@ -1,76 +1,54 @@
 @startuml
-!pragma layout smetana
-title Class structure — Post a listing
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
-interface IForbidFields {
-  +string[] ForbiddenFields
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
 }
-abstract class PostListingCommand {
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Post a listing
+class PostLendListingCommand {
   +string Title
   +string Description
-  +string Category
-  +string Neighbourhood
+  +DateOnly? ReturnBy
 }
-class PostLendListingCommand {
-  +DateOnly ReturnBy
-  +string Condition
-  +string[] ForbiddenFields = { "price" }
-}
-class PostGiveListingCommand {
-  +string Included
-  +bool PickupOnly
-  +string[] ForbiddenFields = { "price" }
-}
-class PostSellListingCommand {
-  +decimal Price
-  +string Condition
-}
-class PostHelpListingCommand {
-  +AvailabilityWindow[] Windows
-  +string AreaCovered
-  +string[] ForbiddenFields = { "price", "photo" }
-}
+interface IForbidFields
+PostLendListingCommand ..|> IForbidFields : rejects price
 class Listing {
-  +Guid Id
-  +Guid CongregationId
   +Guid OwnerId
   +ListingKind Kind
   +ListingStatus Status
-  +string Title
-  +CloseOut(ListingStatus) : void
-}
-enum ListingKind {
-  Lend
-  Give
-  Sell
-  Help
+  +decimal? Price
+  +PostLend(...): Listing
+  +PostGive(...): Listing
+  +PostSell(...): Listing
+  +PostHelp(...): Listing
 }
 class LoanTerms {
   +DateOnly ReturnBy
 }
-class SaleTerms {
-  +decimal Price
+class AvailabilityWindow <<planned>> {
+  +Guid Id
+  +DateTimeOffset StartsAt
+  +DateTimeOffset EndsAt
 }
-class AvailabilityWindow {
-  +DayOfWeek Day
-  +TimeOnly StartsAt
-  +TimeOnly EndsAt
+class PostLendListingCommandHandler {
+  +Handle(command: PostLendListingCommand): Task<PostedListingResult>
 }
-
-PostListingCommand <|-- PostLendListingCommand
-PostListingCommand <|-- PostGiveListingCommand
-PostListingCommand <|-- PostSellListingCommand
-PostListingCommand <|-- PostHelpListingCommand
-IForbidFields <|.. PostLendListingCommand
-IForbidFields <|.. PostGiveListingCommand
-IForbidFields <|.. PostHelpListingCommand
-Listing --> ListingKind : holds
-Listing *-- LoanTerms : for Lend
-Listing *-- SaleTerms : for Sell
-Listing *-- AvailabilityWindow : for Help
+PostLendListingCommandHandler ..> PostLendListingCommand : handles
+PostLendListingCommandHandler ..> Listing : creates
+Listing "1" *-- "0..1" LoanTerms : Lend terms
+Listing "1" *-- "0..*" AvailabilityWindow : planned Help windows
 @enduml

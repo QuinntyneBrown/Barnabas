@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Browse the directory
+Person(actor, "Member", "Browse the directory")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "DirectoryComponent / DirectoryMemberComponent (planned)")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Browse the directory")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Member / help tags")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IDirectoryService / DIRECTORY_SERVICE (planned)", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour - Search listings: search
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "SearchComponent / SearchResultsComponent (planned)" as page
+  participant "ISearchService / SEARCH_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "SearchController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "SearchListingsQueryHandler (planned)" as handler
+  participant "Listing / BoardCursor" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open screen
+page -> client : Load; set loading signal
+client -> api : GET /search?term=LADDER&maxPrice=50
+api -> api : Validate JWT and live session
+api -> handler : Send SearchListingsQuery
+handler -> db : Active scoped listings; case-insensitive literal text; Sell and Price <= 50 [L2-048, L2-049, L2-050, L2-051, L2-053]
+db --> handler : Scoped rows
+handler --> api : SearchPage
+api --> client : 200 / typed result
+client --> page : Set result and clear loading
+alt Empty collection
+  page --> actor : Explain empty state
+else Rows available
+  page --> actor : Present rows and destinations
+end
+opt Transport or server failure
+  client --> page : Failure; retain retry action
+  page --> actor : Explain failure; retry reloads the query
+end
+@enduml

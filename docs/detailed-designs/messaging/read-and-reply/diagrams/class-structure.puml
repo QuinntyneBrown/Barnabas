@@ -1,52 +1,45 @@
 @startuml
-!pragma layout smetana
-title Class structure — Read and reply
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Read and reply
 class MessageThread {
-  +Guid Id
   +Guid RequestId
   +Guid ListingId
   +Guid OwnerId
   +Guid RequesterId
-  +IsParty(Guid) : bool
-  +Append(Guid, string, DateTimeOffset) : Message
+  +IsParty(memberId: Guid): bool
+  +OtherParty(memberId: Guid): Guid
+  +Append(id: Guid, sender: Guid, body: string, sentAt: DateTimeOffset): Message
+  +MarkRead(id: Guid, memberId: Guid, readAt: DateTimeOffset): void
+  +IsUnreadFor(memberId: Guid): bool
 }
 class Message {
-  +Guid Id
-  +Guid ThreadId
   +Guid SenderId
   +string Body
-  +DateTimeOffset SentOn
+  +DateTimeOffset SentAt
 }
 class ThreadReadMark {
-  +Guid ThreadId
   +Guid MemberId
-  +DateTimeOffset ReadUpTo
+  +DateTimeOffset ReadAt
+  +MoveTo(readAt: DateTimeOffset): void
 }
-class GetThreadQuery {
-  +Guid ThreadId
-}
-class SendMessageCommand {
-  +Guid ThreadId
-  +string Body
-}
-class ThreadDetailDto {
-  +Guid ThreadId
-  +Guid ListingId
-  +string ListingTitle
-  +string OtherMemberDisplayName
-  +RequestStatus RequestStatus
-  +MessageDto[] Messages
-}
-
-MessageThread *-- Message : holds in order
-MessageThread ..> ThreadReadMark : read per member
-GetThreadQuery ..> ThreadDetailDto : returns
-SendMessageCommand ..> Message : appends
-ThreadDetailDto ..> MessageThread : projects
+MessageThread "1" *-- "*" Message : contains
+MessageThread "1" *-- "0..2" ThreadReadMark : reader positions
 @enduml

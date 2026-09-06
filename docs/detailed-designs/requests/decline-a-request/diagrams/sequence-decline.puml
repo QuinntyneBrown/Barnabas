@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Decline a request
+title UML sequence behaviour - Decline a request: decline
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,46 +14,62 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Listing owner" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "IncomingRequestsComponent" as page
-  participant "ConfirmDeclineDialog" as dialog
-  participant "RequestsApi" as client
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "IncomingRequestsComponent / ConfirmDialogComponent" as page
+  participant "IRequestService / REQUEST_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "RequestsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "RequestsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
+box "Backend - Barnabas.Application and Domain" #ECFDF3
   participant "DeclineRequestCommandHandler" as handler
-  participant "ListingRequest" as entity
+  participant "ListingRequest / MessageThread" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Decline the request
-page -> dialog : Require confirmation per L2-061
-dialog --> actor : Ask to confirm
-alt owner confirms
-  actor -> dialog : Confirm
-  dialog -> client : Build typed request
-  client -> controller : POST /requests/{requestId}/decline
-  controller -> controller : Authenticate and apply endpoint policy
-  controller -> handler : Send DeclineRequestCommand
-  handler -> db : Load the request within the congregation
-  db --> handler : Request
-  handler -> entity : Apply L2-061 decline transition
-  entity --> handler : Status set to Declined
-  handler -> db : Save changes in one unit of work
-  db --> handler : Commit result
-  note over handler : No message thread is opened, per L2-061
-  handler --> controller : Typed result
-  controller --> client : 200 OK
-  client --> page : Feature result
-  page --> actor : Return to the inbox without the declined request
-else owner cancels
-  actor -> dialog : Cancel
-  dialog --> page : Dismiss
-  page --> actor : Leave the request pending
+actor -> page : Choose decline
+page -> page : ConfirmDialogComponent [L2-061]
+alt Cancel
+  page --> actor : No command; request remains pending
+else Confirm
+actor -> page : Submit action
+page -> client : Send typed values
+client -> api : POST /requests/{id}/decline
+api -> api : Validate JWT and live session
+api -> handler : Validate and authorise; send DeclineRequestCommand
+handler -> db : Load resource within congregation
+db --> handler : Resource or absent
+alt Resource absent or outside congregation
+  handler --> api : NotFoundException
+  api --> client : 404
+else Resource available
+  handler -> entity : Decline(now) [L2-061]
+  alt Invalid current state
+    entity --> handler : Transition refused
+    handler --> api : Conflict
+    api --> client : 409; no committed change
+  else Transition allowed
+    entity --> handler : In-memory transition accepted
+    handler -> db : Save decision with rowversion; no thread insert
+    alt Rowversion or expected uniqueness conflict
+      db --> handler : Reject write; roll back unit of work
+      handler --> api : Conflict
+      api --> client : 409; reload current state
+      client --> page : Explain conflict; preserve unsaved values
+    else Storage failure
+      db --> handler : Roll back
+      handler --> api : Safe server failure
+      api --> client : Failure; no committed change
+    else Commit succeeds
+      db --> handler : Commit
+      handler --> api : DeclineRequestResult
+      api --> client : Success result
+      client --> page : Update signals
+      page --> actor : Confirm result
+    end
+  end
+end
 end
 @enduml

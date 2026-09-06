@@ -1,20 +1,16 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Container>
 LAYOUT_WITH_LEGEND()
-title Containers — Sign in with a link
-
-Person(member, "Member", "A parishioner returning to the board")
+title Container - Sign in with a link
+Person(actor, "Member", "Sign in with a link")
 System_Boundary(barnabas, "Barnabas") {
-  Container(spa, "Barnabas web", "Angular", "Sign-in and check-your-email screens")
-  Container(api, "Barnabas API", "ASP.NET Core", "Issues and redeems sign-in tokens")
-  ContainerDb(db, "Barnabas database", "SQL Server", "Members and sign-in tokens")
+  Container(web, "barnabas web application", "Angular", "SignInComponent / SignInLandingComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Sign in with a link")
+  ContainerDb(db, "Barnabas database", "SQL Server", "SignInToken / Session")
 }
-System_Ext(email, "Email provider", "Delivers the sign-in link")
-
-Rel(member, spa, "Enters an email address in", "HTTPS")
-Rel(spa, api, "Calls", "JSON/HTTPS")
-Rel(api, db, "Stores the token hash", "EF Core")
-Rel(api, email, "Sends the link", "SMTP")
-Rel(member, api, "Follows the link to exchange it", "HTTPS")
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through ISessionService / SESSION_SERVICE", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+System_Ext(external, "Email delivery provider", "Planned adapter behind IEmailSender")
+Rel(api, external, "Uses configured adapter")
 @enduml

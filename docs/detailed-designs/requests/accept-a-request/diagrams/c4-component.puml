@@ -1,18 +1,18 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Component>
 LAYOUT_WITH_LEGEND()
-title Components — Accept a request
-
+title Component - Accept a request
+Container(web, "IncomingRequestsComponent / RequestAcceptedComponent", "Angular barnabas application", "Screen composition; signal state behind service contracts")
 Container_Boundary(api, "Barnabas API") {
-  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes POST /requests/{requestId}/accept")
-  Component(handler, "AcceptRequestCommandHandler", "MediatR handler", "Applies the acceptance and opens a thread")
-  Component(entity, "ListingRequest", "Domain entity", "Owns the request state machine")
-  Component(thread, "MessageThread", "Domain entity", "Carries the listing and both members")
-  ComponentDb(db, "Barnabas database", "SQL Server", "Persists requests and threads")
+  Component(ctrl, "RequestsController", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "AcceptRequestCommandHandler", "Application", "Accept a request")
+  Component(entity, "ListingRequest / MessageThread", "Domain", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
 }
-Rel(ctrl, handler, "Sends AcceptRequestCommand")
-Rel(handler, entity, "Loads and applies Accept")
-Rel(handler, thread, "Creates for the accepted request")
-Rel(handler, db, "Persists in one unit of work", "EF Core")
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through IRequestService / REQUEST_SERVICE", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
 @enduml

@@ -1,93 +1,63 @@
 @startuml
-!pragma layout smetana
-title Class structure — Make a request
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Make a request
 class ListingRequest {
   +Guid Id
-  +Guid CongregationId
   +Guid ListingId
   +Guid RequesterId
   +string Message
   +RequestStatus Status
   +byte[] RowVersion
-  +DateTimeOffset CreatedOn
-  +Accept() : void
-  +Decline() : void
+  +Accept(asOf: DateTimeOffset): void
+  +Decline(asOf: DateTimeOffset): void
 }
-note bottom of ListingRequest
-  Unique on (ListingId, RequesterId)
-  where Status is Pending, so a
-  duplicate is refused by the
-  database rather than by a check.
-end note
-
+class LoanRequestTerms {
+  +DateOnly PickupOn
+  +DateOnly ReturnBy
+}
 enum RequestStatus {
   Pending
   Accepted
   Declined
 }
-
-class LoanTerms {
-  +DateOnly PickupOn
-  +DateOnly ReturnBy
-  +bool LoanAcknowledged
-}
-class PickupTerms {
-  +DateTimeOffset PickupAt
-}
-class AvailabilityWindow {
-  +Guid Id
-  +DayOfWeek Day
-  +TimeOnly StartsAt
-  +TimeOnly EndsAt
-}
-
-abstract class MakeRequestCommand {
+class MessageThread {
+  +Guid RequestId
   +Guid ListingId
-  +string Message
+  +Guid OwnerId
+  +Guid RequesterId
+  +IsParty(memberId: Guid): bool
 }
+ListingRequest --> RequestStatus : holds
+ListingRequest "1" *-- "0..1" LoanRequestTerms : owns
+ListingRequest "1" <-- "0..1" MessageThread : arises from acceptance
+
 class MakeLoanRequestCommand {
-  +DateOnly PickupOn
-  +DateOnly ReturnBy
+  +Guid ListingId
+  +DateOnly? PickupOn
+  +DateOnly? ReturnBy
   +bool LoanAcknowledged
 }
-class MakeGiftRequestCommand {
-  +DateTimeOffset PickupAt
+class MakeLoanRequestCommandHandler {
+  +Handle(command: MakeLoanRequestCommand): Task<MadeRequestResult>
 }
-class MakePurchaseRequestCommand {
-  +DateTimeOffset PickupAt
-}
-class MakeHelpRequestCommand {
-  +Guid AvailabilityWindowId
-}
-
-class RequestEligibilityPolicy {
-  +EnsureNotOwnListing(Listing, Guid) : void
-  +EnsureListingActive(Listing) : void
-  +EnsureKindMatchesEndpoint(Listing, ListingKind) : void
-  +EnsureNoOpenRequest(Guid, Guid) : void
-}
-class Listing {
-  +Guid Id
-  +Guid OwnerId
-  +ListingKind Kind
-  +ListingStatus Status
-}
-
-MakeRequestCommand <|-- MakeLoanRequestCommand
-MakeRequestCommand <|-- MakeGiftRequestCommand
-MakeRequestCommand <|-- MakePurchaseRequestCommand
-MakeRequestCommand <|-- MakeHelpRequestCommand
-
-ListingRequest --> RequestStatus : holds
-ListingRequest *-- LoanTerms : composes for Lend
-ListingRequest *-- PickupTerms : composes for Give and Sell
-ListingRequest --> AvailabilityWindow : chosen for Help
-RequestEligibilityPolicy ..> Listing : inspects
-RequestEligibilityPolicy ..> ListingRequest : guards creation of
+MakeLoanRequestCommandHandler ..> MakeLoanRequestCommand : handles
+MakeLoanRequestCommandHandler ..> ListingRequest : creates
 @enduml

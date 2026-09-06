@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Loading the board
+title UML sequence behaviour - Browse the board: load
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,34 +15,37 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "BoardComponent" as page
-  participant "BoardStore" as store
-  participant "ListingsApi" as client
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "BoardComponent / PlacardComponent" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "BoardController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "BoardController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
+box "Backend - Barnabas.Application and Domain" #ECFDF3
   participant "GetBoardQueryHandler" as handler
+  participant "Listing / Member" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Open the board
-page -> store : Read the listings signal
-store -> client : Request the board
-client -> controller : GET /board
-controller -> handler : Send GetBoardQuery
-handler -> db : Read active listings for the congregation
-note over db : The congregation predicate comes from the\nglobal filter described in platform/scope-queries,\nnot from this handler.
-db --> handler : Listings with owner and neighbourhood
-handler -> handler : Project to BoardListingDto, per L2-042
-handler --> controller : BoardPage with per-kind counts
-controller --> client : 200 OK
-client --> store : Set the listings signal
-store --> page : Listings
-page --> actor : A mosaic of placards, each naming its kind in text
-note over page : L2-044 requires the kind be readable without\ncolour, so each placard carries the word as well\nas the field it sits on.
+actor -> page : Open screen
+page -> client : Load; set loading signal
+client -> api : GET /board?kind=Lend
+api -> api : Validate JWT and live session
+api -> handler : Send GetBoardQuery
+handler -> db : Active congregation listings; optional kind; ordered cursor page [L2-042, L2-043]
+db --> handler : Scoped rows
+handler --> api : BoardPage
+api --> client : 200 / typed result
+client --> page : Set result and clear loading
+alt Empty collection
+  page --> actor : Explain empty state
+else Rows available
+  page --> actor : Present rows and destinations
+end
+opt Transport or server failure
+  client --> page : Failure; retain retry action
+  page --> actor : Explain failure; retry reloads the query
+end
 @enduml

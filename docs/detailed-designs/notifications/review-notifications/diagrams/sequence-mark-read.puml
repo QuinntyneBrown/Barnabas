@@ -1,0 +1,41 @@
+@startuml
+title UML sequence behaviour - Review notifications: mark read
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "NotificationsComponent / application shell (planned)" as page
+  participant "INotificationService / NOTIFICATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "NotificationsController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Notification query/read handlers (planned)" as handler
+  participant "Notification" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Mark all read
+page -> client : markAllRead()
+client -> api : POST /notifications/read-all
+api -> handler : MarkAllNotificationsReadCommand
+handler -> db : Set recipient ReadAt through server cutoff [L2-073]
+db --> handler : Updated rows; newer rows unchanged
+handler --> api : Current unread count
+api --> client : 200
+client --> page : Update shared signal; hide badge when zero
+@enduml

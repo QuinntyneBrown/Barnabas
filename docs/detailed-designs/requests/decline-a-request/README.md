@@ -2,72 +2,54 @@
 
 ## Overview
 
-A request against a listing sits in the `Pending` state until the listing's owner decides it. This feature covers the negative decision: the owner cannot or does not wish to fulfil the ask, and records that.
+Barnabas is a private board where church congregation members offer goods or time through listings.
 
-Declining is a deliberate state change rather than a deletion. The request moves to `Declined` and is retained, so the requester can see what became of their ask and so a member is not left waiting on a request that will never be answered. A silently discarded request would be worse than a declined one.
+A **pending request** — ask awaiting the listing owner's decision — can become Accepted or Declined once. Declining retains the request with a Declined status and creates no message thread.
 
-Declining opens no message thread. A thread in Barnabas exists only as the consequence of an accepted request, which is what keeps every conversation attached to a listing both members agreed to discuss. A declined request creates no obligation and no follow-up task, so it needs no place to talk.
-
-The decision requires confirmation before it is sent. A decline cannot be undone by the owner, and the requester is notified of it, so the action is separated from an accidental press.
-
-A request is decided once. A request that already holds a decision accepts no second one.
+The decision belongs to the listing owner within the congregation. The owner confirms before the command is sent. Cancellation leaves the request pending.
 
 ## Description
 
-The slice runs from the inbox screen to the database.
+**Implementation boundary: Existing decision; planned notification integration.**
 
-- **`IncomingRequestsComponent`** — Angular page component offering the decline action on each pending row, described further in the *Review incoming requests* design.
-- **`ConfirmDeclineDialog`** — dialog component requiring the owner to confirm before the decision is sent. It is a native `dialog` element, so it stays closed and harmless when scripting is unavailable.
-- **`IRequestsApi`** and **`RequestsApi`** — the interface the component depends on and its typed HTTP client implementation.
-- **`RequestsController`** — ASP.NET Core controller exposing `POST /requests/{requestId}/decline`. It authenticates the caller, applies the endpoint policy, and dispatches the command.
-- **`DeclineRequestCommand`** — request object carrying the target `RequestId`. The deciding member is taken from the session.
-- **`DeclineRequestCommandHandler`** — MediatR handler holding the application logic. It loads the request within the caller's congregation, applies the decline, and commits in one unit of work.
-- **`DeclineRequestResult`** — result carrying the request identifier and its resulting status.
-- **`ListingRequest`** — domain entity owning the request state machine. Its `Decline()` method enforces that only a `Pending` request transitions.
-- **`RequestStatus`** — enumeration of the states a request holds: `Pending`, `Accepted`, `Declined`.
-- **`RequestAlreadyDecidedException`** — raised by `ListingRequest` when a decision is applied to a request that already holds one. The controller maps it to `409`.
+`IncomingRequestsComponent` calls `RequestStore.decline`, which consumes `IRequestService` through `REQUEST_SERVICE`. `RequestsController` dispatches `DeclineRequestCommand(RequestId)` from `POST /requests/{requestId}/decline`. The command declares `IRequireOwnership<RequestOwnership>`; `RequestOwnershipLookup` resolves ownership through the listing. Same-congregation non-owners receive 403; missing and foreign identifiers receive 404.
 
-The command carries no reason. A reason would be shown to the requester, and a member declining a neighbour's ask inside their own congregation is better served by a private message than by a recorded justification. Should a reason later prove necessary, it belongs on this command.
+`DeclineRequestCommandHandler` loads `ListingRequest` and calls `Decline(asOf)`. `ListingRequest.RowVersion` is a SQL Server `byte[]` row version. The domain rejects a previously decided request through `RequestAlreadyDecidedException`, and concurrency failures return 409 through `ProblemDetailsExceptionHandler`. Error mapping belongs to that exception handler, not the controller.
+
+The handler changes only the request state. `ConfirmDialogComponent` is the shared confirmation primitive; there is no ConfirmDeclineDialog type. `DeclineRequestResult` returns `RequestId` and Status. The requester sees Declined in the outgoing inbox. The command has no decline-reason field because the requirements specify none. A declined request cannot later be accepted, and a new eligible request is a separate record.
+
+Decision notifications are a planned addition in [receive notifications](../../notifications/receive-notifications/README.md). The target commits an enabled notification with the decision and, on acceptance, the thread. A failed save produces no notification. The current acceptance handler maps all `DbUpdateException` instances to a decision conflict; the target narrows that mapping to the expected uniqueness violation so storage outages remain server failures. Stale decisions refresh the affected inbox row and explain the conflict instead of claiming success.
+
+**Source anchors.** [DeclineRequestCommandHandler.cs](../../../../backend/src/Barnabas.Application/Requests/DeclineRequest/DeclineRequestCommandHandler.cs), [ListingRequestConfiguration.cs](../../../../backend/src/Barnabas.Infrastructure/Persistence/Configurations/ListingRequestConfiguration.cs), [MessageThreadConfiguration.cs](../../../../backend/src/Barnabas.Infrastructure/Persistence/Configurations/MessageThreadConfiguration.cs).
+
+**Acceptance verification.** [L2-061](../../../specs/L2.md#l2-061-decline-a-request): API AC 1, 4; E2E AC 2, 3. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-061` | `L1-009` | 1 | Declining shall set the request to `Declined`, require confirmation, and shall not create a message thread. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-061` | `L1-009` | Declining shall set the request to `Declined`, require confirmation, and shall not create a message thread. |
 
 ## Diagrams
 
-### System context
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-The owner declines a request made by another member of the same congregation. Barnabas notifies the requester of the decision through an external email provider.
+![C4 context view for decline a request](diagrams/c4-context.png)
 
-![C4 system context for declining a request](diagrams/c4-context.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Containers
+![C4 container view for decline a request](diagrams/c4-container.png)
 
-The decision travels from the Barnabas web application to the Barnabas API, which writes the request state to the Barnabas database and queues the requester's notification.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![C4 container view for declining a request](diagrams/c4-container.png)
+![C4 component view for decline a request](diagrams/c4-component.png)
 
-### Components
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-`RequestsController` dispatches one command. `DeclineRequestCommandHandler` mutates `ListingRequest` and persists it. No thread component participates.
+![Class structure for decline a request](diagrams/class-structure.png)
 
-![C4 component view for declining a request](diagrams/c4-component.png)
+The decision and its dependent writes commit together. The request row version settles a simultaneous accept and decline.
 
-### Class structure
-
-`ListingRequest` owns the transition and raises `RequestAlreadyDecidedException` on a second decision. The structure is deliberately narrower than the accept path, which also creates a `MessageThread`.
-
-![Class diagram for declining a request](diagrams/class-structure.png)
-
-### Behaviour — decline a request
-
-The screen requires the confirmation `L2-061` calls for before any call is made. The handler then applies the decline transition and commits. No thread is opened at any point on this path.
-
-![Sequence diagram for declining a request](diagrams/sequence-decline.png)
+![Sequence for decline](diagrams/sequence-decline.png)

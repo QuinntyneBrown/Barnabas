@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour - Join a congregation: await approval
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Prospective member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "JoinInviteComponent / CreateProfileComponent / AwaitingApprovalComponent (planned)" as page
+  participant "IInvitationService / INVITATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "InvitesController / JoiningController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "RedeemInviteCodeCommandHandler / SubmitJoiningProfileCommandHandler (planned)" as handler
+  participant "InviteCode / JoiningSession / Member" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Sign in while pending
+page -> client : Obtain session and current membership status
+client -> api : GET /members/me/status (planned)
+api -> handler : Read current member state
+handler -> db : Scoped Member
+db --> handler : AwaitingApproval and congregation name
+handler --> api : Status DTO
+api --> client : 200
+client --> page : AwaitingApprovalComponent [L2-011]
+client -> api : GET /board
+api --> client : 403; pending member cannot read board
+note over handler, db : A moderator can change state to Approved
+actor -> page : Next board visit
+page -> client : Refresh current status before routing
+client -> api : GET /members/me/status
+api --> client : Approved after moderator decision
+client --> page : Board becomes reachable
+@enduml

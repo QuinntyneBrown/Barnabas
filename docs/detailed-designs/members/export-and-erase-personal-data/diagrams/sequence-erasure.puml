@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour - Export and erase personal data: erasure
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "DataSettingsComponent (planned)" as page
+  participant "IDataRightsService / DATA_RIGHTS_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "DataRightsController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "ExportMemberDataQueryHandler / EraseMemberDataCommandHandler (planned)" as handler
+  participant "MemberErasure / Member data" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Request erasure
+page -> client : requestErasure()
+client -> api : POST /members/me/erasure; identity or restricted capability
+api -> handler : RequestMemberErasureCommand [L2-101]
+handler -> db : Insert or find member-bound erasure work
+db --> handler : Durable request
+handler --> api : Request status
+api --> client : 202
+client --> page : Show pending erasure
+handler -> db : Worker loads repeatable batch
+db --> handler : Subject records
+handler -> entity : Apply documented removal/anonymisation policy
+note over handler : Deadline, retained relations, and backups: TO SUPPLY
+handler -> db : Persist batch and progress
+alt All required stores complete
+  db --> handler : Completion confirmed
+  handler -> entity : Mark Completed
+  handler -> db : Persist completion time
+else Store failure
+  db --> handler : Safe failure
+  handler -> db : Retain retryable progress; no completion claim
+end
+@enduml

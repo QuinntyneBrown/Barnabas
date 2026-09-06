@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour - Receive notifications: request notification
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "Request/message pages / planned NotificationsComponent" as page
+  participant "IRequestService / IThreadService / planned INotificationService" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "RequestsController / ThreadsController" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Source command handlers / planned NotificationWriter" as handler
+  participant "Notification / NotificationPreference" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Send eligible request
+page -> client : Kind-specific request method
+client -> api : POST /listings/{id}/requests/{kind}
+api -> handler : Validated request command
+handler -> db : Load listing owner and preference
+db --> handler : Owner and enabled state
+handler -> entity : Stage request and enabled owner notification [L2-070]
+handler -> db : Commit request and unique event/recipient notification
+db --> handler : Both committed or both rolled back
+handler --> api : Request result
+api --> client : 201
+client --> page : Confirm request
+@enduml

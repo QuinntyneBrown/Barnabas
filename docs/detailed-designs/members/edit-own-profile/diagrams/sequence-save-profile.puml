@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour - Edit own profile: save profile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ProfileSettingsComponent / MemberProfileFormComponent (planned)" as page
+  participant "IMemberService / MEMBER_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "MembersController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetOwnProfileQueryHandler / EditOwnProfileCommandHandler (planned)" as handler
+  participant "Member / congregation choices" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Edit profile and save
+page -> client : saveProfile(draft)
+client -> api : PUT /members/me
+api -> handler : EditOwnProfileCommand; current member only
+handler -> db : Read congregation choices
+db --> handler : Ordered neighbourhoods and allowed help tags
+alt Description exceeds 1000 or invalid choice
+  handler --> api : 400 naming field [L2-021, L2-022]
+  api --> client : Field errors
+  client --> page : Preserve draft
+else Valid
+  handler -> entity : Set editable profile and help tags [L2-023]
+  handler -> db : Save with member rowversion
+  db --> handler : Commit
+  handler --> api : Updated profile
+  api --> client : 200
+  client --> page : Refresh signals and show saved confirmation [L2-021]
+end
+@enduml

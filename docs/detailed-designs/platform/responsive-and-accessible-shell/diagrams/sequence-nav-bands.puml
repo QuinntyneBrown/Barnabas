@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — The five destinations at every viewport band
+title UML sequence behaviour - Use the responsive and accessible shell: nav bands
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,28 +15,26 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "ViewportService" as vp
-  participant "AppShellComponent" as shell
-  participant "PrimaryNavComponent" as primary
-  participant "BottomNavComponent" as bottom
-  participant "NavDestinations" as nav
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "AppShellComponent / PublicShellComponent" as page
+  participant "Viewport contract (planned) / browser events" as client
 end box
-
-actor -> shell : Open any screen
-shell -> vp : Read the current band
-alt band is Medium or wider
-  vp --> shell : Medium, Large, or ExtraLarge
-  shell -> primary : Render with the destinations and the current one
-  primary -> nav : Read the ordered list
-  nav --> primary : Board, Search, Post, Inbox, You
-  primary --> actor : Five destinations in the header
-else band is ExtraSmall or Small
-  vp --> shell : ExtraSmall or Small
-  shell -> bottom : Render with the destinations and the current one
-  bottom -> nav : Read the same ordered list
-  nav --> bottom : Board, Search, Post, Inbox, You
-  bottom --> actor : The same five, in the same order, in the bottom bar
-end
-note over nav : L2-109 is satisfied structurally: both navigations\nread one list, so a destination cannot exist at\none band and be missing at another.
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "No API call for layout or focus" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "No backend behaviour for layout or focus" as handler
+  participant "Navigation destinations / Band" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open screen at 375, 576, 768, 992, or 1200 px [L2-108]
+page -> client : Browser media queries / viewport signal
+client --> page : Current Band and reduced-motion preference
+page -> page : Arrange primary or bottom navigation; preserve ordered destinations [L2-109]
+page -> page : Fit content without horizontal overflow or clipped controls
+page -> page : Size touch controls; suppress nonessential motion when requested [L2-110, L2-114]
+page --> actor : Reachable destinations and readable content
+note over api, db : No backend interaction for this behaviour
 @enduml

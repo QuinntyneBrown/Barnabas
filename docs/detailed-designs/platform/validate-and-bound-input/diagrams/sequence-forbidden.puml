@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — A field the command forbids, and one it merely does not know
+title UML sequence behaviour - Validate and bound input: forbidden
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,34 +15,30 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "PostLendComponent" as page
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "PostLendComponent / fieldErrors" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ListingsController" as controller
-  participant "ForbiddenFieldInspector" as inspector
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "RequestBodyLimitMiddleware / ForbiddenFieldInspector" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "PostLendListingCommandHandler" as handler
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "ValidationBehaviour / PostLendListingCommandValidator" as handler
+  participant "PostLendListingCommand / Listing" as entity
 end box
-
-alt the body carries a forbidden field
-  actor -> page : Post a Lend listing carrying a price
-  page -> controller : POST /listings/lend with { title, price }
-  controller -> inspector : Inspect the raw body against the command's forbidden names
-  inspector -> inspector : price is forbidden for a Lend listing, per L2-027
-  inspector --> controller : Failure on price
-  controller --> page : 400 naming price
-  page --> actor : Explain a Lend listing carries no price
-  note over inspector : Inspection reads the raw payload. After binding\nthe value is already gone, because the command\nhas no property to hold it.
-else the body carries an unrecognised field
-  actor -> page : Post a listing carrying a superseded field
-  page -> controller : POST /listings/lend with { title, legacyTag }
-  controller -> inspector : Inspect
-  inspector --> controller : No forbidden field present
-  controller -> handler : Bind, discarding legacyTag, and dispatch
-  note over controller : L2-096 keeps an unrecognised field harmless,\nso an older client is not broken by a deployment.
-  handler --> controller : Listing identifier
-  controller --> page : 201 Created
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : POST Lend listing with price and legacyField
+api -> api : ForbiddenFieldInspector reads raw property names
+alt price present
+  api --> client : 400 naming price [L2-096 AC5]
+else Only legacyField present
+  api -> api : JSON binding ignores unknown legacyField [L2-096 AC4]
+  api -> handler : Validated known fields only
+  handler -> db : Persist accepted model
+  db --> handler : Commit; no legacyField stored
+  handler --> api : Typed result
+  api --> client : Success
 end
 @enduml

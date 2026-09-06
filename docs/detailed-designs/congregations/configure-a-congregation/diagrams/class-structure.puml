@@ -1,0 +1,46 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Configure a congregation
+class Congregation {
+  +Guid Id
+  +string Name
+  +IReadOnlyList<string> Neighbourhoods
+  +HasNeighbourhood(name: string): bool
+}
+class ProvisionCongregationCommand <<planned>> {
+  +string Name
+  +string Slug
+}
+class ConfigureCongregationCommand <<planned>> {
+  +Guid CongregationId
+  +string Name
+  +IReadOnlyList<string> Neighbourhoods
+  +byte[] RowVersion
+}
+class CongregationDto <<planned>> {
+  +Guid Id
+  +string Name
+  +IReadOnlyList<string> Neighbourhoods
+}
+ProvisionCongregationCommand ..> Congregation : creates; adds immutable Slug
+ConfigureCongregationCommand ..> Congregation : edits configuration
+CongregationDto ..> Congregation : projects
+@enduml

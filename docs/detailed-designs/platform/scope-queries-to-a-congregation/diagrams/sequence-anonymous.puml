@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Finding a member before any congregation is known
+title UML sequence behaviour - Scope queries to a congregation: anonymous
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,33 +14,30 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Anonymous caller" as actor
-box "Backend — Barnabas API" #D1FADF
-  participant "SessionsController" as controller
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "BoardComponent / ListingDetailComponent" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "RequestSignInLinkCommandHandler" as handler
-  participant "CongregationContext" as ctx
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "BoardController / ListingsController / JWT pipeline" as api
 end box
-box "Backend — Infrastructure" #FFF4E5
-  participant "IAuthenticationStore" as store
-  participant "BarnabasDbContext" as db
-  database "Barnabas database" as sql
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetBoardQueryHandler / scoped command handlers" as handler
+  participant "Listing / ITenantOwned" as entity
 end box
-
-actor -> controller : POST /sessions/link with an email address
-note over ctx : No token is presented, so the context is\nunresolved. There is no congregation to filter by.
-controller -> handler : Send RequestSignInLinkCommand
-handler -> store : Find the member by email address
-store -> sql : SELECT ... FROM Members WHERE EmailAddress = @address
-note over store : The authentication store is the single\nsanctioned bypass of the global filter. It returns\nauthentication records and never business data.
-sql --> store : Member, carrying its congregation
-store --> handler : Member
-handler -> handler : Derive the congregation from the verified record, per L2-014
-== the same request reaches for business data ==
-handler -> db : Query listings
-db -> ctx : Read the current congregation
-ctx --> db : Unresolved
-db --> handler : CongregationContextMissingException
-note over db : L2-088 requires the read be refused rather than\nreturning unfiltered rows. Failing closed is what\nstops the bypass widening beyond authentication.
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : POST /sessions/link
+api -> handler : RequestSignInLinkCommand
+handler -> db : IAuthenticationStore lookup by normalised email
+db --> handler : Authentication member record only
+handler --> api : Accepted
+api --> client : 202
+opt Attempt business read with unresolved congregation
+  handler -> db : Access Listings, Members, Requests, or Threads
+  db --> handler : CongregationContextMissingException [L2-088 AC4]
+  handler --> api : Refused without rows
+end
 @enduml

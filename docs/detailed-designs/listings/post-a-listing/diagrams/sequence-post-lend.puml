@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Posting a Lend listing
+title UML sequence behaviour - Post a listing: post lend
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,39 +15,31 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "ChooseKindComponent" as chooser
-  participant "PostLendComponent" as page
-  participant "ListingsApi" as client
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ChooseKindComponent / per-kind listing pages" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ListingsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ListingsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "PostLendListingCommandHandler" as handler
-  participant "Listing" as entity
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "PostLendListingCommandHandler / planned kind handlers" as handler
+  participant "Listing / LoanTerms / planned AvailabilityWindow" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> chooser : Open the post flow
-chooser --> actor : Offer Lend, Give, Sell, and Help, with no detail fields
-note over chooser : L2-026 requires the kind be chosen first,\nso the form that follows asks only for what\nthat kind needs.
-actor -> chooser : Choose Lend
-chooser -> page : Open the Lend form
-page --> actor : Title, description, category, return date, condition, photo
-note over page : No price field is rendered, per L2-027.
-actor -> page : Post the listing
-page -> client : Build the typed request
-client -> controller : POST /listings/lend
-controller -> handler : Send PostLendListingCommand
-handler -> entity : Create with kind Lend and its loan terms
+actor -> page : Open kind chooser; choose Lend [L2-026]
+page --> actor : Show common fields and return date; no price [L2-027]
+actor -> page : Submit details
+page -> client : postLend(values)
+client -> api : POST /listings/lend
+api -> handler : PostLendListingCommand after validation
+handler -> entity : Listing.PostLend(owner and congregation from context)
 entity --> handler : Active listing
-handler -> db : Save, stamping the caller's congregation and ownership
-db --> handler : Commit result
-handler --> controller : Listing identifier
-controller --> client : 201 Created
-client --> page : Feature result
-page --> actor : Confirm the listing is on the board, per L2-033
+handler -> db : Add and SaveChangesAsync
+db --> handler : Commit
+handler --> api : PostedListingResult
+api --> client : 201 and ListingId
+client --> page : Show confirmation and three destinations [L2-033]
 @enduml

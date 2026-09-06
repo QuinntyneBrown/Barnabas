@@ -1,59 +1,48 @@
 @startuml
-!pragma layout smetana
-title Class structure — Scope queries to a congregation
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Scope queries to a congregation
+interface ITenantOwned {
+  +Guid CongregationId
+}
 interface ICongregationContext {
   +bool IsResolved
   +Guid CongregationId
   +Guid MemberId
 }
-class CongregationContext {
-  +bool IsResolved
-  +Guid CongregationId
-  +Guid MemberId
-}
-interface ITenantOwned {
-  +Guid CongregationId
-}
 class BarnabasDbContext {
-  +DbSet<Listing> Listings
-  +DbSet<ListingRequest> Requests
-  +DbSet<MessageThread> Threads
-  #OnModelCreating(ModelBuilder) : void
-  -ApplyCongregationFilter(ModelBuilder) : void
+  +SaveChangesAsync(): Task<int>
+}
+class CongregationContext
+class Listing {
+  +Guid CongregationId
+  +Guid OwnerId
 }
 interface IAuthenticationStore {
-  +FindMemberByEmailAddress(string) : Member
-  +FindSignInTokenByHash(string) : SignInToken
-  +FindSessionById(Guid) : Session
+  +FindMemberByIdAsync(id: Guid): Task<Member>
 }
-class CongregationContextMissingException {
-  +string EntityName
-}
-class Listing {
-  +Guid Id
-  +Guid CongregationId
-}
-class ListingRequest {
-  +Guid Id
-  +Guid CongregationId
-}
-class MessageThread {
-  +Guid Id
-  +Guid CongregationId
-}
-
-ICongregationContext <|.. CongregationContext
-ITenantOwned <|.. Listing
-ITenantOwned <|.. ListingRequest
-ITenantOwned <|.. MessageThread
-BarnabasDbContext --> ICongregationContext : reads current congregation from
-BarnabasDbContext ..> ITenantOwned : filters every set of
-BarnabasDbContext ..> CongregationContextMissingException : raises when unresolved
-IAuthenticationStore ..> BarnabasDbContext : the one sanctioned bypass
+CongregationContext ..|> ICongregationContext
+BarnabasDbContext --> ICongregationContext : scopes instance queries
+Listing ..|> ITenantOwned
+BarnabasDbContext ..> Listing : filters / persists
+class AuthenticationStore
+AuthenticationStore ..|> IAuthenticationStore
+AuthenticationStore --> BarnabasDbContext : deliberate unfiltered authentication lookups
 @enduml

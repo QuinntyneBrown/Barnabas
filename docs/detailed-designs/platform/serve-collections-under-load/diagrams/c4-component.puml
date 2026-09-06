@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Component - Serve collections under load
+Container(web, "BoardComponent / collection pages", "Angular barnabas application", "Screen composition; signal state behind service contracts")
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "BoardController / collection controllers", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "GetBoardQueryHandler / planned collection query handlers", "Application", "Serve collections under load")
+  Component(entity, "BoardCursor / bounded collection DTOs", "Domain / application contracts", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
+}
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through IListingService / planned collection contracts", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
+@enduml

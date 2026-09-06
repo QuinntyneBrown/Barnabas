@@ -1,52 +1,40 @@
 @startuml
-!pragma layout smetana
-title Class structure — Review incoming requests
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Review incoming requests
 class GetIncomingRequestsQuery {
-  +Guid CallerId
-  +Guid CongregationId
+  +GetIncomingRequestsQuery()
 }
 class GetIncomingRequestsQueryHandler {
-  +Handle(GetIncomingRequestsQuery) : IncomingRequestDto[]
+  +Handle(query: GetIncomingRequestsQuery): Task<IReadOnlyList<IncomingRequestDto>>
 }
 class IncomingRequestDto {
   +Guid RequestId
-  +Guid RequesterId
-  +string RequesterDisplayName
   +Guid ListingId
-  +string ListingTitle
-  +ListingKind Kind
-  +string Message
-  +RequestStatus Status
-  +DateTimeOffset CreatedOn
-}
-class ListingRequest {
-  +Guid Id
-  +Guid ListingId
-  +Guid RequesterId
+  +string Terms
   +RequestStatus Status
 }
-class Listing {
-  +Guid Id
-  +Guid OwnerId
-  +ListingKind Kind
-  +string Title
+class RequestStore {
+  +loadIncoming(): Promise<void>
 }
-enum ListingKind {
-  Lend
-  Give
-  Sell
-  Help
-}
-
 GetIncomingRequestsQueryHandler ..> GetIncomingRequestsQuery : handles
-GetIncomingRequestsQueryHandler --> IncomingRequestDto : returns
-IncomingRequestDto ..> ListingRequest : projects
-IncomingRequestDto ..> Listing : projects
-Listing --> ListingKind : holds
+GetIncomingRequestsQueryHandler ..> IncomingRequestDto : projects
+RequestStore ..> IncomingRequestDto : receives through IRequestService
 @enduml

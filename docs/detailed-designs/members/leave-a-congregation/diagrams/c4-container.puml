@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Leave a congregation
+Person(actor, "Member", "Leave a congregation")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "ProfileSettingsComponent / ConfirmDialogComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Leave a congregation")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Member / Listing / Session")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IMemberService / MEMBER_SERVICE (planned)", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

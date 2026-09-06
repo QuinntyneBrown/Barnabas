@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour - Secure transport and tokens: transport
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "SessionStore / routed pages" as page
+  participant "ISessionService / TOKEN_SERVICE" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "HTTPS hosting pipeline / SessionsController" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "RefreshSessionCommandHandler / JwtIssuer" as handler
+  participant "Session / RefreshToken" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open HTTP URL
+page -> api : HTTP request to public host
+api --> page : Redirect to HTTPS; Strict-Transport-Security [L2-100]
+page -> api : Follow HTTPS destination
+api -> handler : Issue access token for live session
+handler -> entity : Read session identity
+entity --> handler : Member and congregation
+handler --> api : Signed token with lifetime <= 60 minutes
+api --> client : HTTPS response; Secure HttpOnly refresh cookie
+client --> page : Keep access token in memory
+@enduml

@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour - End a session: renew
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "YouComponent / ConfirmDialogComponent" as page
+  participant "ISessionService / SESSION_SERVICE" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "SessionsController" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "RefreshSessionCommandHandler / SignOutCommandHandler" as handler
+  participant "Session / RefreshToken" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+page -> client : Restore or renew session
+client -> api : POST /sessions/refresh; HttpOnly cookie
+api -> handler : RefreshSessionCommand
+handler -> db : Load token and Session
+db --> handler : Current state
+handler -> entity : IsActive(now) and IsLive(now) [L2-018]
+alt Expired, revoked, or absent
+  handler --> api : RefreshTokenNotActiveException
+  api --> client : 401
+  client --> page : Clear session; route to sign-in
+else Live
+  handler -> db : Target transaction: conditional rotation and replacement insert
+  alt Concurrent caller already rotated
+    db --> handler : Zero rows; roll back
+    handler --> api : 401 [L2-018 AC4]
+  else Rotation wins
+    db --> handler : Commit; other sessions unchanged
+    handler --> api : New access and refresh token pair
+    api --> client : 200; replace refresh cookie
+    client --> page : Set access-token signal
+  end
+end
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Designate moderators
+Person(actor, "Administrator", "Designate moderators")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "ModeratorDesignationComponent / YouComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Designate moderators")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Member / MemberRole")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through ICongregationService / CONGREGATION_SERVICE (planned)", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

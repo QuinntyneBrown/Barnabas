@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Use the responsive and accessible shell
+Person(actor, "Member", "Uses keyboard, touch, or assistive technology")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "AppShellComponent / PublicShellComponent")
+}
+Rel(actor, web, "Navigates and reads screens", "Browser")
+@enduml

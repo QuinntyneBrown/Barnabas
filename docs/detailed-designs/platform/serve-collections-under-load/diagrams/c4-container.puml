@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Serve collections under load
+Person(actor, "Member", "Serve collections under load")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "BoardComponent / collection pages")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Serve collections under load")
+  ContainerDb(db, "Barnabas database", "SQL Server", "BoardCursor / bounded collection DTOs")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IListingService / planned collection contracts", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

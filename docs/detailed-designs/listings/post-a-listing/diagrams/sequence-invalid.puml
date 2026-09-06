@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — A listing that fails its bounds
+title UML sequence behaviour - Post a listing: invalid
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,30 +15,30 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "PostLendComponent" as page
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ChooseKindComponent / per-kind listing pages" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ListingsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ListingsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "ValidationBehaviour" as behaviour
-  participant "PostLendListingCommandHandler" as handler
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "PostLendListingCommandHandler / planned kind handlers" as handler
+  participant "Listing / LoanTerms / planned AvailabilityWindow" as entity
 end box
-
-actor -> page : Post with an empty title and a 5000-character description
-page -> controller : POST /listings/lend
-controller -> behaviour : Send PostLendListingCommand
-behaviour -> behaviour : Run the Lend validator, per L2-031
-alt every field is within bounds
-  behaviour -> handler : Invoke the handler
-  handler --> controller : Listing identifier
-  controller --> page : 201 Created
-else one or more fields are not
-  behaviour --> controller : Failures on Title and Description
-  controller --> page : 400 with the failing field names
-  page -> page : Mark each field and move focus to the first
-  page --> actor : Errors shown against their fields, the form still filled in
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Submit incomplete listing
+page -> client : postLend(values)
+client -> api : POST /listings/lend
+alt Payload contains price
+  api --> client : ForbiddenFieldInspector: 400 naming price [L2-027]
+else Bound violated
+  api -> handler : ValidationBehaviour runs command validator [L2-031]
+  handler --> api : ValidationException
+  api --> client : 400 with field errors
 end
-note over behaviour : The mechanism is described once in\nplatform/validate-and-bound-input; this feature\nonly declares the bounds a listing accepts.
+client --> page : Preserve input; mark fields; focus first invalid field
+note over db : No listing is stored
 @enduml

@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour - Configure a congregation: configure
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Administrator / congregation member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "Planned CongregationConfigurationComponent / BoardComponent" as page
+  participant "ICongregationService / CONGREGATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "CongregationsController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "ProvisionCongregationCommandHandler / ConfigureCongregationCommandHandler (planned)" as handler
+  participant "Congregation" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Save neighbourhood names in order
+page -> client : configure(congregationId, values)
+client -> api : PUT /congregations/{id}
+api -> handler : ConfigureCongregationCommand; Administrator
+alt Payload changes slug
+  handler --> api : 400 naming slug; no mutation [L2-001 AC3]
+else Valid configuration
+  handler -> entity : Apply name and ordered neighbourhoods [L2-002]
+  handler -> db : Save with rowversion
+  db --> handler : Commit
+  handler --> api : Current configuration
+  api --> client : 200
+  client --> page : Display saved order
+end
+page -> client : current()
+client -> api : GET /congregations/current
+api -> handler : Congregation id from member context
+handler -> db : Read only current congregation
+db --> handler : Name and ordered choices
+handler --> api : CongregationDto
+api --> client : 200
+client --> page : Board heading names this congregation [L2-004]
+@enduml

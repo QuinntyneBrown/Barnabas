@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour - Limit abuse: rate limit
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "SignInComponent / JoinInviteComponent / feature pages" as page
+  participant "Typed service contracts / error interceptor" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "Request admission middleware (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "IRequestAdmissionService (planned)" as handler
+  participant "RateLimitBucket / AdmissionDecision (planned)" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : Request from source
+api -> handler : TryAdmit(trusted source key, endpoint)
+handler -> db : Conditional shared-bucket increment [L2-099]
+db --> handler : Admission and next permitted time
+alt Within documented limit
+  handler --> api : Admitted
+  api -> entity : Continue feature pipeline
+  entity --> api : Feature response
+  api --> client : Normal result
+else Limit exceeded
+  handler --> api : Rejected with wait
+  api --> client : 429 and Retry-After [L2-099]
+  client --> page : Preserve values; indicate retry time
+else Admission store unavailable
+  handler --> api : Admission unavailable
+  api --> client : Safe 503
+end
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Display member text safely
+Person(actor, "Member", "Display member text safely")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "Board, profile, thread, and moderation pages")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Display member text safely")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Member-supplied string values")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through Typed feature service contracts", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

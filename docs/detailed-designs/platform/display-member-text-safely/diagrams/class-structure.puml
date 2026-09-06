@@ -1,0 +1,42 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Display member text safely
+class Listing {
+  +string Title
+  +string Description
+}
+class Message {
+  +string Body
+}
+class BoardListingDto {
+  +string Title
+}
+class GetBoardQueryHandler {
+  +Handle(query: GetBoardQuery): Task<BoardPage>
+}
+class SearchListingsQueryHandler <<planned>> {
+  +Handle(query: SearchListingsQuery): Task<SearchPage>
+}
+GetBoardQueryHandler --> Listing : projects literal title
+SearchListingsQueryHandler --> Listing : parameterised literal matching
+BoardListingDto ..> Listing : no executable HTML
+Message ..> Listing : context through request and thread
+@enduml

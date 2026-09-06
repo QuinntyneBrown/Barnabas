@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour - Display member text safely: literal search
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "Board, profile, thread, and moderation pages" as page
+  participant "Typed feature service contracts" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "JSON response pipeline / feature controllers" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Feature queries and commands" as handler
+  participant "Member-supplied string values" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open screen
+page -> client : Load; set loading signal
+client -> api : GET /search?term=control-characters
+api -> api : Validate JWT and live session
+api -> handler : Send SearchListingsQuery
+handler -> db : Parameterised literal matching; escape LIKE wildcard characters if used [L2-098]
+db --> handler : Scoped rows
+handler --> api : SearchPage; unchanged stored values
+api --> client : 200 / typed result
+client --> page : Set result and clear loading
+alt Empty collection
+  page --> actor : Explain empty state
+else Rows available
+  page --> actor : Present rows and destinations
+end
+opt Transport or server failure
+  client --> page : Failure; retain retry action
+  page --> actor : Explain failure; retry reloads the query
+end
+@enduml

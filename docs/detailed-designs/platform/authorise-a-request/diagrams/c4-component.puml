@@ -1,22 +1,18 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Component>
 LAYOUT_WITH_LEGEND()
-title Components — Authorise a request
-
+title Component - Authorise a request
+Container(web, "ListingDetailComponent / IncomingRequestsComponent", "Angular barnabas application", "Screen composition; signal state behind service contracts")
 Container_Boundary(api, "Barnabas API") {
-  Component(jwt, "JwtBearerMiddleware", "ASP.NET Core middleware", "Rejects an absent, malformed, or wrongly signed token")
-  Component(session, "SessionValidator", "Authentication event handler", "Rejects a token whose session has been revoked")
-  Component(controller, "Any controller", "ASP.NET Core controller", "Dispatches the request through MediatR")
-  Component(behaviour, "AuthorisationBehaviour", "MediatR pipeline behaviour", "Applies role and ownership rules before the handler runs")
-  Component(rules, "IRequireRole and IRequireOwnership", "Marker interfaces", "Declare what a request demands")
-  Component(handler, "Any command handler", "MediatR handler", "Runs only for an authorised caller")
-  Component(problem, "ProblemDetailsFactory", "ASP.NET Core", "Renders 401 and 403 without leaking detail")
+  Component(ctrl, "JWT bearer pipeline / ListingsController / RequestsController", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "AuthorisationBehaviour / CloseOutListingCommandHandler", "Application", "Authorise a request")
+  Component(entity, "Session / Listing / RequestOwnership", "Domain / application contracts", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
 }
-Rel(jwt, session, "Hands the validated principal to")
-Rel(session, controller, "Passes an authenticated principal on a live session")
-Rel(controller, behaviour, "Sends the request through the pipeline")
-Rel(behaviour, rules, "Reads the request's declared demands")
-Rel(behaviour, handler, "Invokes when authorised")
-Rel(behaviour, problem, "Raises when not")
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through IListingService / IRequestService", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
 @enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Read and reply
+Person(actor, "Member", "Read and reply")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "ThreadComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Read and reply")
+  ContainerDb(db, "Barnabas database", "SQL Server", "MessageThread / Message / ThreadReadMark")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IThreadService / THREAD_SERVICE", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

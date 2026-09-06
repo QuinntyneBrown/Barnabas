@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Control notifications
+Person(actor, "Member", "Control notifications")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "ProfileSettingsComponent / NotificationPreferenceComponent (planned)")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Control notifications")
+  ContainerDb(db, "Barnabas database", "SQL Server", "NotificationPreference")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through INotificationService / NOTIFICATION_SERVICE (planned)", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

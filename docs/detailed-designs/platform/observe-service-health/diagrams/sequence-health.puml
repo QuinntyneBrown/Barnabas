@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour - Observe service health: health
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "Operator probe client / affected member page" as page
+  participant "Operational HTTP client / feature service contract" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "Health endpoint / CorrelationMiddleware / RequestMetricsMiddleware (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Health checks and request instrumentation (planned)" as handler
+  participant "Health and telemetry records; no domain dependency" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> client : Probe health without credentials
+client -> api : GET /health [L2-116]
+api -> handler : Run configured bounded health checks
+handler -> db : SQL Server readiness probe with timeout
+alt Database available
+  db --> handler : Healthy
+  handler --> api : Dependency names and healthy states
+  api --> client : 200; no configuration
+else Database unavailable
+  db --> handler : Timeout or failure
+  handler --> api : Database unhealthy
+  api --> client : 503; no versions or connection string
+end
+note over api : Public exception conflicts with literal L2-093; reconciliation recorded
+@enduml

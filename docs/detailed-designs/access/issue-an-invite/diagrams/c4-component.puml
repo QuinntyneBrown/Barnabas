@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Component - Issue an invite
+Container(web, "InviteCodeComponent (planned)", "Angular barnabas application", "Screen composition; signal state behind service contracts")
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "InvitesController (planned)", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "IssueInviteCodeCommandHandler / RevokeInviteCodeCommandHandler (planned)", "Application", "Issue an invite")
+  Component(entity, "InviteCode", "Domain", "Feature state and rules")
+  Component(store, "BarnabasDbContext / InvitationStore (planned)", "Infrastructure implementation", "SQL Server persistence")
+}
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through IInvitationService / INVITATION_SERVICE (planned)", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
+@enduml

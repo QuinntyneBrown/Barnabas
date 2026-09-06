@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Component - Display member text safely
+Container(web, "Board, profile, thread, and moderation pages", "Angular barnabas application", "Screen composition; signal state behind service contracts")
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "JSON response pipeline / feature controllers", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "Feature queries and commands", "Application", "Display member text safely")
+  Component(entity, "Member-supplied string values", "Domain / application contracts", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
+}
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through Typed feature service contracts", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour - Join a congregation: submit profile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Prospective member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "JoinInviteComponent / CreateProfileComponent / AwaitingApprovalComponent (planned)" as page
+  participant "IInvitationService / INVITATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "InvitesController / JoiningController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "RedeemInviteCodeCommandHandler / SubmitJoiningProfileCommandHandler (planned)" as handler
+  participant "InviteCode / JoiningSession / Member" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Submit display name and neighbourhood [L2-010]
+page -> client : submitProfile(capability, values)
+client -> api : POST /joining/profile; restricted signed credential
+api -> handler : SubmitJoiningProfileCommand
+handler -> db : Load unused joining session and congregation choices
+db --> handler : Capability-bound context
+alt Missing display name or invalid neighbourhood
+  handler --> api : 400 naming field; no member created
+  api --> client : Validation errors
+  client --> page : Keep screen and values
+else Valid established profile fields
+  note over handler : Email and joining-reason decisions remain TO SUPPLY
+  handler -> entity : Create Member with AwaitingApproval
+  handler -> db : Insert member and bind consumed capability atomically
+  db --> handler : Commit or existing same result
+  handler --> api : Pending membership
+  api --> client : Created or replayed result
+  client --> page : Show congregation and awaiting moderators [L2-011]
+end
+@enduml

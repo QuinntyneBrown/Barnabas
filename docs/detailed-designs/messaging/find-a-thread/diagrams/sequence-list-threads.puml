@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Listing the threads a member is party to
+title UML sequence behaviour - Find a thread: list threads
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,30 +15,37 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "MessagesComponent" as page
-  participant "ThreadsApi" as client
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ThreadsComponent" as page
+  participant "IThreadService / THREAD_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ThreadsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ThreadsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "GetMyThreadsQueryHandler" as handler
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetMyThreadsQueryHandler / AcceptRequestCommandHandler" as handler
+  participant "MessageThread" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Open the Messages section of the inbox
-page -> client : Request my threads
-client -> controller : GET /threads
-controller -> handler : Send GetMyThreadsQuery
-handler -> db : Read threads where the caller is owner or requester
-note over db : A thread the caller is not party to is not\nreturned, per L2-065. The congregation filter\napplies underneath, from platform/scope-queries.
-db --> handler : Threads with their latest message
-handler -> handler : Project to ThreadSummaryDto with the other member and the listing
-handler --> controller : Summaries
-controller --> client : 200 OK
-client --> page : Threads
-page --> actor : Each row naming the other member, the listing, and whether it is unread
+actor -> page : Open screen
+page -> client : Load; set loading signal
+client -> api : GET /threads
+api -> api : Validate JWT and live session
+api -> handler : Send GetMyThreadsQuery
+handler -> db : Threads where caller is owner or requester; scoped joins [L2-065]
+db --> handler : Scoped rows
+handler --> api : ThreadSummaryDto[]
+api --> client : 200 / typed result
+client --> page : Set result and clear loading
+alt Empty collection
+  page --> actor : Explain empty state
+else Rows available
+  page --> actor : Present rows and destinations
+end
+opt Transport or server failure
+  client --> page : Failure; retain retry action
+  page --> actor : Explain failure; retry reloads the query
+end
 @enduml

@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour - Review reported listings: remove listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Moderator" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ModerationQueueComponent / ReportedListingComponent (planned)" as page
+  participant "IModerationService / MODERATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ModerationController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Reported-listing query and decision handlers (planned)" as handler
+  participant "ListingModeration / ListingReport" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Remove flagged listing
+page -> page : Confirm removal [L2-084]
+alt Cancel
+  page --> actor : Queue unchanged
+else Confirm
+  page -> client : removeListing(id)
+  client -> api : POST /moderation/listings/{id}/remove
+  api -> handler : Scoped Moderator policy; RemoveListingCommand
+  handler -> db : Load current moderation state
+  db --> handler : Scoped listing
+  handler -> entity : Set RemovedAt; resolve reports; stage owner notification
+  handler -> db : Commit with rowversion
+  db --> handler : Commit or 409
+  handler --> api : Removal outcome
+  api --> client : 200
+  client --> page : Refresh queue; listing absent from board
+end
+@enduml

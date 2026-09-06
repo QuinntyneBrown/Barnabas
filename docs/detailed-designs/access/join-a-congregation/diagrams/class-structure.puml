@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Join a congregation
+class InviteCode {
+  +Guid CongregationId
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? RedeemedAt
+  +IsRedeemable(asOf: DateTimeOffset): bool
+}
+class JoiningSession <<planned>> {
+  +Guid Id
+  +Guid InviteId
+  +Guid CongregationId
+  +DateTimeOffset ExpiresAt
+  +Guid? MemberId
+}
+class Member {
+  +Guid Id
+  +Guid CongregationId
+  +string DisplayName
+  +string Neighbourhood
+  +MemberStatus Status
+}
+enum MemberStatus {
+  AwaitingApproval
+  Approved
+  Declined
+}
+InviteCode "1" <-- "0..1" JoiningSession : consumes once
+JoiningSession "1" --> "0..1" Member : creates once
+Member --> MemberStatus : approval state
+@enduml

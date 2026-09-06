@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — An authenticated caller acting on another member's resource
+title UML sequence behaviour - Authorise a request: not owner
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,30 +15,36 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Backend — Barnabas API" #D1FADF
-  participant "RequestsController" as controller
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ListingDetailComponent / IncomingRequestsComponent" as page
+  participant "IListingService / IRequestService" as client
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "AuthorisationBehaviour" as behaviour
-  participant "AcceptRequestCommandHandler" as handler
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "JWT bearer pipeline / ListingsController / RequestsController" as api
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "AuthorisationBehaviour / CloseOutListingCommandHandler" as handler
+  participant "Session / Listing / RequestOwnership" as entity
 end box
-
-actor -> controller : POST /requests/{id}/accept
-controller -> behaviour : Send AcceptRequestCommand
-behaviour -> behaviour : Read IRequireOwnership from the command
-behaviour -> db : Load the listing that owns the request
-db --> behaviour : Listing with its owner
-alt caller owns the listing
-  behaviour -> handler : Invoke the handler
-  handler --> behaviour : Result
-  behaviour --> controller : Result
-  controller --> actor : 200 OK
-else caller does not own it
-  behaviour --> controller : L2-094 ownership failure
-  controller --> actor : 403 Forbidden
-  note over behaviour : The handler never runs, so no state\nis read or written for an unauthorised caller.
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : Modify resource
+api -> handler : Validation then AuthorisationBehaviour
+handler -> db : IOwnerLookup within congregation
+db --> handler : Scoped resource or absent
+alt Absent or foreign
+  handler --> api : 404
+else Wrong owner
+  handler --> api : ForbiddenException [L2-094]
+  api --> client : 403
+else Missing required role
+  handler --> api : ForbiddenException [L2-095]
+  api --> client : 403
+else Authorised
+  handler -> entity : Execute declared feature action
+  entity --> handler : Result
+  handler --> api : Feature result
+  api --> client : Success
 end
 @enduml

@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Sending a message
+title UML sequence behaviour - Read and reply: send
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,43 +15,42 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
+box "Frontend - barnabas application and libraries" #E0F2FE
   participant "ThreadComponent" as page
-  participant "ThreadsApi" as client
+  participant "IThreadService / THREAD_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ThreadsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ThreadsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "ValidationBehaviour" as behaviour
-  participant "SendMessageCommandHandler" as handler
-  participant "MessageThread" as thread
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetThreadQueryHandler / SendMessageCommandHandler" as handler
+  participant "MessageThread / Message / ThreadReadMark" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Write a reply and send
-page -> client : Build the typed request
-client -> controller : POST /threads/{id}/messages
-controller -> behaviour : Send SendMessageCommand
-behaviour -> behaviour : Reject an empty or over-long body, per L2-067
-alt the body is within bounds
-  behaviour -> handler : Invoke
-  handler -> thread : Is the caller a party?
-  thread --> handler : Yes
-  handler -> thread : Append the message
-  thread --> handler : Message
-  handler -> db : Save
-  handler --> controller : Message
-  controller --> client : 201 Created
-  client --> page : Append to the messages signal
-  page --> actor : The message in the thread, attributed to them
-  note over page : The message appearing is the confirmation.\nNothing else is shown, because nothing else happened.
-else the body is empty or too long
-  behaviour --> controller : Validation failure
-  controller --> client : 400 Bad Request
-  client --> page : Field error
-  page --> actor : Mark the composer, keeping what was typed
+actor -> page : Send message
+page -> client : send(threadId, body)
+client -> api : POST /threads/{id}/messages
+api -> handler : SendMessageCommand; validate body [L2-067]
+alt Empty or over 4000 characters
+  handler --> api : 400 naming Body
+  api --> client : Validation errors
+  client --> page : Retain draft
+else Valid body
+  handler -> db : Load scoped thread
+  db --> handler : Thread
+  handler -> entity : Append(id, caller, body, now); check party
+  alt Caller not a party
+    entity --> handler : NotAPartyException
+    handler --> api : 404
+  else Party
+    entity --> handler : Message
+    handler -> db : SaveChangesAsync; target enabled recipient notification
+    db --> handler : Commit
+    handler --> api : MessageDto
+    api --> client : 201
+    client --> page : Append returned message and clear draft
+  end
 end
 @enduml

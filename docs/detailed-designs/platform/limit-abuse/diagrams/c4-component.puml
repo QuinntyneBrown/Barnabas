@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Component - Limit abuse
+Container(web, "SignInComponent / JoinInviteComponent / feature pages", "Angular barnabas application", "Screen composition; signal state behind service contracts")
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "Request admission middleware (planned)", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "IRequestAdmissionService (planned)", "Application", "Limit abuse")
+  Component(entity, "RateLimitBucket / AdmissionDecision (planned)", "Domain / application contracts", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
+}
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through Typed service contracts / error interceptor", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
+@enduml

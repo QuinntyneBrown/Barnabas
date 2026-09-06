@@ -1,15 +1,10 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Context>
 LAYOUT_WITH_LEGEND()
-title System Context — Sign in with a link
-
-Person(member, "Member", "A parishioner returning to the board")
-System(barnabas, "Barnabas", "Congregation lending and helping board")
-System_Ext(email, "Email provider", "Delivers the sign-in link")
-
-Rel(member, barnabas, "Asks for a sign-in link from", "HTTPS")
-Rel(barnabas, email, "Sends the link via", "SMTP")
-Rel(email, member, "Delivers the link to")
-Rel(member, barnabas, "Follows the link into", "HTTPS")
+title Context - Sign in with a link
+Person(actor, "Member", "Sign in with a link")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Sign in with a link", "HTTPS")
+System_Ext(external, "Email delivery provider", "Planned adapter behind IEmailSender")
+Rel(barnabas, external, "Uses configured adapter")
 @enduml

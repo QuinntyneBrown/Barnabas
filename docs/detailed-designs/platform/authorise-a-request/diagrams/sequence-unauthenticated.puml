@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — A request with no valid token, or none on a live session
+title UML sequence behaviour - Authorise a request: unauthenticated
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,36 +14,33 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Caller" as actor
-box "Backend — Barnabas API" #D1FADF
-  participant "JwtBearerMiddleware" as jwt
-  participant "SessionValidator" as sv
-  participant "ListingsController" as controller
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ListingDetailComponent / IncomingRequestsComponent" as page
+  participant "IListingService / IRequestService" as client
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "JWT bearer pipeline / ListingsController / RequestsController" as api
 end box
-
-alt no token presented
-  actor -> jwt : POST /listings
-  jwt --> actor : 401 Unauthorized
-else token is malformed, unsigned, or signed with the wrong key
-  actor -> jwt : POST /listings with a tampered token
-  jwt -> jwt : Validate signature against the configured key
-  jwt --> actor : 401 Unauthorized
-else signature valid, session revoked
-  actor -> jwt : POST /listings after signing out
-  jwt -> sv : Validated principal carrying the sid claim
-  sv -> db : Read the session named by sid
-  db --> sv : Session, revoked
-  sv --> actor : 401 Unauthorized
-  note over sv : L2-019 admits no window, so revocation is\nchecked on every request rather than waiting\nfor the access token to expire.
-else signature valid, session live
-  actor -> jwt : POST /listings
-  jwt -> sv : Validated principal
-  sv -> db : Read the session named by sid
-  db --> sv : Session, live
-  sv -> controller : Authenticated request
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "AuthorisationBehaviour / CloseOutListingCommandHandler" as handler
+  participant "Session / Listing / RequestOwnership" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : Protected request
+alt Missing, malformed, expired, or invalid signature
+  api --> client : 401 [L2-093]
+else Valid signature
+  api -> db : SessionValidator loads sid
+  db --> api : Session
+  alt Absent sid or session no longer live
+    api --> client : 401
+  else Live session
+    api -> handler : Target current member status/role policy; dispatch
+    handler --> api : Authorised result
+    api --> client : Feature response
+  end
 end
-note over jwt : L2-093 admits only the public landing,\ninvite redemption, and sign-in endpoints\nwithout a token.
 @enduml

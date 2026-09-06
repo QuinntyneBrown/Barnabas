@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour - Close out and archive: archive and restore
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "MyListingsComponent / planned ArchivedListingsComponent" as page
+  participant "IListingService / LISTING_SERVICE" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ListingsController" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "CloseOutListingCommandHandler / planned lifecycle handlers" as handler
+  participant "Listing / ListingStatus" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Archive active listing; confirm [L2-038]
+page -> client : archive(listingId)
+client -> api : POST /listings/{id}/archive
+api -> handler : Validate and authorise ArchiveListingCommand
+handler -> db : Load scoped owner listing
+db --> handler : Active listing
+handler -> entity : Archive() (planned)
+handler -> db : Save with rowversion
+db --> handler : Commit or 409 concurrency conflict
+handler --> api : Archived listing
+api --> client : Success
+client --> page : Show archived list
+actor -> page : Restore archived listing [L2-039]
+page -> client : restore(listingId)
+client -> api : POST /listings/{id}/restore
+api -> handler : RestoreListingCommand
+handler -> entity : Require Archived; Restore() (planned)
+handler -> db : Save Active with rowversion
+db --> handler : Commit
+handler --> api : Active listing
+api --> client : Success
+client --> page : Show active list
+@enduml

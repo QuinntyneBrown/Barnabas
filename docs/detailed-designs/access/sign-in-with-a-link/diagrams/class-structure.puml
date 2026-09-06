@@ -1,72 +1,48 @@
 @startuml
-!pragma layout smetana
-title Class structure — Sign in with a link
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Sign in with a link
 class SignInToken {
-  +Guid Id
   +Guid MemberId
   +string TokenHash
-  +DateTimeOffset IssuedOn
-  +DateTimeOffset ExpiresOn
-  +DateTimeOffset? ConsumedOn
-  +IsRedeemable(DateTimeOffset) : bool
-  +Consume(DateTimeOffset) : void
-}
-class RequestSignInLinkCommand {
-  +string EmailAddress
-}
-class ExchangeSignInTokenCommand {
-  +string Token
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? ConsumedAt
+  +HasExpired(asOf: DateTimeOffset): bool
 }
 class Session {
   +Guid Id
   +Guid MemberId
   +Guid CongregationId
-  +DateTimeOffset OpenedOn
-  +DateTimeOffset? RevokedOn
-  +IsLive(DateTimeOffset) : bool
-}
-class SessionResult {
-  +Guid SessionId
-  +string AccessToken
-  +string RefreshToken
-  +DateTimeOffset ExpiresOn
-}
-class JwtIssuer {
-  +Issue(Member, Session) : SessionResult
+  +IsLive(asOf: DateTimeOffset): bool
 }
 interface IAuthenticationStore {
-  +FindMemberByEmailAddress(string) : Member
-  +FindSignInTokenByHash(string) : SignInToken
+  +TryConsumeSignInTokenAsync(hash: string, asOf: DateTimeOffset): Task<SignInToken?>
 }
-interface IEmailSender {
-  +SendSignInLink(string, string) : Task
+class ExchangeSignInTokenCommand {
+  +string Token
 }
-class Member {
-  +Guid Id
-  +Guid CongregationId
-  +string EmailAddress
-  +MemberRole Role
-  +MemberState State
+class ExchangeSignInTokenCommandHandler {
+  +Handle(command: ExchangeSignInTokenCommand): Task<SessionResult>
 }
-class TokenAlreadyConsumedException {
-  +Guid TokenId
-}
-
-SignInToken --> Member : identifies
-Session --> Member : opened for
-RequestSignInLinkCommand ..> SignInToken : results in
-ExchangeSignInTokenCommand ..> SignInToken : consumes atomically
-ExchangeSignInTokenCommand ..> Session : opens
-SignInToken ..> TokenAlreadyConsumedException : raises on reuse
-JwtIssuer --> SessionResult : returns
-JwtIssuer ..> Session : stamps the sid claim from
-IAuthenticationStore ..> Member : finds without a congregation filter
-IAuthenticationStore ..> SignInToken : finds by hash
-IEmailSender ..> SignInToken : delivers
+ExchangeSignInTokenCommandHandler ..> ExchangeSignInTokenCommand : handles
+ExchangeSignInTokenCommandHandler ..> IAuthenticationStore : consumes through
+ExchangeSignInTokenCommandHandler ..> Session : creates
+IAuthenticationStore --> SignInToken : returns
 @enduml

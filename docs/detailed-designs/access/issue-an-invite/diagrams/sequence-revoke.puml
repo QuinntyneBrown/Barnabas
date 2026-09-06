@@ -1,0 +1,69 @@
+@startuml
+title UML sequence behaviour - Issue an invite: revoke
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Moderator" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "InviteCodeComponent (planned)" as page
+  participant "IInvitationService / INVITATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "InvitesController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "IssueInviteCodeCommandHandler / RevokeInviteCodeCommandHandler (planned)" as handler
+  participant "InviteCode" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Submit action
+page -> client : Send typed values
+client -> api : DELETE /invites/{id}
+api -> api : Validate JWT and live session
+api -> handler : Validate and authorise; send RevokeInviteCodeCommand
+handler -> db : Load resource within congregation
+db --> handler : Resource or absent
+alt Resource absent or outside congregation
+  handler --> api : NotFoundException
+  api --> client : 404
+else Resource available
+  handler -> entity : Mark revoked if not consumed [L2-090]
+  alt Invalid current state
+    entity --> handler : Transition refused
+    handler --> api : Conflict
+    api --> client : 409; no committed change
+  else Transition allowed
+    entity --> handler : In-memory transition accepted
+    handler -> db : Conditional update inside issuing congregation
+    alt Rowversion or expected uniqueness conflict
+      db --> handler : Reject write; roll back unit of work
+      handler --> api : Conflict
+      api --> client : 409; reload current state
+      client --> page : Explain conflict; preserve unsaved values
+    else Storage failure
+      db --> handler : Roll back
+      handler --> api : Safe server failure
+      api --> client : Failure; no committed change
+    else Commit succeeds
+      db --> handler : Commit
+      handler --> api : Revocation complete
+      api --> client : Success result
+      client --> page : Update signals
+      page --> actor : Confirm result
+    end
+  end
+end
+@enduml

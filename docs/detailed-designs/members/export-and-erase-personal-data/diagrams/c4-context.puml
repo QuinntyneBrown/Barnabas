@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Export and erase personal data
+Person(actor, "Member", "Export and erase personal data")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Export and erase personal data", "HTTPS")
+@enduml

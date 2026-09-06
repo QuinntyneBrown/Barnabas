@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour - Search listings: no results
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "SearchComponent / SearchResultsComponent (planned)" as page
+  participant "ISearchService / SEARCH_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "SearchController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "SearchListingsQueryHandler (planned)" as handler
+  participant "Listing / BoardCursor" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : GET /search with text and filters
+api -> handler : SearchListingsQuery
+handler -> db : Apply all predicates
+db --> handler : No matches
+handler --> api : Empty SearchPage
+api --> client : 200
+client --> page : State searched term; offer clear filters [L2-052]
+actor -> page : Clear filters
+page -> client : Preserve term; reset kind, neighbourhood, price, and cursor
+client -> api : GET /search?term=original-term
+api -> handler : SearchListingsQuery without filters
+handler -> db : Active congregation matches for same term
+db --> handler : Unfiltered matching rows
+handler --> api : SearchPage
+api --> client : 200
+client --> page : Show term and results
+@enduml
