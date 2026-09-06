@@ -23,4 +23,14 @@ public enum ListingStatus
 
     /// <summary>A Help offer that has been completed.</summary>
     Completed = 4,
+
+    /// <summary>
+    /// Taken off the board by a moderator.
+    /// </summary>
+    /// <remarks>
+    /// Distinct from <see cref="Archived"/> rather than folded into it. An archived listing is
+    /// one its owner shelved and may put back; a removed one is a decision made about them, and
+    /// <c>L2-039</c>'s restore must not be a way to undo it.
+    /// </remarks>
+    Removed = 5,
 }

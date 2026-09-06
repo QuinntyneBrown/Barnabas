@@ -1,0 +1,124 @@
+<div class="masthead on-ink">
+  <div class="container stack-2">
+    <h1 class="masthead-title">Moderator tools</h1>
+    <p class="masthead-note">Reported listings, and members waiting to join.</p>
+  </div>
+</div>
+
+<div class="container section stack-7">
+  <a class="back-link" routerLink="/you">&larr; You</a>
+
+  @if (failed()) {
+    <p class="field-error" role="alert">That could not be loaded. Try again in a moment.</p>
+  }
+
+  @if (!loading() && nothingWaiting()) {
+    <div class="state stack-4">
+      <h2>Nothing is waiting</h2>
+      <p>No listing has been reported, and nobody is waiting to be let in.</p>
+    </div>
+  }
+
+  <!-- Landmarks rather than plain divs: two lists of rows on one page need telling apart by
+       somebody moving through it with a screen reader, and by anything else reading the page. -->
+  @if (flaggedListings().length > 0) {
+    <section class="stack-5" aria-labelledby="reported-listings">
+      <h2 id="reported-listings">Reported listings</h2>
+      <div class="rows">
+        @for (listing of flaggedListings(); track listing.listingId) {
+          <div class="list-row">
+            <div class="list-row__body stack-2">
+              <div class="row-between">
+                <a class="list-row__title link" [routerLink]="['/listings', listing.listingId]">{{
+                  listing.title
+                }}</a>
+                <span class="status status--flagged">Flagged</span>
+              </div>
+              <p class="list-row__meta">
+                Posted by
+                <a class="link" [routerLink]="['/members', listing.ownerId]">{{
+                  listing.ownerDisplayName
+                }}</a>
+              </p>
+              @for (report of listing.reports; track report.reportId) {
+                <p class="list-row__meta">
+                  Reported by {{ report.reporterDisplayName }} &mdash;
+                  {{ wordsFor(report.reason) }}@if (report.note) {: {{ report.note }}}
+                </p>
+              }
+              <div class="list-row__actions">
+                <button
+                  class="btn btn-secondary btn-sm"
+                  type="button"
+                  (click)="approveListing(listing.listingId)"
+                >
+                  Leave it up
+                </button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  type="button"
+                  (click)="askToRemove(listing, removeDialog)"
+                >
+                  Remove it
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (pendingMembers().length > 0) {
+    <section class="stack-5" aria-labelledby="waiting-to-join">
+      <h2 id="waiting-to-join">Members waiting to join</h2>
+      <div class="rows">
+        @for (member of pendingMembers(); track member.memberId) {
+          <div class="list-row">
+            <div class="list-row__body stack-2">
+              <a class="list-row__title link" [routerLink]="['/members', member.memberId]">{{
+                member.displayName
+              }}</a>
+              <p class="list-row__meta">{{ member.neighbourhood }}</p>
+              @if (member.reasonForJoining) {
+                <p class="list-row__meta">{{ member.reasonForJoining }}</p>
+              }
+              <div class="list-row__actions">
+                <button
+                  class="btn btn-primary btn-sm"
+                  type="button"
+                  (click)="approveMember(member.memberId)"
+                >
+                  Approve
+                </button>
+                <button
+                  class="btn btn-secondary btn-sm"
+                  type="button"
+                  (click)="askToDecline(member, declineDialog)"
+                >
+                  Decline
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>
+
+<bar-confirm-dialog
+  #removeDialog
+  heading="Remove this listing?"
+  body="It comes off the board and the member who posted it is told. The member who reported it stays anonymous."
+  confirmLabel="Remove it"
+  (confirmed)="removeListing()"
+/>
+
+<bar-confirm-dialog
+  #declineDialog
+  heading="Decline this member?"
+  body="Their request to join is not approved, and they do not see the board."
+  confirmLabel="Decline"
+  (confirmed)="declineMember()"
+/>

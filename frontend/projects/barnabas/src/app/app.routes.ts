@@ -39,6 +39,8 @@ import { ThreadComponent } from './messaging/thread.component';
 import { ThreadsComponent } from './messaging/threads.component';
 
 import { InviteSomeoneComponent } from './moderation/invite-someone.component';
+import { ModerationQueueComponent } from './moderation/moderation-queue.component';
+import { ReportSentComponent } from './moderation/report-sent.component';
 
 import { DirectoryComponent } from './members/directory.component';
 import { NotificationsComponent } from './notifications/notifications.component';
@@ -151,6 +153,11 @@ export const routes: Routes = [
         component: RequestHelpComponent,
         title: 'Request this help · Barnabas',
       },
+      {
+        path: 'listings/:listingId/reported',
+        component: ReportSentComponent,
+        title: 'Report sent · Barnabas',
+      },
       { path: 'listings/:listingId', component: ListingDetailComponent, title: 'Listing · Barnabas' },
 
       { path: 'inbox', pathMatch: 'full', redirectTo: 'inbox/requests' },
@@ -190,6 +197,14 @@ export const routes: Routes = [
         path: 'moderation/invite',
         component: InviteSomeoneComponent,
         title: 'Invite someone · Barnabas',
+      },
+      // No route guard beyond the approved one. The API refuses an ordinary member every call
+      // this screen makes, so a member who typed the address sees an empty page rather than
+      // somebody else's complaints — L2-082 AC2 is the rule, and hiding the link is presentation.
+      {
+        path: 'moderation/queue',
+        component: ModerationQueueComponent,
+        title: 'Moderator tools · Barnabas',
       },
 
       // Reachable so the five destinations are five at every width, and honest about being empty.

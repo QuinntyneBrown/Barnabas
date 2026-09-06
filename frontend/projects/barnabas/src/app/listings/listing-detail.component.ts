@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { LISTING_SERVICE, ListingDetail } from '@barnabas/api';
 
 import { ConfirmDialogComponent } from '@barnabas/components';
-import { wordsFor } from '@barnabas/domain';
+import { ReportListingDialogComponent, wordsFor } from '@barnabas/domain';
 
 /**
  * One listing, shown two ways.
@@ -14,13 +14,17 @@ import { wordsFor } from '@barnabas/domain';
  *
  * Which of the two is not decided here by comparing identifiers. The API says whose it is.
  *
+ * Neither of the two is told the listing has been reported. The owner learns nothing about a
+ * complaint until a moderator acts on it, and a visitor who reported it sees the same screen as
+ * everybody else - L2-081.
+ *
  * Every verb on the screen comes from the listing's kind rather than being written into the
  * template: an owner marks a sale *sold* and a gift *given away*, and a visitor asks to *borrow*
  * a loan but to *buy* a sale. The server derives the outcome from the kind by the same rule.
  */
 @Component({
   selector: 'bar-listing-detail',
-  imports: [RouterLink, ConfirmDialogComponent],
+  imports: [RouterLink, ConfirmDialogComponent, ReportListingDialogComponent],
   templateUrl: './listing-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -46,6 +50,11 @@ export class ListingDetailComponent {
     effect(() => {
       void this.load(this.listingId());
     });
+  }
+
+  /** Where a sent report leads. The dialogue says what happened; the page says where to go. */
+  async reported(): Promise<void> {
+    await this.router.navigate(['/listings', this.listingId(), 'reported']);
   }
 
   async closeOut(): Promise<void> {

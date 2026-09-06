@@ -1,0 +1,52 @@
+<dialog #dialog aria-label="Report this listing" (close)="onClosed()">
+  <h2>Report this listing</h2>
+
+  <!-- Said before they choose anything, because it is the thing a member hesitating would want
+       to know: L2-080 AC3 and L2-081 are one promise from the reporter's side. -->
+  <p>
+    A moderator will look at it. {{ ownerDisplayName() }} is not told who reported it.
+  </p>
+
+  <div class="stack-5">
+    <div class="field">
+      <label for="report-reason">What is wrong with it?</label>
+      <select
+        id="report-reason"
+        name="reason"
+        [value]="reason()"
+        (change)="chooseReason($any($event.target).value)"
+      >
+        @for (choice of reasons; track choice.reason) {
+          <option [value]="choice.reason">{{ choice.words }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="report-note">Anything to add?</label>
+      <textarea
+        id="report-note"
+        name="note"
+        rows="3"
+        placeholder="Optional"
+        [value]="note()"
+        (input)="note.set($any($event.target).value)"
+      ></textarea>
+    </div>
+
+    @if (alreadyReported()) {
+      <p class="field-error" role="alert">
+        You have already reported this listing. A moderator has it.
+      </p>
+    } @else if (failed()) {
+      <p class="field-error" role="alert">The report could not be sent. Try again in a moment.</p>
+    }
+
+    <div class="btn-group">
+      <button class="btn btn-primary" type="button" [disabled]="sending()" (click)="send()">
+        Send report
+      </button>
+      <button class="btn btn-ghost" type="button" (click)="cancel()">Cancel</button>
+    </div>
+  </div>
+</dialog>

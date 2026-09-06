@@ -66,6 +66,23 @@ public sealed class Listing : ITenantOwned, IOwnedResource
     /// <summary>When the owner shelved it. Null on a listing that was closed out instead.</summary>
     public DateTimeOffset? ArchivedAt { get; private set; }
 
+    /// <summary>
+    /// When somebody reported it, and it has not been reviewed since.
+    /// </summary>
+    /// <remarks>
+    /// A mark, not a status. Only <see cref="ListingStatus.Active"/> appears on the board, and
+    /// <c>L2-083</c> requires an approved listing to <em>stay</em> there - so a flag that moved the
+    /// status would have taken it off the board the moment anybody complained, and approving it
+    /// would have had to put it back. Nothing a member sees carries this.
+    /// </remarks>
+    public DateTimeOffset? FlaggedAt { get; private set; }
+
+    /// <summary>When a moderator took it off the board.</summary>
+    public DateTimeOffset? RemovedAt { get; private set; }
+
+    /// <summary>Whether a moderator has an unreviewed complaint about it. L2-080.</summary>
+    public bool IsFlagged => FlaggedAt is not null;
+
     /// <summary>Present on a Lend listing and on no other kind.</summary>
     public LoanTerms? LoanTerms { get; private set; }
 
@@ -269,6 +286,50 @@ public sealed class Listing : ITenantOwned, IOwnedResource
 
         Status = ListingStatus.Active;
         ArchivedAt = null;
+    }
+
+    /// <summary>
+    /// Marks it for a moderator's attention.
+    /// </summary>
+    /// <remarks>
+    /// The first complaint sets the moment; a second leaves it alone, so the queue orders by when
+    /// a listing was first objected to rather than by who complained most recently.
+    /// </remarks>
+    public void Flag(DateTimeOffset asOf) => FlaggedAt ??= asOf;
+
+    /// <summary>A moderator has looked and found nothing wrong. L2-083.</summary>
+    public void ClearFlag()
+    {
+        if (!IsFlagged)
+        {
+            throw new ListingNotFlaggedException(Id);
+        }
+
+        FlaggedAt = null;
+    }
+
+    /// <summary>
+    /// A moderator takes it off the board.
+    /// </summary>
+    /// <remarks>
+    /// Not <see cref="Archive"/>. Archiving is the owner shelving their own listing and is
+    /// reversible by them; this is a decision made about them, and <see cref="CanBeRestored"/>
+    /// refuses it because the status is not <see cref="ListingStatus.Archived"/>.
+    /// <para>
+    /// A listing already closed out can still be removed - the wording of its outcome is
+    /// replaced, because what a moderator objected to is the listing, not how it ended.
+    /// </para>
+    /// </remarks>
+    public void RemoveByModerator(DateTimeOffset asOf)
+    {
+        if (Status == ListingStatus.Removed)
+        {
+            throw new ListingNotActiveException(Id);
+        }
+
+        Status = ListingStatus.Removed;
+        RemovedAt = asOf;
+        FlaggedAt = null;
     }
 
     public void CloseOut(DateTimeOffset asOf)
