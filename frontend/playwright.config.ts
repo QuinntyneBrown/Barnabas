@@ -59,7 +59,11 @@ export default defineConfig({
         // String.raw, because a lone backslash in a normal string literal is an unknown
         // escape and JavaScript drops it - which points the API at a server called
         // ".SQLEXPRESS" and fails with a network error that names no cause.
-        Database__ConnectionString: String.raw`Server=.\SQLEXPRESS;Database=Barnabas_E2E;Trusted_Connection=True;TrustServerCertificate=True`,
+        // A developer's SQL Express by default, overridable by environment so the same suite runs
+        // unchanged against a container in continuous integration.
+        Database__ConnectionString:
+          process.env['BARNABAS_E2E_SQL']
+          ?? String.raw`Server=.\SQLEXPRESS;Database=Barnabas_E2E;Trusted_Connection=True;TrustServerCertificate=True`,
         Database__ResetOnStart: 'true',
         Database__Seed: 'true',
         SignInLink__UrlTemplate: `http://localhost:${port}/sign-in/{token}`,

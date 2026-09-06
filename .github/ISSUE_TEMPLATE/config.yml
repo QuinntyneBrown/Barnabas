@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Question or discussion
+    url: https://github.com/QuinntyneBrown/Barnabas/discussions
+    about: >-
+      Not sure whether it is a defect? Ask here first. Issues are for work that can be done.
+
+  - name: Report a security vulnerability
+    url: https://github.com/QuinntyneBrown/Barnabas/security/advisories/new
+    about: >-
+      Report it privately, never as a public issue. See SECURITY.md.

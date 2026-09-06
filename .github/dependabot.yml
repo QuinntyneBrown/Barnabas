@@ -1,0 +1,25 @@
+version: 2
+
+updates:
+  - package-ecosystem: nuget
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      # MediatR is pinned to 12.5.0 and must not be upgraded. 12.5.0 is the last release under
+      # plain Apache-2.0; from 13.0.0 it is commercially licensed, free only under a registered
+      # Community tier that lapses above $5M USD annual revenue. See AGENTS.md.
+      - dependency-name: MediatR
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

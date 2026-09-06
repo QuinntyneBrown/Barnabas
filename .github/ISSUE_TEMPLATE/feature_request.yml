@@ -1,0 +1,58 @@
+name: Feature request
+description: Suggest a change to what Barnabas does
+title: "[feature] "
+labels: ["enhancement", "needs triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Barnabas is built to a written specification. A change to what it does is a change to
+        `docs/specs/L2.md` first and to the code second — so the most useful thing you can give us
+        is the acceptance criteria you would want to hold it to.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: >-
+        Who is stuck, and what are they trying to do? Describe the situation rather than the
+        solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What should Barnabas do instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: criteria
+    attributes:
+      label: How would you know it worked?
+      description: >-
+        Acceptance criteria, in Given–When–Then, as in docs/specs/L2.md. One per line.
+      placeholder: |
+        1. Given a member with no listings, when they open the board, then ...
+        2. Given ...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What else did you consider?
+      description: Including doing nothing, and why that is not good enough.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      description: >-
+        Barnabas brokers an introduction. It does not handle payments, shipping, or delivery, and
+        it is scoped to one congregation.
+      options:
+        - label: This does not ask Barnabas to handle payment, shipping, or delivery.
+          required: true
+        - label: I have read docs/specs/L2.md and this is not already there.
+          required: true

@@ -1,0 +1,91 @@
+name: Bug report
+description: Something behaves differently from the way the specification says it should
+title: "[bug] "
+labels: ["bug", "needs triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report this.
+
+        **If this is a security vulnerability, stop.** Report it
+        [privately](https://github.com/QuinntyneBrown/Barnabas/security/advisories/new) rather than
+        here — see [SECURITY.md](https://github.com/QuinntyneBrown/Barnabas/blob/main/SECURITY.md).
+
+  - type: input
+    id: criterion
+    attributes:
+      label: Which acceptance criterion does this violate?
+      description: >-
+        If you can find it in docs/specs/L2.md, name it — the fix usually follows immediately.
+        Leave it blank if you cannot; describing what happened is enough.
+      placeholder: "L2-084 AC2"
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, and what the product did.
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-you-expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce it
+      description: >-
+        Step by step. Say which member you were signed in as, and their role and congregation —
+        most of this product's behaviour depends on both.
+      placeholder: |
+        1. Sign in as marion@example.com (moderator of St. Aidan's)
+        2. Open /moderation/queue
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: failing-test
+    attributes:
+      label: A failing test, if you have one
+      description: >-
+        The fastest possible report: an acceptance test that fails on main and passes once this is
+        fixed.
+      render: text
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where is it?
+      multiple: true
+      options:
+        - API (backend)
+        - Web client (frontend)
+        - Database or migrations
+        - Documentation
+        - Build, tests, or tooling
+        - Not sure
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Output of `dotnet --info`, `node --version`, and your SQL Server edition.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and this has not already been reported.
+          required: true
+        - label: This is not a security vulnerability. (If it is, report it privately instead.)
+          required: true
