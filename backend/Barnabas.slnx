@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Barnabas.Domain/Barnabas.Domain.csproj" />
+    <Project Path="src/Barnabas.Application/Barnabas.Application.csproj" />
+    <Project Path="src/Barnabas.Infrastructure/Barnabas.Infrastructure.csproj" />
+    <Project Path="src/Barnabas.Api/Barnabas.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Barnabas.IntegrationTests/Barnabas.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

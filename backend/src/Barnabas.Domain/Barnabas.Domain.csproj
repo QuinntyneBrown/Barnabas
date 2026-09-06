@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Clean Architecture: Domain references nothing. Not another project, not a
+    NuGet package. If something here needs a dependency, it does not belong here.
+  -->
+
+</Project>

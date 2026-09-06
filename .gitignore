@@ -1,0 +1,23 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Node / Angular
+node_modules/
+/frontend/dist/
+/frontend/.angular/
+/frontend/tests/e2e/.output/
+/frontend/tests/e2e/.report/
+/frontend/tests/e2e/.auth/
+
+# Editors
+.idea/
+*.swp
+
+# Local configuration and secrets
+appsettings.Local.json
+.env
+.env.*
