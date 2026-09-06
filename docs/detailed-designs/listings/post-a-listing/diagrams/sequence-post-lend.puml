@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Posting a Lend listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "ChooseKindComponent" as chooser
+  participant "PostLendComponent" as page
+  participant "ListingsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "PostLendListingCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> chooser : Open the post flow
+chooser --> actor : Offer Lend, Give, Sell, and Help, with no detail fields
+note over chooser : L2-026 requires the kind be chosen first,\nso the form that follows asks only for what\nthat kind needs.
+actor -> chooser : Choose Lend
+chooser -> page : Open the Lend form
+page --> actor : Title, description, category, return date, condition, photo
+note over page : No price field is rendered, per L2-027.
+actor -> page : Post the listing
+page -> client : Build the typed request
+client -> controller : POST /listings/lend
+controller -> handler : Send PostLendListingCommand
+handler -> entity : Create with kind Lend and its loan terms
+entity --> handler : Active listing
+handler -> db : Save, stamping the caller's congregation and ownership
+db --> handler : Commit result
+handler --> controller : Listing identifier
+controller --> client : 201 Created
+client --> page : Feature result
+page --> actor : Confirm the listing is on the board, per L2-033
+@enduml

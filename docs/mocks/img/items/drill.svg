@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a cordless drill"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M74 92h108v56H74a12 12 0 0 1-12-12v-32a12 12 0 0 1 12-12Z"/>
+  <path d="M182 104h34v32h-34"/>
+  <path d="M216 120h34"/>
+  <path d="M108 148l-14 56h48l10-56"/>
+  <path d="M86 204h60v22H86Z"/>
+  <path d="M74 120h20"/>
+</svg>

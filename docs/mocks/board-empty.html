@@ -1,66 +1,99 @@
 <!DOCTYPE html>
-<!-- Demonstrates the main board when St. Aidan's has no listings yet. Responsive change: below 768px the bottom tab bar is shown; at 768px+ the header nav replaces it, with no material layout change beyond wider margins and chip wrapping. -->
+<!--
+The board on day one, before anyone has posted. An empty screen is an
+  invitation to act, so the state offers the one action that resolves it.
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Board Empty · Barnabas</title>
+<title>Board · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
     <nav class="primary-nav" aria-label="Primary">
       <a href="board.html" aria-current="page">Board</a>
-      <a href="search-results.html">Search</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="requests-incoming.html">Requests</a>
-      <a href="my-listings-active.html">My listings</a>
-      <a href="my-profile-settings.html">Profile</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html">You</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
   </div>
 </header>
 
 <main id="main" class="page-main">
-  <div class="container">
-    <div class="section-title">
-      <h1 class="mb-0">St. Aidan's Board</h1>
-      <a href="search-results.html" class="text-sm">Search →</a>
+
+  <div class="masthead on-ink">
+    <div class="container">
+      <h1 class="masthead-title">St.&nbsp;Aidan's board</h1>
+      <p class="masthead-note">Nothing is posted yet.</p>
+      <nav class="chip-row" aria-label="Filter by listing type">
+        <a class="chip" href="board.html" aria-current="true">Everything <span class="chip-count">12</span></a>
+        <a class="chip" href="board-lend.html">Lend <span class="chip-count">4</span></a>
+        <a class="chip" href="board-give.html">Give <span class="chip-count">2</span></a>
+        <a class="chip" href="board-sell.html">Sell <span class="chip-count">3</span></a>
+        <a class="chip" href="board-help.html">Help <span class="chip-count">3</span></a>
+      </nav>
     </div>
+  </div>
 
-    <nav aria-label="Filter by listing type" class="chip-row" style="margin-bottom: var(--space-5);">
-      <a class="chip is-active" aria-current="true" href="board.html">All</a>
-      <a class="chip" href="board.html#lend">Lend</a>
-      <a class="chip" href="board.html#give">Give</a>
-      <a class="chip" href="board.html#sell">Sell</a>
-      <a class="chip" href="board-help.html">Help</a>
-    </nav>
-
-    <section class="state-block" aria-labelledby="board-empty-title">
-      <svg viewBox="0 0 64 64" width="88" height="88" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color: var(--color-primary);">
-        <path d="M14 24h36l-4 24H18l-4-24Z"/>
-        <path d="M22 24c0-6 4.5-10 10-10s10 4 10 10"/>
-        <path d="M24 32h16"/>
-        <path d="M28 38h8"/>
-      </svg>
-      <h2 id="board-empty-title">Nothing posted yet</h2>
-      <p>Be the first — a ladder, a spare hour, a box of canning jars. Anything helpful can get things started around St. Aidan's.</p>
-      <a class="btn btn-primary" href="new-listing-choose-type.html">Post the first listing</a>
-    </section>
+  <div class="container">
+    <div class="state">
+      <svg viewBox="0 0 120 120" role="img" aria-label="An empty noticeboard" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 24h88v72H16z"/>
+  <path d="M16 40h88"/>
+  <circle cx="26" cy="32" r="3"/>
+  <path d="M40 60h40M40 74h24"/></svg>
+      <h2>The board is empty</h2>
+      <p>Nobody has posted anything yet. The first listing tends to bring the rest.</p>
+      <div class="btn-group">
+        <a class="btn btn-primary btn-lg" href="new-listing-choose-type.html">Post the first listing</a>
+      </div>
+    </div>
   </div>
 </main>
 
 <nav class="bottom-nav" aria-label="Primary">
-  <a href="board.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
-  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
-  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
-  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
-  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+  <a href="board.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
 </nav>
+
 </body>
 </html>

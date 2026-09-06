@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a canoe and paddle"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M32 138c60-42 196-42 256 0-60 46-196 46-256 0Z"/>
+  <path d="M60 133c50-24 150-24 200 0"/>
+  <path d="M118 126v22"/>
+  <path d="M202 126v22"/>
+  <path d="M96 200 208 74"/>
+  <path d="M198 62c14-8 26 4 18 18l-16 18-20-20Z"/>
+</svg>

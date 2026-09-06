@@ -1,0 +1,24 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Post a listing
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Exposes one endpoint per listing kind")
+  Component(lend, "PostLendListingCommandHandler", "MediatR handler", "Creates a Lend listing with its return period")
+  Component(give, "PostGiveListingCommandHandler", "MediatR handler", "Creates a Give listing, free and collected in person")
+  Component(sell, "PostSellListingCommandHandler", "MediatR handler", "Creates a Sell listing with an asking price")
+  Component(help, "PostHelpListingCommandHandler", "MediatR handler", "Creates a Help listing with availability windows")
+  Component(entity, "Listing", "Domain entity", "Holds kind, status, and the terms its kind carries")
+  Component(photo, "ListingPhotoService", "Infrastructure service", "Re-encodes and stores one image")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Listings")
+}
+Rel(ctrl, lend, "Sends PostLendListingCommand")
+Rel(ctrl, give, "Sends PostGiveListingCommand")
+Rel(ctrl, sell, "Sends PostSellListingCommand")
+Rel(ctrl, help, "Sends PostHelpListingCommand")
+Rel(lend, entity, "Creates")
+Rel(sell, photo, "Stores the image through")
+Rel(entity, db, "Persisted in", "EF Core")
+@enduml

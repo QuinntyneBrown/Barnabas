@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="A pinned card"
+     fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M26 34h68v58H26z"/>
+  <circle cx="60" cy="26" r="8"/>
+  <path d="M60 34v6"/>
+  <path d="M42 58h36M42 72h22"/>
+</svg>

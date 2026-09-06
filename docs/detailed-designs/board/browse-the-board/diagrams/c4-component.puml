@@ -1,0 +1,18 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse the board
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "BoardController", "ASP.NET Core controller", "Exposes GET /board")
+  Component(handler, "GetBoardQueryHandler", "MediatR handler", "Reads active listings and projects them")
+  Component(dto, "BoardListingDto", "Read model", "Kind, title, owner, neighbourhood, and price")
+  Component(entity, "Listing", "Domain entity", "Holds kind, status, and owner")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Listings")
+}
+Rel(ctrl, handler, "Sends GetBoardQuery")
+Rel(handler, db, "Reads active listings, scoped by the congregation filter", "EF Core")
+Rel(handler, dto, "Projects to")
+Rel(entity, db, "Persisted in")
+@enduml

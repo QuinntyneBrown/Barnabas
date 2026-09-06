@@ -1,137 +1,495 @@
 <!DOCTYPE html>
 <!--
-  Catalogue / entry point for the Barnabas static mock set.
-  Responsive notes: the list of mocks is a single column on phones and
-  becomes a two-column grid of section cards at 768px and up; no other
-  material change at 1280px beyond wider margins.
+The catalogue, grouped by flow rather than by category, with the five main
+  walkthroughs as clickable chains. It is a development index, not a product
+  screen.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Barnabas — Mock catalogue</title>
+<title>Mock catalogue · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
-<style>
-  .catalogue-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
-  }
-  @media (min-width: 768px) {
-    .catalogue-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  .catalogue-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-  .catalogue-list li {
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: var(--space-3);
-  }
-  .catalogue-list li:last-child { border-bottom: none; padding-bottom: 0; }
-  .catalogue-list a {
-    font-weight: 700;
-    text-decoration: none;
-  }
-  .catalogue-list p {
-    margin: var(--space-1) 0 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-  }
-</style>
 </head>
-<body style="padding-bottom: 0;">
+<body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas mocks</a>
+    <a class="brand" href="landing.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
   </div>
 </header>
 
 <main id="main" class="page-main">
-  <div class="container">
-    <h1>Barnabas — static mock catalogue</h1>
-    <p class="text-muted">
-      Barnabas is a lending-and-helping board scoped to a single congregation
-      (St. Aidan's, in this set). Members post something to lend, give away,
-      or sell, or post time they're offering — a ride, tutoring, help moving.
-      Everything below is plain HTML and CSS: no build step, no framework, no
-      CDN. Open any file directly from the filesystem in a browser. A single
-      shared <code>styles.css</code> carries the token system, and a tiny
-      <code>mocks.js</code> only powers a couple of confirmation dialogs —
-      every page is fully usable with JavaScript turned off.
-    </p>
-    <p class="text-muted">
-      Mobile-first: every mock is designed for 360px first, and re-flows at
-      768px and 1280px. Where a layout changes materially between
-      breakpoints, that's noted in an HTML comment at the top of the file.
-    </p>
 
-    <div class="catalogue-grid">
+  <div class="masthead masthead--tall on-ink">
+    <div class="container">
+      <h1 class="masthead-title">Barnabas &mdash; static mocks</h1>
+      <p class="masthead-note">Fifty-two screens for a congregation's lending and helping board. Every page is plain HTML and one stylesheet.</p>
+    </div>
+  </div>
 
-      <section class="card" style="padding: var(--space-5);">
-        <h2>Onboarding and access</h2>
-        <ul class="catalogue-list">
-          <li><a href="landing.html">1. Landing / what this is</a><p>What a first-time visitor sees after following an invite link.</p></li>
-          <li><a href="sign-in.html">2. Sign in</a><p>Returning-member sign in, with a link out to join with a code.</p></li>
-          <li><a href="join-invite.html">3. Join with invite code</a><p>Entering a congregation invite code to get in.</p></li>
-          <li><a href="create-profile.html">4. Create profile</a><p>Name, photo, neighbourhood, and what you're willing to help with.</p></li>
-        </ul>
-      </section>
+  <div class="container section">
+    <div class="field-block field-block--paper">
+      <div class="stack-5">
+        <h2>Walk a flow end to end</h2>
+        <div class="stack-2">
+          <h3>Join and get approved</h3>
+          <p class="small">
+          <a class="link" href="landing.html">landing</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="join-invite.html">join-invite</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="create-profile.html">create-profile</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="join-pending-approval.html">join-pending-approval</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="board.html">board</a>
+          </p>
+        </div>
+        <div class="stack-2">
+          <h3>Post a listing</h3>
+          <p class="small">
+          <a class="link" href="board.html">board</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="new-listing-choose-type.html">new-listing-choose-type</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="new-listing-sell.html">new-listing-sell</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="listing-posted.html">listing-posted</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="listing-owner-view.html">listing-owner-view</a>
+          </p>
+        </div>
+        <div class="stack-2">
+          <h3>Ask to borrow something</h3>
+          <p class="small">
+          <a class="link" href="board.html">board</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="listing-lend.html">listing-lend</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="request-lend.html">request-lend</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="request-sent.html">request-sent</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="inbox-requests-outgoing.html">inbox-requests-outgoing</a>
+          </p>
+        </div>
+        <div class="stack-2">
+          <h3>Decide a request, then close it out</h3>
+          <p class="small">
+          <a class="link" href="inbox-requests-incoming.html">inbox-requests-incoming</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="request-accepted.html">request-accepted</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="message-thread.html">message-thread</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="listing-owner-view.html">listing-owner-view</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="my-listings-archived.html">my-listings-archived</a>
+          </p>
+        </div>
+        <div class="stack-2">
+          <h3>Report something to a moderator</h3>
+          <p class="small">
+          <a class="link" href="listing-sell.html">listing-sell</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="report-sent.html">report-sent</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="you.html">you</a>
+          <span class="muted" aria-hidden="true">&rsaquo;</span>
+          <a class="link" href="moderation-queue.html">moderation-queue</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <section class="card" style="padding: var(--space-5);">
-        <h2>Core — browsing and posting</h2>
-        <ul class="catalogue-list">
-          <li><a href="board.html">5. Board</a><p>Main browse view: mixed Lend/Give/Sell/Help listings with filter chips.</p></li>
-          <li><a href="board-help.html">6. Board, filtered to Help</a><p>Same board, showing how time offers read differently from goods.</p></li>
-          <li><a href="search-results.html">7. Search results, filters open</a><p>A search with the type/neighbourhood/price filter panel expanded.</p></li>
-          <li><a href="listing-lend.html">8. Listing detail — Lend</a><p>A ladder loan, with a return expectation instead of a price.</p></li>
-          <li><a href="listing-sell.html">9. Listing detail — Sell</a><p>A priced item, with a "request to buy" action.</p></li>
-          <li><a href="listing-give.html">10. Listing detail — Give</a><p>A free item, with pickup-only logistics called out.</p></li>
-          <li><a href="listing-help.html">11. Listing detail — Help</a><p>An offer of time, showing the offerer's availability windows.</p></li>
-          <li><a href="new-listing-choose-type.html">12. New listing, step 1</a><p>Choosing between Lend / Give / Sell / Help before anything else.</p></li>
-          <li><a href="new-listing-details-goods.html">13a. New listing, step 2 — Sell</a><p>Details form variant with a price field.</p></li>
-          <li><a href="new-listing-details-help.html">13b. New listing, step 2 — Help</a><p>Details form variant with availability instead of a price.</p></li>
-        </ul>
-      </section>
-
-      <section class="card" style="padding: var(--space-5);">
-        <h2>Core — managing your own activity</h2>
-        <ul class="catalogue-list">
-          <li><a href="my-listings-active.html">14. My listings — active</a><p>Own listings with pending request counts and quick actions.</p></li>
-          <li><a href="my-listings-archived.html">15. My listings — archived</a><p>No-longer-available listings, with a delete confirmation dialog.</p></li>
-          <li><a href="requests-incoming.html">16. Requests, incoming</a><p>Requests other members made on your listings, Accept/Decline.</p></li>
-          <li><a href="requests-outgoing.html">17. Requests, outgoing</a><p>Requests you made on other members' listings, with status.</p></li>
-          <li><a href="message-thread.html">18. Message thread</a><p>A conversation between two members about one specific listing.</p></li>
-        </ul>
-      </section>
-
-      <section class="card" style="padding: var(--space-5);">
-        <h2>Core — people and moderation</h2>
-        <ul class="catalogue-list">
-          <li><a href="member-profile.html">19. Member profile — public view</a><p>Someone else's profile: bio, help tags, their active listings.</p></li>
-          <li><a href="my-profile-settings.html">20. My profile / settings</a><p>Editable profile plus notification preferences and a danger zone.</p></li>
-          <li><a href="notifications.html">21. Notification centre</a><p>Read/unread activity notices with relative timestamps.</p></li>
-          <li><a href="directory.html">22. Congregation directory</a><p>Browsable member list with neighbourhood and help tags.</p></li>
-          <li><a href="moderator-view.html">23. Moderator view</a><p>Flagged listings and pending members awaiting approval.</p></li>
-        </ul>
-      </section>
-
-      <section class="card" style="padding: var(--space-5);">
-        <h2>States</h2>
-        <ul class="catalogue-list">
-          <li><a href="board-empty.html">24. Board, empty</a><p>Nothing posted yet, with a prompt to post the first listing.</p></li>
-          <li><a href="requests-empty.html">25. Requests, empty</a><p>No incoming requests yet.</p></li>
-          <li><a href="search-no-results.html">26. Search, no results</a><p>A search that matched nothing, with suggestions to broaden it.</p></li>
-          <li><a href="board-loading.html">27. Loading skeleton</a><p>Shimmering placeholder cards while the board loads.</p></li>
-          <li><a href="error-state.html">28. Error state</a><p>Something failed to load, with a plain-language retry.</p></li>
-          <li><a href="404.html">29. 404</a><p>A missing or removed page/listing.</p></li>
-        </ul>
-      </section>
-
+  <div class="container section">
+    <div class="stack-7">
+      <div class="stack-5">
+        <h2>Getting in</h2>
+        <p class="muted">Invite-only. A moderator approves every new member.</p>
+        <div class="rows">
+          <a class="list-row" href="landing.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Landing</span>
+              <span class="list-row__meta">Public welcome. The hero is the board itself.</span>
+            </div>
+          </a>
+          <a class="list-row" href="join-invite.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Enter an invite code</span>
+              <span class="list-row__meta">From the bulletin, the parish email, or a leader.</span>
+            </div>
+          </a>
+          <a class="list-row" href="join-invite-invalid.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Code did not work</span>
+              <span class="list-row__meta">Expired or unrecognised, and what to do about it.</span>
+            </div>
+          </a>
+          <a class="list-row" href="create-profile.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Create a profile</span>
+              <span class="list-row__meta">Name, neighbourhood, and what you can help with.</span>
+            </div>
+          </a>
+          <a class="list-row" href="join-pending-approval.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Waiting for approval</span>
+              <span class="list-row__meta">The member's side of the moderator gate.</span>
+            </div>
+          </a>
+          <a class="list-row" href="sign-in.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Sign in</span>
+              <span class="list-row__meta">Passwordless. A single-use link by email.</span>
+            </div>
+          </a>
+          <a class="list-row" href="check-your-email.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Check your email</span>
+              <span class="list-row__meta">A dead end by design.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>The board</h2>
+        <p class="muted">Browse what the congregation has posted.</p>
+        <div class="rows">
+          <a class="list-row" href="board.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Board</span>
+              <span class="list-row__meta">All twelve listings. The wall of placards.</span>
+            </div>
+          </a>
+          <a class="list-row" href="board-lend.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Lend</span>
+              <span class="list-row__meta">Filtered to loans. A wall of indigo.</span>
+            </div>
+          </a>
+          <a class="list-row" href="board-give.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Give</span>
+              <span class="list-row__meta">Filtered to gifts. A wall of cream.</span>
+            </div>
+          </a>
+          <a class="list-row" href="board-sell.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Sell</span>
+              <span class="list-row__meta">Filtered to sales. A wall of stone.</span>
+            </div>
+          </a>
+          <a class="list-row" href="board-help.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Help</span>
+              <span class="list-row__meta">Offers of time. No drawings — the words fill the block.</span>
+            </div>
+          </a>
+          <a class="list-row" href="board-empty.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Empty board</span>
+              <span class="list-row__meta">Day one, before anyone has posted.</span>
+            </div>
+          </a>
+          <a class="list-row" href="board-loading.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Loading</span>
+              <span class="list-row__meta">Skeletons holding the placard geometry.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>Finding something</h2>
+        <p class="muted">Search is a destination, not a board sub-feature.</p>
+        <div class="rows">
+          <a class="list-row" href="search.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Search</span>
+              <span class="list-row__meta">The real search entry, with filters.</span>
+            </div>
+          </a>
+          <a class="list-row" href="search-results.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Results</span>
+              <span class="list-row__meta">Four matches for ladder, filters beside them.</span>
+            </div>
+          </a>
+          <a class="list-row" href="search-no-results.html">
+            <div class="list-row__body">
+              <span class="list-row__title">No results</span>
+              <span class="list-row__meta">What was searched, and two ways out.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>A listing</h2>
+        <p class="muted">Each kind shows what its kind actually carries.</p>
+        <div class="rows">
+          <a class="list-row" href="listing-lend.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Lend</span>
+              <span class="list-row__meta">Return by, and the owner's own sentence.</span>
+            </div>
+          </a>
+          <a class="list-row" href="listing-give.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Give</span>
+              <span class="list-row__meta">Free, pickup only.</span>
+            </div>
+          </a>
+          <a class="list-row" href="listing-sell.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Sell</span>
+              <span class="list-row__meta">An asking price, settled in person.</span>
+            </div>
+          </a>
+          <a class="list-row" href="listing-help.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Help</span>
+              <span class="list-row__meta">Availability windows. No object, so no drawing.</span>
+            </div>
+          </a>
+          <a class="list-row" href="listing-owner-view.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Your own listing</span>
+              <span class="list-row__meta">Requests, edit, and close out.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>Posting</h2>
+        <p class="muted">Four kinds, four forms. The choice is not thrown away.</p>
+        <div class="rows">
+          <a class="list-row" href="new-listing-choose-type.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Choose a kind</span>
+              <span class="list-row__meta">Step 1 of 2.</span>
+            </div>
+          </a>
+          <a class="list-row" href="new-listing-lend.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Lend form</span>
+              <span class="list-row__meta">Asks for a return date.</span>
+            </div>
+          </a>
+          <a class="list-row" href="new-listing-give.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Give form</span>
+              <span class="list-row__meta">No price, pickup only.</span>
+            </div>
+          </a>
+          <a class="list-row" href="new-listing-sell.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Sell form</span>
+              <span class="list-row__meta">An asking price, paid in person.</span>
+            </div>
+          </a>
+          <a class="list-row" href="new-listing-help.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Help form</span>
+              <span class="list-row__meta">Availability windows, no photo.</span>
+            </div>
+          </a>
+          <a class="list-row" href="listing-posted.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Posted</span>
+              <span class="list-row__meta">Where did it go, and what next.</span>
+            </div>
+          </a>
+          <a class="list-row" href="edit-listing.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Edit a listing</span>
+              <span class="list-row__meta">Distinct from the create form.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>Asking for something</h2>
+        <p class="muted">The flow the original set got wrong.</p>
+        <div class="rows">
+          <a class="list-row" href="request-lend.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Request to borrow</span>
+              <span class="list-row__meta">Return date and a loan acknowledgement.</span>
+            </div>
+          </a>
+          <a class="list-row" href="request-give.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Request this</span>
+              <span class="list-row__meta">A message and when you could collect.</span>
+            </div>
+          </a>
+          <a class="list-row" href="request-sell.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Request to buy</span>
+              <span class="list-row__meta">Restates that payment is in person.</span>
+            </div>
+          </a>
+          <a class="list-row" href="request-help.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Request this help</span>
+              <span class="list-row__meta">Choose one of the offered windows.</span>
+            </div>
+          </a>
+          <a class="list-row" href="request-sent.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Request sent</span>
+              <span class="list-row__meta">What happens next, in plain terms.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>The inbox</h2>
+        <p class="muted">Requests to me, my requests, and messages — one chip row.</p>
+        <div class="rows">
+          <a class="list-row" href="inbox-requests-incoming.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Requests to me</span>
+              <span class="list-row__meta">Every part of a row leads somewhere.</span>
+            </div>
+          </a>
+          <a class="list-row" href="inbox-requests-outgoing.html">
+            <div class="list-row__body">
+              <span class="list-row__title">My requests</span>
+              <span class="list-row__meta">No longer unreachable.</span>
+            </div>
+          </a>
+          <a class="list-row" href="inbox-messages.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Messages</span>
+              <span class="list-row__meta">The thread list that did not exist.</span>
+            </div>
+          </a>
+          <a class="list-row" href="inbox-empty.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Nothing waiting</span>
+              <span class="list-row__meta">The state most members are in.</span>
+            </div>
+          </a>
+          <a class="list-row" href="message-thread.html">
+            <div class="list-row__body">
+              <span class="list-row__title">A thread</span>
+              <span class="list-row__meta">Always about one listing.</span>
+            </div>
+          </a>
+          <a class="list-row" href="request-accepted.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Request accepted</span>
+              <span class="list-row__meta">Straight into arranging the handoff.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>Your own things</h2>
+        <p class="muted">Listings you posted, and how they end.</p>
+        <div class="rows">
+          <a class="list-row" href="my-listings-active.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Active listings</span>
+              <span class="list-row__meta">Request counts are links.</span>
+            </div>
+          </a>
+          <a class="list-row" href="my-listings-archived.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Wrapped up</span>
+              <span class="list-row__meta">Sold, given away, archived, completed.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>People</h2>
+        <p class="muted">Who is in the congregation, and what they offer.</p>
+        <div class="rows">
+          <a class="list-row" href="you.html">
+            <div class="list-row__body">
+              <span class="list-row__title">You</span>
+              <span class="list-row__meta">The hub. Five nav slots, everything else here.</span>
+            </div>
+          </a>
+          <a class="list-row" href="notifications.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Notifications</span>
+              <span class="list-row__meta">Every row leads to its subject.</span>
+            </div>
+          </a>
+          <a class="list-row" href="directory.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Directory</span>
+              <span class="list-row__meta">Ten members, each row a profile.</span>
+            </div>
+          </a>
+          <a class="list-row" href="member-profile.html">
+            <div class="list-row__body">
+              <span class="list-row__title">A member</span>
+              <span class="list-row__meta">No email, no direct messaging.</span>
+            </div>
+          </a>
+          <a class="list-row" href="my-profile-settings.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Profile and settings</span>
+              <span class="list-row__meta">Including leaving the board.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>Moderation</h2>
+        <p class="muted">For clergy and approved moderators.</p>
+        <div class="rows">
+          <a class="list-row" href="moderation-queue.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Moderator tools</span>
+              <span class="list-row__meta">Flagged listings and members waiting.</span>
+            </div>
+          </a>
+          <a class="list-row" href="report-sent.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Report sent</span>
+              <span class="list-row__meta">A person reviews it, and you stay anonymous.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="stack-5">
+        <h2>When things go wrong</h2>
+        <div class="rows">
+          <a class="list-row" href="error-state.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Board failed to load</span>
+              <span class="list-row__meta">Says what happened, offers a retry.</span>
+            </div>
+          </a>
+          <a class="list-row" href="404.html">
+            <div class="list-row__body">
+              <span class="list-row__title">Not found</span>
+              <span class="list-row__meta">Also covers a listing that has gone.</span>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </main>
+
 </body>
 </html>

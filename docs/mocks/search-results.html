@@ -1,192 +1,208 @@
 <!DOCTYPE html>
 <!--
-  Search results with filters visibly open.
-  Responsive notes:
-  - <768px: filters appear full-width above the result cards.
-  - >=768px: filters move into a left side rail beside the results.
-  - >=1280px: no material layout change beyond wider margins and roomier result columns.
+Results for one query, with the filters beside them. Reached from the search
+  screen rather than from the nav, so the query shown is always one the member
+  actually asked for.
+
+  Responsive: the filter rail sits above the results under 900px and beside
+  them at 900px and up.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Search results · Barnabas</title>
+<title>Search · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
     <nav class="primary-nav" aria-label="Primary">
       <a href="board.html">Board</a>
-      <a href="search-results.html" aria-current="page">Search</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="requests-incoming.html">Requests</a>
-      <a href="my-listings-active.html">My listings</a>
-      <a href="my-profile-settings.html">Profile</a>
+      <a href="search.html" aria-current="page">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html">You</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
   </div>
 </header>
+
 <main id="main" class="page-main">
-  <div class="container">
-    <div class="section-title">
-      <h1 class="mb-0">Search</h1>
-      <span class="text-sm text-muted">4 results for “ladder”</span>
+
+  <div class="masthead masthead--stone masthead--short">
+    <div class="container">
+      <h1 class="masthead-title">4 results for &ldquo;ladder&rdquo;</h1>
     </div>
+  </div>
 
-    <div class="content-with-rail">
-      <aside class="card panel rail-card" aria-label="Search filters">
-        <form>
-          <div class="field">
-            <label for="search-query">Search listings</label>
-            <input id="search-query" type="search" value="ladder">
-          </div>
-
-          <fieldset class="field">
-            <legend>Listing type</legend>
-            <div class="check-list">
-              <label class="check-row"><input type="checkbox" checked> Lend</label>
-              <label class="check-row"><input type="checkbox"> Give</label>
-              <label class="check-row"><input type="checkbox"> Sell</label>
-              <label class="check-row"><input type="checkbox"> Help</label>
-            </div>
-          </fieldset>
-
-          <fieldset class="field">
-            <legend>Neighbourhood</legend>
-            <div class="check-list">
-              <label class="check-row"><input type="checkbox" checked> Riverdale</label>
-              <label class="check-row"><input type="checkbox" checked> Leslieville</label>
-              <label class="check-row"><input type="checkbox"> East York</label>
-              <label class="check-row"><input type="checkbox"> The Danforth</label>
-              <label class="check-row"><input type="checkbox"> Scarborough</label>
-            </div>
-          </fieldset>
-
-          <fieldset class="field">
-            <legend>Price range</legend>
-            <div class="form-grid">
-              <div>
-                <label class="visually-hidden" for="price-min">Minimum price</label>
-                <div class="input-with-prefix">
-                  <span>$</span>
-                  <input id="price-min" type="number" value="0">
-                </div>
-              </div>
-              <div>
-                <label class="visually-hidden" for="price-max">Maximum price</label>
-                <div class="input-with-prefix">
-                  <span>$</span>
-                  <input id="price-max" type="number" value="75">
-                </div>
-              </div>
-            </div>
-            <p class="field-hint">Results include free and low-cost matches near St. Aidan's.</p>
-          </fieldset>
-
-          <div class="btn-group">
-            <button class="btn btn-primary" type="submit">Apply filters</button>
-            <button class="btn btn-ghost" type="reset">Clear</button>
-          </div>
-        </form>
-      </aside>
-
-      <section aria-label="Search results" class="stack">
-        <div class="inline-meta">
-          <span>Sorted by nearest match</span>
-          <span>Pickup only unless noted</span>
+  <div class="container section-tight">
+    <div class="two-col two-col--rail">
+      <form class="stack-6" action="search-results.html" method="get">
+        <div class="field">
+          <label for="q2">Search</label>
+          <input type="search" id="q2" name="q" value="ladder">
         </div>
-
-        <div class="board-grid">
-          <a class="card listing-card" href="listing-lend.html">
-            <div class="listing-card-media">
-              <svg viewBox="0 0 400 300" role="img" aria-label="Photo of a ladder">
-                <rect width="400" height="300" fill="#e5f0ec"/>
-                <g stroke="#2f6d5e" stroke-width="6" fill="none" stroke-linecap="round">
-                  <line x1="120" y1="40" x2="90" y2="260"/>
-                  <line x1="220" y1="40" x2="250" y2="260"/>
-                  <line x1="102" y1="90" x2="234" y2="90"/>
-                  <line x1="98" y1="140" x2="238" y2="140"/>
-                  <line x1="94" y1="190" x2="242" y2="190"/>
-                </g>
-              </svg>
-            </div>
-            <div class="listing-card-body">
-              <span class="badge-type badge-type-lend">Lend</span>
-              <h3 class="listing-card-title">6ft aluminum step ladder</h3>
-              <p class="listing-card-meta mb-0">Riverdale · posted by Marion T.</p>
-              <div class="listing-card-footer"><span class="text-sm text-muted">Back within 2 weeks</span></div>
-            </div>
-          </a>
-
-          <a class="card listing-card" href="listing-lend.html">
-            <div class="listing-card-media">
-              <svg viewBox="0 0 400 300" role="img" aria-label="Photo of an extension ladder">
-                <rect width="400" height="300" fill="#e5f0ec"/>
-                <g stroke="#2f6d5e" stroke-width="6" fill="none" stroke-linecap="round">
-                  <line x1="125" y1="35" x2="75" y2="265"/>
-                  <line x1="210" y1="35" x2="260" y2="265"/>
-                  <line x1="92" y1="95" x2="228" y2="95"/>
-                  <line x1="84" y1="145" x2="236" y2="145"/>
-                  <line x1="76" y1="195" x2="244" y2="195"/>
-                </g>
-              </svg>
-            </div>
-            <div class="listing-card-body">
-              <span class="badge-type badge-type-lend">Lend</span>
-              <h3 class="listing-card-title">10ft extension ladder for outdoor jobs</h3>
-              <p class="listing-card-meta mb-0">Leslieville · posted by Sam Iqbal</p>
-              <div class="listing-card-footer"><span class="text-sm text-muted">Weekend pickup, return by Monday</span></div>
-            </div>
-          </a>
-
-          <a class="card listing-card" href="listing-sell.html">
-            <div class="listing-card-media">
-              <svg viewBox="0 0 400 300" role="img" aria-label="Photo of a folding ladder">
-                <rect width="400" height="300" fill="#f5e9dc"/>
-                <g stroke="#a15a1f" stroke-width="6" fill="none" stroke-linecap="round">
-                  <line x1="125" y1="55" x2="95" y2="245"/>
-                  <line x1="205" y1="55" x2="235" y2="245"/>
-                  <line x1="108" y1="108" x2="220" y2="108"/>
-                  <line x1="102" y1="158" x2="226" y2="158"/>
-                  <line x1="96" y1="208" x2="232" y2="208"/>
-                </g>
-              </svg>
-            </div>
-            <div class="listing-card-body">
-              <span class="badge-type badge-type-sell">Sell</span>
-              <h3 class="listing-card-title">Folding ladder, condo-storage friendly</h3>
-              <p class="listing-card-meta mb-0">Riverdale · posted by Grace Papadopoulos</p>
-              <div class="listing-card-footer"><span class="listing-card-price">$35</span></div>
-            </div>
-          </a>
-
-          <a class="card listing-card listing-card-help" href="listing-help.html">
-            <div class="listing-card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3"/><path d="M4 20l4-1 9-9-3-3-9 9-1 4z"/></svg>
-            </div>
-            <div class="listing-card-body">
-              <span class="badge-type badge-type-help">Help</span>
-              <h3 class="listing-card-title">Gutter clean-out if you can supply the ladder</h3>
-              <p class="listing-card-meta mb-0">Offered by Hank W. · Scarborough</p>
-              <div class="listing-card-footer"><span class="text-sm text-muted">One Saturday each month, weather permitting</span></div>
-            </div>
-          </a>
+        <div class="field">
+          <span class="field-label">Kind of listing</span>
+      <div class="check-grid">
+        <label class="choice">
+          <input type="checkbox" name="kind" value="lend">
+          <span><span class="choice__title">Lend</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="kind" value="give">
+          <span><span class="choice__title">Give</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="kind" value="sell">
+          <span><span class="choice__title">Sell</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="kind" value="help">
+          <span><span class="choice__title">Help</span></span>
+        </label>
+      </div>
         </div>
-      </section>
+        <div class="field">
+          <label for="hood2">Neighbourhood</label>
+      <select id="hood2" name="hood2">
+        <option value="">Choose your neighbourhood</option>
+        <option>Riverdale</option>
+        <option>Leslieville</option>
+        <option>The Danforth</option>
+        <option>Scarborough</option>
+        <option>The Beaches</option>
+        <option>East York</option>
+        <option>Cabbagetown</option>
+        <option>North York</option>
+      </select>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-secondary btn-block" type="submit">Apply</button>
+        </div>
+      </form>
+
+      <div class="stack-6">
+    <div class="mosaic">
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a step ladder" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M108 55h50"/>
+  <path d="M108 55 72 196"/>
+  <path d="M158 55l36 141"/>
+  <path d="M99 92h68"/>
+  <path d="M89 130h88"/>
+  <path d="M79 168h108"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">6ft aluminum step ladder</span>
+          <span class="placard__meta">Marion T.</span>
+          <span class="placard__meta">Riverdale</span>
+        </span>
+      </a>
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of an extension ladder" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M90 205 150 40"/>
+  <path d="M140 215 200 50"/>
+  <path d="M99 180l50 10"/>
+  <path d="M111 147l50 10"/>
+  <path d="M123 114l50 10"/>
+  <path d="M135 81l50 10"/>
+  <path d="M144 56l50 10"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">10ft extension ladder for outdoor jobs</span>
+          <span class="placard__meta">Sam Iqbal</span>
+          <span class="placard__meta">Leslieville</span>
+        </span>
+      </a>
+
+      <a class="placard placard--sell" href="listing-sell.html">
+        <span class="placard__kind">Sell</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a folding ladder" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M118 62h44"/>
+  <path d="M118 62 92 190"/>
+  <path d="M162 62l26 128"/>
+  <path d="M111 96h58"/>
+  <path d="M104 130h72"/>
+  <path d="M97 164h86"/>
+  <path d="M188 74l38 116"/>
+  <path d="M170 128h44"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">Folding ladder, condo-storage friendly</span>
+          <span class="placard__price">$35</span>
+          <span class="placard__meta">Grace Papadopoulos</span>
+          <span class="placard__meta">The Danforth</span>
+        </span>
+      </a>
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a canoe and paddle" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M32 138c60-42 196-42 256 0-60 46-196 46-256 0Z"/>
+  <path d="M60 133c50-24 150-24 200 0"/>
+  <path d="M118 126v22"/>
+  <path d="M202 126v22"/>
+  <path d="M96 200 208 74"/>
+  <path d="M198 62c14-8 26 4 18 18l-16 18-20-20Z"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">16ft Nova Craft canoe and paddles</span>
+          <span class="placard__meta">Hank W.</span>
+          <span class="placard__meta">Scarborough</span>
+        </span>
+      </a>
+
+    </div>
+      </div>
     </div>
   </div>
 </main>
+
 <nav class="bottom-nav" aria-label="Primary">
-  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
-  <a href="search-results.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
-  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
-  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
-  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
 </nav>
+
 </body>
 </html>

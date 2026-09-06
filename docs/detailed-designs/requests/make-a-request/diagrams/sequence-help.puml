@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Request help against a declared window
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Requester" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "RequestHelpComponent" as page
+  participant "RequestsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "MakeHelpRequestCommandHandler" as handler
+  participant "RequestEligibilityPolicy" as policy
+  participant "ListingRequest" as entity
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Choose Request this help
+page -> client : Read the listing's declared windows
+client -> controller : GET /listings/{listingId}
+controller --> client : Listing with availability windows
+client --> page : Declared windows
+page --> actor : Offer only the declared windows, per L2-057
+actor -> page : Choose one window and write a message
+page -> client : Build typed request
+client -> controller : POST /listings/{listingId}/requests/help
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send MakeHelpRequestCommand
+handler -> policy : Apply L2-062 eligibility checks
+policy --> handler : Eligible
+alt window was declared by the listing
+  handler -> entity : Create pending request against the chosen window
+  entity --> handler : Pending request
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Typed result
+  controller --> client : 201 Created
+  client --> page : Feature result
+  page --> actor : Present L2-058 confirmation naming the owner
+else window was not declared
+  handler --> controller : Validation failure
+  controller --> client : 400 ProblemDetails
+  client --> page : Field errors
+  page --> actor : Mark the window choice as invalid
+end
+@enduml

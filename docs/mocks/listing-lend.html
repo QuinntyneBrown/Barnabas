@@ -1,115 +1,212 @@
 <!DOCTYPE html>
 <!--
-  Lend listing detail for Marion T.'s step ladder.
-  Responsive notes:
-  - <768px: full app chrome uses the bottom nav and the detail content stacks in one column.
-  - >=768px: header nav replaces the bottom nav; the detail content still stacks until wider tablet/desktop widths.
-  - >=1024px: the two-col-detail layout places the listing content and request card side by side.
-  - >=1280px: no material layout change beyond wider gutters.
+A Lend listing. The drawing gets a full field of colour matching its kind;
+  the owner's own sentence about the item is set in the serif, because it is
+  theirs and not the board's. Facts are a plain list of rows.
+
+  Responsive: one column under 1024px; art and aside side by side above, with
+  the aside sticky.
 -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>6ft aluminum step ladder · Barnabas</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6ft aluminum step ladder · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <div class="container">
-      <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
-      <nav class="primary-nav" aria-label="Primary">
-        <a href="board.html">Board</a>
-        <a href="search-results.html">Search</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="requests-incoming.html">Requests</a>
-        <a href="my-listings-active.html">My listings</a>
-        <a href="my-profile-settings.html">Profile</a>
-      </nav>
-      <div class="header-actions">
-        <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
-      </div>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html" aria-current="page">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main id="main" class="page-main">
-    <div class="container stack">
-      <a class="back-link" href="board.html">← Back to board</a>
+<main id="main" class="page-main">
 
-      <div class="two-col two-col-detail">
-        <article class="stack">
-          <div class="detail-media">
-            <svg viewBox="0 0 800 600" role="img" aria-label="Illustration of a six-foot aluminum step ladder">
-              <rect width="800" height="600" fill="var(--color-lend-bg)"></rect>
-              <g stroke="var(--color-lend)" stroke-width="12" fill="none" stroke-linecap="round">
-                <line x1="250" y1="90" x2="190" y2="520"></line>
-                <line x1="430" y1="90" x2="490" y2="520"></line>
-                <line x1="214" y1="185" x2="466" y2="185"></line>
-                <line x1="204" y1="280" x2="476" y2="280"></line>
-                <line x1="194" y1="375" x2="486" y2="375"></line>
-                <line x1="184" y1="470" x2="496" y2="470"></line>
-                <path d="M310 90l-30 430"></path>
-              </g>
-            </svg>
+  <div class="container">
+
+    <a class="back-link" href="board.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      Board
+    </a>
+
+    <div class="detail">
+
+      <div class="stack-6">
+        <div class="detail__art ">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a step ladder" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M108 55h50"/>
+  <path d="M108 55 72 196"/>
+  <path d="M158 55l36 141"/>
+  <path d="M99 92h68"/>
+  <path d="M89 130h88"/>
+  <path d="M79 168h108"/></svg>
+        </div>
+
+        <blockquote class="quote">
+          Happy to lend it out. I only ask that it comes back within a couple of weeks, because the parish hall needs painting in the spring and I would rather not buy another one.
+        </blockquote>
+
+        <dl class="facts">
+          <div>
+            <dt>Return by</dt>
+            <dd>Within two weeks of pickup</dd>
           </div>
-          <div class="stack">
-            <span class="badge-type badge-type-lend">Lend</span>
-            <h1>6ft aluminum step ladder</h1>
-            <p>Marion T. in Riverdale keeps this ladder in the garage and is glad to lend it out for small home jobs, painting, and changing light fixtures. It is lightweight enough to fit in most hatchbacks and still feels steady once opened on a flat floor.</p>
-            <div class="tag-list">
-              <span class="tag">Good condition</span>
-              <span class="tag">Home repair</span>
-            </div>
+          <div>
+            <dt>Pickup</dt>
+            <dd>Near Broadview and Gerrard, or after the 10:30 service</dd>
           </div>
-        </article>
-
-        <aside class="card detail-side-card stack">
-          <dl class="detail-list">
-            <div>
-              <dt>Return by</dt>
-              <dd>Back within 2 weeks, though Marion says there is no rush if you need a few extra days.</dd>
-            </div>
-            <div>
-              <dt>Borrowing note</dt>
-              <dd>This is a loan, not a gift. Please return it clean and let Marion know if a rung or hinge gets damaged.</dd>
-            </div>
-            <div>
-              <dt>Pickup</dt>
-              <dd>Riverdale, near Broadview and Gerrard. Evening pickup is easiest.</dd>
-            </div>
-          </dl>
-
-          <a class="btn btn-primary btn-block" href="requests-incoming.html">Request to borrow</a>
-
-          <div class="detail-note text-sm text-muted">You and Marion arrange the handoff directly. Barnabas does not manage deposits, delivery, or returns.</div>
-
-          <hr>
-
-          <div class="profile-inline">
-            <div class="avatar" aria-hidden="true">
-              <svg viewBox="0 0 64 64" role="img" aria-label="Avatar placeholder for Marion T.">
-                <circle cx="32" cy="32" r="32" fill="var(--color-lend-bg)"></circle>
-                <circle cx="32" cy="24" r="10" fill="none" stroke="var(--color-lend)" stroke-width="3"></circle>
-                <path d="M16 50c4-8 10-12 16-12s12 4 16 12" fill="none" stroke="var(--color-lend)" stroke-width="3" stroke-linecap="round"></path>
-              </svg>
-            </div>
-            <div>
-              <p><strong><a href="member-profile.html">Marion T.</a></strong></p>
-              <p class="text-sm text-muted">Riverdale · member since 2023</p>
-            </div>
+          <div>
+            <dt>Condition</dt>
+            <dd>Well used, sound. Both spreaders lock properly.</dd>
           </div>
-        </aside>
+          <div>
+            <dt>Posted</dt>
+            <dd>Four days ago</dd>
+          </div>
+        </dl>
       </div>
-    </div>
-  </main>
 
-  <nav class="bottom-nav" aria-label="Primary">
-    <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"></path><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"></path></svg>Board</a>
-    <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>Search</a>
-    <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>Post</a>
-    <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"></path><rect x="3" y="5" width="18" height="14" rx="2"></rect></svg>Requests</a>
-    <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"></path></svg>Profile</a>
-  </nav>
+      <div class="detail__aside">
+        <div class="stack-5">
+          <span class="kind kind--lend">Lend</span>
+          <h1 class="detail__title">6ft aluminum step ladder</h1>
+
+          <a class="person" href="member-profile.html">
+            <span class="avatar avatar--paper" aria-hidden="true">MT</span>
+            <span>
+              <span class="person__name">Marion T.</span><br>
+              <span class="person__meta">Riverdale</span>
+            </span>
+          </a>
+
+          <a class="btn btn-primary btn-lg btn-block" href="request-lend.html">Request to borrow</a>
+
+          <p class="note">Marion arranges the handoff with you directly. Barnabas does not manage deposits, delivery, or returns.</p>
+
+          <button class="btn btn-ghost btn-sm" type="button" data-open-dialog="report">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 5.5c4-2 8 2 12 0v8c-4 2-8-2-12 0"/></svg>
+            Report this listing
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container section">
+    <div class="stack-6">
+      <h2>More from Marion T.</h2>
+    <div class="mosaic">
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a camping tent" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M46 194 160 54l114 140Z"/>
+  <path d="M160 54v140"/>
+  <path d="M124 194c0-30 16-54 36-54s36 24 36 54"/>
+  <path d="M46 194h228"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">Four-person camping tent</span>
+          <span class="placard__meta">Marion T.</span>
+          <span class="placard__meta">Riverdale</span>
+        </span>
+      </a>
+
+      <a class="placard placard--sell" href="listing-sell.html">
+        <span class="placard__kind">Sell</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a cordless drill" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M74 92h108v56H74a12 12 0 0 1-12-12v-32a12 12 0 0 1 12-12Z"/>
+  <path d="M182 104h34v32h-34"/>
+  <path d="M216 120h34"/>
+  <path d="M108 148l-14 56h48l10-56"/>
+  <path d="M86 204h60v22H86Z"/>
+  <path d="M74 120h20"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">DeWalt cordless drill, two batteries</span>
+          <span class="placard__price">$45</span>
+          <span class="placard__meta">Marion T.</span>
+          <span class="placard__meta">Riverdale</span>
+        </span>
+      </a>
+
+    </div>
+    </div>
+  </div>
+</main>
+
+<dialog id="report" aria-labelledby="report-title">
+  <h2 id="report-title">Report this listing</h2>
+  <p>A moderator at St.&nbsp;Aidan's will look at it. Marion T. is not told who reported it.</p>
+  <form method="dialog" class="stack-5">
+    <div class="field">
+      <label for="report-reason">What is wrong with it?</label>
+      <select id="report-reason" name="reason">
+        <option>It does not belong on the board</option>
+        <option>It is already gone</option>
+        <option>The description is not accurate</option>
+        <option>Something else</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="report-note">Anything to add?</label>
+      <textarea id="report-note" name="note" rows="3" placeholder="Optional"></textarea>
+    </div>
+    <div class="btn-group">
+      <a class="btn btn-primary" href="report-sent.html">Send report</a>
+      <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+<script src="mocks.js"></script>
+
 </body>
 </html>

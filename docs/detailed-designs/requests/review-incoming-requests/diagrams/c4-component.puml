@@ -1,0 +1,16 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Review incoming requests
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes GET /requests/incoming")
+  Component(handler, "GetIncomingRequestsQueryHandler", "MediatR handler", "Reads requests on the caller's listings")
+  Component(dto, "IncomingRequestDto", "Read model", "Requester, listing, message, and per-kind terms")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Stores requests and listings")
+}
+Rel(ctrl, handler, "Sends GetIncomingRequestsQuery")
+Rel(handler, db, "Reads requests on listings owned by the caller", "EF Core")
+Rel(handler, dto, "Projects to")
+@enduml

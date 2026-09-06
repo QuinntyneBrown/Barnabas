@@ -1,0 +1,19 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Make a request
+
+Person(requester, "Requester", "Member asking for a listing")
+System_Boundary(barnabas, "Barnabas") {
+  Container(spa, "Barnabas web", "Angular", "Member-facing user interface")
+  Container(api, "Barnabas API", "ASP.NET Core", "Application and domain logic")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Congregations, listings, and requests")
+}
+System_Ext(email, "Email provider", "Delivers notifications")
+
+Rel(requester, spa, "Composes a request in", "HTTPS")
+Rel(spa, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, email, "Queues owner notification", "SMTP")
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Read and reply
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "ThreadsController", "ASP.NET Core controller", "Exposes reading one thread and appending to it")
+  Component(read, "GetThreadQueryHandler", "MediatR handler", "Returns the messages and marks the thread read for the caller")
+  Component(send, "SendMessageCommandHandler", "MediatR handler", "Appends a message to a thread the caller is party to")
+  Component(thread, "MessageThread", "Domain entity", "Answers whether a member is a party")
+  Component(message, "Message", "Domain entity", "One message and its sender")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Threads, messages, and read marks")
+}
+Rel(ctrl, read, "Sends GetThreadQuery")
+Rel(ctrl, send, "Sends SendMessageCommand")
+Rel(read, thread, "Checks party membership on")
+Rel(send, thread, "Checks party membership on")
+Rel(send, message, "Appends")
+Rel(message, db, "Persisted in", "EF Core")
+@enduml

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+The terminus of the sign-in flow, and a dead end by design — the member has to
+  leave for their email. In the original set the magic-link button jumped
+  straight to the board, which was a lie about what had happened.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check your email · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="landing.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+
+  <div class="container">
+    <div class="auth">
+      <div class="state">
+        <svg viewBox="0 0 120 120" role="img" aria-label="A posted note" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 30h72v56H24z"/>
+  <path d="m24 32 36 26 36-26"/>
+  <path d="M60 96v12M44 100l16 12 16-12"/></svg>
+        <h1>Check your email</h1>
+        <p>A sign-in link is on its way to <strong>priya@example.com</strong>. It works once and expires in fifteen minutes.</p>
+        <div class="btn-group">
+          <a class="btn btn-secondary" href="check-your-email.html">Send it again</a>
+          <a class="btn btn-ghost" href="sign-in.html">Use a different address</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

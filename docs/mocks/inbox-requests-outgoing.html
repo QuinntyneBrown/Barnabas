@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+The requests you have made. This page existed in the original set but nothing
+  linked to it — the Requests nav item always went to the owner's inbox and
+  there was no incoming/outgoing pair. It is now one of three chips.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inbox · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html" aria-current="page">Inbox</a>
+      <a href="you.html">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+
+  <div class="masthead on-ink">
+    <div class="container">
+      <h1 class="masthead-title">Inbox</h1>
+      <p class="masthead-note">Requests, replies, and the threads where handoffs get arranged.</p>
+      <nav class="chip-row" aria-label="Inbox sections">
+        <a class="chip" href="inbox-requests-incoming.html">Requests to me <span class="chip-count">4</span></a>
+        <a class="chip" href="inbox-requests-outgoing.html" aria-current="true">My requests <span class="chip-count">3</span></a>
+        <a class="chip" href="inbox-messages.html">Messages <span class="chip-count">2</span></a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container section-tight">
+    <div class="rows">
+        <div class="list-row">
+          <span class="avatar avatar--paper" aria-hidden="true">MT</span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <span class="list-row__title">6ft aluminum step ladder</span>
+              <span class="status status--pending">Pending</span>
+            </div>
+            <p class="list-row__meta"><a class="link" href="member-profile.html">Marion T.</a> &nbsp;&mdash;&nbsp; Sent this morning</p>
+            <p class="list-row__meta">Waiting on Marion. You will get a notification either way.</p>
+            <div class="list-row__actions">
+            <a class="btn btn-ghost btn-sm" href="board.html">Find something similar</a>
+            </div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="avatar avatar--stone" aria-hidden="true">AF</span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <span class="list-row__title">Crib, mattress included</span>
+              <span class="status status--accepted">Accepted</span>
+            </div>
+            <p class="list-row__meta"><a class="link" href="member-profile.html">Angela F.</a> &nbsp;&mdash;&nbsp; Accepted yesterday</p>
+            <p class="list-row__meta">Angela accepted. Settle the pickup in the thread.</p>
+            <div class="list-row__actions">
+            <a class="btn btn-secondary btn-sm" href="message-thread.html">Open the message thread</a>
+            </div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="avatar avatar--paper" aria-hidden="true">HW</span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <span class="list-row__title">16ft Nova Craft canoe and paddles</span>
+              <span class="status status--declined">Declined</span>
+            </div>
+            <p class="list-row__meta"><a class="link" href="member-profile.html">Hank W.</a> &nbsp;&mdash;&nbsp; Declined last week</p>
+            <p class="list-row__meta">Hank has it out until Labour Day.</p>
+            <div class="list-row__actions">
+            <a class="btn btn-ghost btn-sm" href="board.html">Find something similar</a>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+
+</body>
+</html>

@@ -1,78 +1,107 @@
 <!DOCTYPE html>
 <!--
-  New listing flow, step 1. Responsive notes: <768px the four type choices stack in one column with the bottom tab bar visible; >=768px the choices shift to a two-column option-card grid and the header nav replaces the bottom tab bar; >=1280px no additional material layout change beyond wider margins.
+Step one of two. The four kinds each lead to their own form: the original set
+  sent Lend, Give and Sell to one shared form hardcoded with Sell content, so
+  the choice made here was thrown away.
+
+  Responsive: the four options stack under 700px and sit two-up above.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Choose listing type · Barnabas</title>
+<title>Post a listing · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
     <nav class="primary-nav" aria-label="Primary">
       <a href="board.html">Board</a>
-      <a href="search-results.html">Search</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="requests-incoming.html">Requests</a>
-      <a href="my-listings-active.html">My listings</a>
-      <a href="my-profile-settings.html">Profile</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html" aria-current="page">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html">You</a>
     </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
+    </div>
   </div>
 </header>
-<main id="main" class="page-main">
-  <div class="container">
-    <a class="back-link" href="board.html">← Back to board</a>
-    <div class="section-title">
-      <div>
-        <p class="text-sm text-muted mb-0">Step 1 of 2</p>
-        <h1>What are you posting?</h1>
-      </div>
-    </div>
-    <p class="text-muted">Tap the kind of listing you want to share with St. Aidan's to continue.</p>
 
-    <nav class="option-card-group option-card-group-2col" aria-label="Choose listing type">
-      <a class="option-card" href="new-listing-details-goods.html">
-        <span>
-          <span class="option-card-title">Lend</span>
-          <span class="option-card-desc">Something you'll want back eventually.</span>
-        </span>
+<main id="main" class="page-main">
+
+  <div class="masthead on-ink">
+    <div class="container">
+      <h1 class="masthead-title">What are you posting?</h1>
+      <p class="masthead-note">Choose the kind first &mdash; each asks for what it actually needs.</p>
+      <p class="step-marker">Step 1 of 2</p>
+    </div>
+  </div>
+
+  <div class="container section-tight">
+    <nav class="option-grid option-grid--2" aria-label="Choose a listing kind">
+      <a class="option option--lend" href="new-listing-lend.html">
+        <span class="option__title">Lend</span>
+        <span class="option__desc">Something you will want back.</span>
       </a>
-      <a class="option-card" href="new-listing-details-goods.html">
-        <span>
-          <span class="option-card-title">Give</span>
-          <span class="option-card-desc">Something you no longer need.</span>
-        </span>
+      <a class="option option--give" href="new-listing-give.html">
+        <span class="option__title">Give</span>
+        <span class="option__desc">Something you no longer need.</span>
       </a>
-      <a class="option-card" href="new-listing-details-goods.html">
-        <span>
-          <span class="option-card-title">Sell</span>
-          <span class="option-card-desc">Something you want a fair price for.</span>
-        </span>
+      <a class="option option--sell" href="new-listing-sell.html">
+        <span class="option__title">Sell</span>
+        <span class="option__desc">Something you want a fair price for.</span>
       </a>
-      <a class="option-card" href="new-listing-details-help.html">
-        <span>
-          <span class="option-card-title">Help</span>
-          <span class="option-card-desc">Time or a skill, not a thing.</span>
-        </span>
+      <a class="option option--help" href="new-listing-help.html">
+        <span class="option__title">Help</span>
+        <span class="option__desc">Time or a skill, not a thing.</span>
       </a>
     </nav>
-    <p class="field-hint">Lend, Give, and Sell all continue to the same goods details step below (the price field is skipped for Lend/Give in the full app); Help continues to its own availability-based step.</p>
-    <div class="btn-group">
+
+    <div class="btn-group" style="margin-top: var(--s-6);">
       <a class="btn btn-ghost" href="board.html">Cancel</a>
     </div>
   </div>
 </main>
+
 <nav class="bottom-nav" aria-label="Primary">
-  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
-  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
-  <a href="new-listing-choose-type.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
-  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
-  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
 </nav>
+
 </body>
 </html>

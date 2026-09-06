@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!--
+For clergy and approved moderators. Reported listings and members waiting to
+  join sit on one page, and every title and name links to what it names — in the
+  original set the flagged titles were plain headings, so a moderator could not
+  open the thing being moderated.
+
+  The page had no inbound link at all before; it is now a row on the You hub,
+  shown only to moderators.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moderator tools · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html" aria-current="page">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+
+  <div class="masthead on-ink">
+    <div class="container">
+      <h1 class="masthead-title">Moderator tools</h1>
+      <p class="masthead-note">For clergy and approved moderators at St.&nbsp;Aidan's.</p>
+    </div>
+  </div>
+
+  <div class="container section-tight">
+    <a class="back-link" href="you.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      You
+    </a>
+
+    <div class="stack-7">
+      <div class="stack-5">
+        <h2>Reported listings</h2>
+        <div class="rows">
+        <div class="list-row">
+          <div class="list-row__body">
+            <div class="row-between">
+              <a class="list-row__title link" href="listing-sell.html">Dining table, solid oak</a>
+              <span class="status status--flagged">Flagged</span>
+            </div>
+            <p class="list-row__meta">Posted by <a class="link" href="member-profile.html">Grace Papadopoulos</a></p>
+            <p class="list-row__meta">Reported as already gone</p>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="moderation-queue.html">Leave it up</a>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="remove">Remove it</button>
+            </div>
+          </div>
+        </div>
+        <div class="list-row">
+          <div class="list-row__body">
+            <div class="row-between">
+              <a class="list-row__title link" href="listing-help.html">Painting help for cash</a>
+              <span class="status status--flagged">Flagged</span>
+            </div>
+            <p class="list-row__meta">Posted by <a class="link" href="member-profile.html">Sam Iqbal</a></p>
+            <p class="list-row__meta">Reported as not belonging on the board</p>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="moderation-queue.html">Leave it up</a>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="remove">Remove it</button>
+            </div>
+          </div>
+        </div>
+        <div class="list-row">
+          <div class="list-row__body">
+            <div class="row-between">
+              <a class="list-row__title link" href="listing-give.html">Box of paperback novels</a>
+              <span class="status status--flagged">Flagged</span>
+            </div>
+            <p class="list-row__meta">Posted by <a class="link" href="member-profile.html">Priya K.</a></p>
+            <p class="list-row__meta">Reported as inaccurately described</p>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="moderation-queue.html">Leave it up</a>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="remove">Remove it</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="stack-5">
+        <h2>Members waiting to join</h2>
+        <div class="rows">
+        <div class="list-row">
+          <span class="avatar avatar--stone" aria-hidden="true">NA</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="member-profile.html">Nora Almeida</a>
+            <p class="list-row__meta">East York</p>
+            <p class="list-row__meta">Came to the parish newcomer lunch. Referred by Angela F.</p>
+            <div class="list-row__actions">
+              <a class="btn btn-primary btn-sm" href="moderation-queue.html">Approve</a>
+              <button class="btn btn-secondary btn-sm" type="button" data-open-dialog="declinemember">Decline</button>
+            </div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="avatar avatar--paper" aria-hidden="true">DM</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="member-profile.html">David Mensah</a>
+            <p class="list-row__meta">Riverdale</p>
+            <p class="list-row__meta">Emailed the parish office after Sunday notices. Sings in the choir.</p>
+            <div class="list-row__actions">
+              <a class="btn btn-primary btn-sm" href="moderation-queue.html">Approve</a>
+              <button class="btn btn-secondary btn-sm" type="button" data-open-dialog="declinemember">Decline</button>
+            </div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="avatar avatar--stone" aria-hidden="true">EC</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="member-profile.html">Evelyn Chow</a>
+            <p class="list-row__meta">Riverdale</p>
+            <p class="list-row__meta">Referred by Fr. Michael Chen. Wants to offer rides and to borrow a crib.</p>
+            <div class="list-row__actions">
+              <a class="btn btn-primary btn-sm" href="moderation-queue.html">Approve</a>
+              <button class="btn btn-secondary btn-sm" type="button" data-open-dialog="declinemember">Decline</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<dialog id="remove" aria-labelledby="remove-title">
+  <h2 id="remove-title">Remove this listing?</h2>
+  <p>It comes off the board and the member who posted it is told. The member who reported it stays anonymous.</p>
+  <div class="btn-group">
+    <a class="btn btn-danger" href="moderation-queue.html">Remove it</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="declinemember" aria-labelledby="dm-title">
+  <h2 id="dm-title">Decline this member?</h2>
+  <p>They are told their request to join was not approved, and they do not see the board.</p>
+  <div class="btn-group">
+    <a class="btn btn-danger" href="moderation-queue.html">Decline</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+<script src="mocks.js"></script>
+
+</body>
+</html>

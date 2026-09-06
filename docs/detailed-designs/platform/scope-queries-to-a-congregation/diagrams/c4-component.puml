@@ -1,0 +1,18 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Scope queries to a congregation
+
+Container_Boundary(api, "Barnabas API") {
+  Component(jwt, "JwtBearerMiddleware", "ASP.NET Core middleware", "Validates the token and populates the claims principal")
+  Component(ctx, "CongregationContext", "Scoped service", "Exposes the congregation and member the token names")
+  Component(handler, "Any query or command handler", "MediatR handler", "Reads and writes without naming a congregation")
+  Component(db, "BarnabasDbContext", "EF Core", "Applies a global query filter to every ITenantOwned entity")
+  ComponentDb(store, "Barnabas database", "SQL Server", "Holds every congregation's data in shared tables")
+}
+Rel(jwt, ctx, "Populates from the congregation claim")
+Rel(handler, db, "Queries without a congregation predicate")
+Rel(db, ctx, "Reads the current congregation")
+Rel(db, store, "Issues filtered SQL", "EF Core")
+@enduml

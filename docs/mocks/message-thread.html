@@ -1,101 +1,139 @@
 <!DOCTYPE html>
 <!--
-  One request conversation tied to a specific listing. Responsive notes: <768px the composer stacks beneath the textarea; >=768px the composer becomes a two-column row beside the send button; >=1280px no additional material layout change beyond wider margins.
+One thread, about one listing. The context card at the top is what makes a
+  thread comprehensible six weeks later, and it is always present because a
+  thread only ever begins from a request on a listing.
+
+  Messages are set in the serif: they are members' own words, not the board's.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Message thread · Barnabas</title>
+<title>Messages · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
     <nav class="primary-nav" aria-label="Primary">
       <a href="board.html">Board</a>
-      <a href="search-results.html">Search</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="requests-incoming.html" aria-current="page">Requests</a>
-      <a href="my-listings-active.html">My listings</a>
-      <a href="my-profile-settings.html">Profile</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html" aria-current="page">Inbox</a>
+      <a href="you.html">You</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
   </div>
 </header>
+
 <main id="main" class="page-main">
-  <div class="container">
-    <div class="section-title">
-      <div>
-        <h1>Message thread</h1>
-        <p class="text-muted mb-0">About one listing request between Priya K. and Marion T.</p>
-      </div>
+
+  <div class="masthead masthead--stone masthead--short">
+    <div class="container">
+      <h1 class="masthead-title">Angela F.</h1>
     </div>
+  </div>
 
-    <section class="message-thread" aria-label="Conversation with Marion T.">
-      <a class="message-context" href="listing-sell.html">
-        <p class="mb-0"><span class="badge-type badge-type-sell">Sell</span></p>
-        <h2 class="listing-card-title">DeWalt cordless drill, 2 batteries</h2>
-        <p class="text-sm text-muted mb-0">Marion T. · Riverdale · $45 CAD</p>
-      </a>
+  <div class="container section-tight">
+    <a class="back-link" href="inbox-messages.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      All messages
+    </a>
 
-      <div class="message-list" aria-label="Messages">
-        <div class="message-item message-out">
-          <div class="message-bubble">
-            <span class="message-meta">Priya K. · Today, 10:14 a.m.</span>
-            <p class="mb-0">Hi Marion — is the drill still available? I'm helping with repairs at my aunt's place this weekend and wondered if the charger and spare bits are included.</p>
-          </div>
+    <div class="stack-6">
+
+      <div class="thread-context">
+        <span class="thread-context__art" aria-hidden="true">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a crib" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M66 92h188"/>
+  <path d="M66 182h188"/>
+  <path d="M66 92v98"/>
+  <path d="M254 92v98"/>
+  <path d="M74 190v22"/>
+  <path d="M246 190v22"/>
+  <path d="M100 96v82M132 96v82M164 96v82M196 96v82M228 96v82"/></svg>
+        </span>
+        <span>
+          <a class="list-row__title link" href="listing-give.html">Crib, mattress included</a><br>
+          <span class="list-row__meta">Given away by <a class="link" href="member-profile.html">Angela F.</a></span>
+        </span>
+      </div>
+
+      <div class="row">
+        <a class="status status--accepted" href="inbox-requests-outgoing.html">Request accepted</a>
+        <span class="muted small">Arrange the pickup between yourselves.</span>
+      </div>
+
+      <div class="messages">
+        <div class="message message--in">
+          <div class="message__bubble">Hello Priya — yes, the crib is still here. When suits you for collecting it?</div>
+          <span class="message__meta">Angela F. &nbsp;&mdash;&nbsp; Yesterday, 4:12 p.m.</span>
         </div>
-
-        <div class="message-item message-in">
-          <div class="message-bubble">
-            <span class="message-meta">Marion T. · Today, 10:28 a.m.</span>
-            <p class="mb-0">Yes, still available. Charger, both batteries, and a small bit case are all included. The batteries still hold a good charge.</p>
-          </div>
+        <div class="message message--out">
+          <div class="message__bubble">That is wonderful, thank you. Would Thursday evening work, after choir?</div>
+          <span class="message__meta">You &nbsp;&mdash;&nbsp; Yesterday, 6:40 p.m.</span>
         </div>
-
-        <div class="message-item message-out">
-          <div class="message-bubble">
-            <span class="message-meta">Priya K. · Today, 10:41 a.m.</span>
-            <p class="mb-0">Perfect, thank you. Could I pick it up after the 10:30 service this Sunday? I can bring exact cash.</p>
-          </div>
+        <div class="message message--in">
+          <div class="message__bubble">Thursday is perfect. We are the red door on the north side, just up from Coxwell station. Bring an Allen key if you have one and I will help you get it in the car.</div>
+          <span class="message__meta">Angela F. &nbsp;&mdash;&nbsp; Yesterday, 7:02 p.m.</span>
         </div>
-
-        <div class="message-item message-in">
-          <div class="message-bubble">
-            <span class="message-meta">Marion T. · Today, 10:47 a.m.</span>
-            <p class="mb-0">That works for me. I'll bring it to coffee hour and look for you near the parish hall doors.</p>
-          </div>
-        </div>
-
-        <div class="message-item message-in">
-          <div class="message-bubble">
-            <span class="message-meta">Marion T. · Today, 10:48 a.m.</span>
-            <p class="mb-0">If anything changes, send a note here before Saturday evening.</p>
-          </div>
+        <div class="message message--out">
+          <div class="message__bubble">Will do. See you Thursday, and thank you again.</div>
+          <span class="message__meta">You &nbsp;&mdash;&nbsp; This morning, 8:15 a.m.</span>
         </div>
       </div>
 
-      <form class="message-composer" action="message-thread.html">
-        <div>
-          <label class="visually-hidden" for="message-reply">Type a reply</label>
-          <textarea id="message-reply" name="reply" placeholder="Write a reply to Marion..."></textarea>
+      <form class="composer" action="message-thread.html" method="get">
+        <div class="field">
+          <label for="reply">Reply to Angela</label>
+          <textarea id="reply" name="reply" rows="3" placeholder="Write a message&hellip;"></textarea>
         </div>
         <button class="btn btn-primary" type="submit">Send</button>
       </form>
-    </section>
+
+    </div>
   </div>
 </main>
+
 <nav class="bottom-nav" aria-label="Primary">
-  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
-  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
-  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
-  <a href="requests-incoming.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
-  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
 </nav>
+
 </body>
 </html>

@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Exchanging a link for a session
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "SignInLandingComponent" as page
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "SessionsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "ExchangeSignInTokenCommandHandler" as handler
+  participant "SignInToken" as token
+  participant "Session" as session
+  participant "JwtIssuer" as issuer
+end box
+box "Backend — Infrastructure" #FFF4E5
+  participant "IAuthenticationStore" as store
+  database "Barnabas database" as db
+end box
+
+actor -> page : Follow the emailed link
+page -> controller : POST /sessions with the token
+controller -> handler : Send ExchangeSignInTokenCommand
+handler -> store : Find the token by its hash
+store --> handler : Token
+handler -> token : Check expiry
+alt past its expiry
+  token --> handler : Expired, per L2-015
+  handler --> controller : Gone
+  controller --> page : 410 Gone
+  page --> actor : Explain the link expired, offer to send another
+else unexpired
+  handler -> db : Consume the token conditionally, only if still unconsumed
+  note over db : L2-016 requires exactly one session from a\nconcurrent exchange. A read-then-write would let\ntwo callers both pass the check, so consumption is\none conditional update and the row count decides.
+  alt one row updated, this caller won
+    db --> handler : Consumed
+    handler -> session : Open, deriving the congregation from the member record
+    session --> handler : Session
+    handler -> issuer : Issue tokens bound to the session
+    issuer --> handler : Access and refresh tokens carrying sid
+    handler -> db : Save the session and the refresh token in one unit of work
+    handler --> controller : Session
+    controller --> page : 200 OK
+    page --> actor : The board
+  else no rows updated, another caller won
+    db --> handler : Already consumed
+    handler --> controller : Gone
+    controller --> page : 410 Gone
+    page --> actor : Explain the link was already used
+  end
+end
+@enduml

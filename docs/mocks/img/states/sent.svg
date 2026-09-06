@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="A posted note"
+     fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M24 30h72v56H24z"/>
+  <path d="m24 32 36 26 36-26"/>
+  <path d="M60 96v12M44 100l16 12 16-12"/>
+</svg>

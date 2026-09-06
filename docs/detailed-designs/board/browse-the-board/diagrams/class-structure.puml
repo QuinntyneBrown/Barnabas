@@ -1,0 +1,60 @@
+@startuml
+!pragma layout smetana
+title Class structure — Browse the board
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class GetBoardQuery {
+  +ListingKind? Kind
+  +int Limit
+  +string? Cursor
+}
+class GetBoardQueryHandler {
+  +Handle(GetBoardQuery) : BoardPage
+}
+class BoardPage {
+  +BoardListingDto[] Listings
+  +string? NextCursor
+  +IDictionary<ListingKind, int> Counts
+}
+class BoardListingDto {
+  +Guid ListingId
+  +ListingKind Kind
+  +string Title
+  +string OwnerDisplayName
+  +string Neighbourhood
+  +decimal? Price
+  +string? OfferInOwnWords
+}
+class Listing {
+  +Guid Id
+  +Guid CongregationId
+  +Guid OwnerId
+  +ListingKind Kind
+  +ListingStatus Status
+  +string Title
+}
+enum ListingKind {
+  Lend
+  Give
+  Sell
+  Help
+}
+enum ListingStatus {
+  Active
+  Sold
+  GivenAway
+  Archived
+  Completed
+}
+
+GetBoardQueryHandler ..> GetBoardQuery : handles
+GetBoardQueryHandler --> BoardPage : returns
+BoardPage *-- BoardListingDto : carries
+BoardListingDto ..> Listing : projects
+Listing --> ListingKind : holds
+Listing --> ListingStatus : holds
+@enduml

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="An hourglass"
+     fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M36 18h48M36 102h48"/>
+  <path d="M40 18v14c0 12 20 20 20 28s-20 16-20 28v14"/>
+  <path d="M80 18v14c0 12-20 20-20 28s20 16 20 28v14"/>
+  <path d="M48 90h24"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a box of books"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M62 118h196v96H62Z"/>
+  <path d="M62 118 84 92h152l22 26"/>
+  <path d="M104 118V60h30v58"/>
+  <path d="M144 118V44h30v74"/>
+  <path d="M184 118V70h30v48"/>
+  <path d="M104 78h30M144 66h30M184 92h30"/>
+</svg>

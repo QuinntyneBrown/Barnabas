@@ -1,0 +1,43 @@
+@startuml
+!pragma layout smetana
+title Class structure — Manage my listings
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class GetMyListingsQuery {
+  +bool IncludeClosed
+}
+class MyListingDto {
+  +Guid ListingId
+  +ListingKind Kind
+  +ListingStatus Status
+  +string Title
+  +decimal? Price
+  +int OpenRequestCount
+}
+class EditListingCommand {
+  +Guid ListingId
+  +string Title
+  +string Description
+  +string Category
+  +string Neighbourhood
+}
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingKind Kind
+  +ListingStatus Status
+  +Edit(string, string, string, string) : void
+}
+interface IRequireOwnership {
+  +Guid ResourceId
+}
+
+EditListingCommand ..|> IRequireOwnership
+GetMyListingsQuery ..> MyListingDto : returns
+MyListingDto ..> Listing : projects
+EditListingCommand ..> Listing : mutates
+@enduml

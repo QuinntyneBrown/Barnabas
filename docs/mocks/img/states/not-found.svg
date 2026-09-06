@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="A compass"
+     fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <circle cx="60" cy="60" r="40"/>
+  <path d="m74 46-9 23-23 9 9-23z"/>
+  <path d="M60 14v8M60 98v8M14 60h8M98 60h8"/>
+</svg>

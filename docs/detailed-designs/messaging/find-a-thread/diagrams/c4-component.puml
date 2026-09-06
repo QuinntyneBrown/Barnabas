@@ -1,0 +1,20 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Find a thread
+
+Container_Boundary(api, "Barnabas API") {
+  Component(accept, "AcceptRequestCommandHandler", "MediatR handler", "Opens a thread as a consequence of accepting")
+  Component(ctrl, "ThreadsController", "ASP.NET Core controller", "Exposes GET /threads")
+  Component(query, "GetMyThreadsQueryHandler", "MediatR handler", "Reads the threads the caller is party to")
+  Component(dto, "ThreadSummaryDto", "Read model", "Other member, listing, latest message, and unread state")
+  Component(entity, "MessageThread", "Domain entity", "Carries the listing and both members")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Threads and messages")
+}
+Rel(accept, entity, "Creates on acceptance")
+Rel(ctrl, query, "Sends GetMyThreadsQuery")
+Rel(query, db, "Reads threads where the caller is a party", "EF Core")
+Rel(query, dto, "Projects to")
+Rel(entity, db, "Persisted in")
+@enduml

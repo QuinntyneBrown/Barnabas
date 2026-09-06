@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Closing out a listing in the vocabulary of its kind
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "MyListingsComponent" as page
+  participant "ConfirmCloseOutDialog" as dialog
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "CloseOutListingCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Open my listings
+page -> page : Label the action from the listing's kind
+note over page : Sell reads "Mark as sold", Give and Lend read\n"Mark as taken", Help reads "Mark as booked".\nThe wording is the kind's, per L2-037.
+actor -> page : Choose the close-out action
+page -> dialog : Ask to confirm
+actor -> dialog : Confirm
+dialog -> controller : POST /listings/{id}/close-out
+controller -> handler : Send CloseOutListingCommand
+handler -> db : Load the listing
+db --> handler : Listing with its kind
+alt the listing is active
+  handler -> entity : Close out
+  entity -> entity : Choose the status from the kind
+  note over entity : Sell becomes Sold, Give becomes Given away,\nLend becomes Archived, Help becomes Completed.\nThe mapping lives here, not in the handler.
+  entity --> handler : Status set
+  handler -> db : Save
+  handler --> controller : Result
+  controller --> dialog : 200 OK
+  dialog --> actor : The wrapped-up list, showing the outcome
+else the listing is already closed
+  entity --> handler : ListingNotActiveException
+  handler --> controller : Conflict
+  controller --> dialog : 409 Conflict
+  dialog --> actor : Report it has already been closed out
+end
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Close out and archive
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Exposes close-out, archive, restore, and delete")
+  Component(close, "CloseOutListingCommandHandler", "MediatR handler", "Records how the listing ended, in its kind's vocabulary")
+  Component(archive, "ArchiveListingCommandHandler", "MediatR handler", "Takes a listing off the board without an outcome")
+  Component(restore, "RestoreListingCommandHandler", "MediatR handler", "Returns an archived listing to the board")
+  Component(delete, "DeleteListingCommandHandler", "MediatR handler", "Removes a listing and its requests permanently")
+  Component(entity, "Listing", "Domain entity", "Owns the status transitions and the per-kind outcome")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Listings, requests, and threads")
+}
+Rel(ctrl, close, "Sends CloseOutListingCommand")
+Rel(ctrl, archive, "Sends ArchiveListingCommand")
+Rel(ctrl, restore, "Sends RestoreListingCommand")
+Rel(ctrl, delete, "Sends DeleteListingCommand")
+Rel(close, entity, "Applies the outcome to")
+Rel(archive, entity, "Transitions")
+Rel(restore, entity, "Transitions")
+Rel(delete, db, "Removes from", "EF Core")
+@enduml

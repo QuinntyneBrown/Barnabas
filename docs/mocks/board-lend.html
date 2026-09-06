@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<!--
+The board filtered to Lend. Filtering to one kind is the clearest
+  view of the colour system: every placard here sits on the same field.
+  Responsive: the mosaic is one column under 560px, two to 1024px,
+  three to 1400px, and four above. The masthead band and its filter chips
+  keep the same shape at every width.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lending · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html" aria-current="page">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+
+  <div class="masthead on-ink">
+    <div class="container">
+      <h1 class="masthead-title">Lending</h1>
+      <p class="masthead-note">Things members want back when you are finished with them.</p>
+      <nav class="chip-row" aria-label="Filter by listing type">
+        <a class="chip" href="board.html">Everything <span class="chip-count">12</span></a>
+        <a class="chip" href="board-lend.html" aria-current="true">Lend <span class="chip-count">4</span></a>
+        <a class="chip" href="board-give.html">Give <span class="chip-count">2</span></a>
+        <a class="chip" href="board-sell.html">Sell <span class="chip-count">3</span></a>
+        <a class="chip" href="board-help.html">Help <span class="chip-count">3</span></a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container section">
+    <div class="mosaic">
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a step ladder" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M108 55h50"/>
+  <path d="M108 55 72 196"/>
+  <path d="M158 55l36 141"/>
+  <path d="M99 92h68"/>
+  <path d="M89 130h88"/>
+  <path d="M79 168h108"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">6ft aluminum step ladder</span>
+          <span class="placard__meta">Marion T.</span>
+          <span class="placard__meta">Riverdale</span>
+        </span>
+      </a>
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a canoe and paddle" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M32 138c60-42 196-42 256 0-60 46-196 46-256 0Z"/>
+  <path d="M60 133c50-24 150-24 200 0"/>
+  <path d="M118 126v22"/>
+  <path d="M202 126v22"/>
+  <path d="M96 200 208 74"/>
+  <path d="M198 62c14-8 26 4 18 18l-16 18-20-20Z"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">16ft Nova Craft canoe and paddles</span>
+          <span class="placard__meta">Hank W.</span>
+          <span class="placard__meta">Scarborough</span>
+        </span>
+      </a>
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a camping tent" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M46 194 160 54l114 140Z"/>
+  <path d="M160 54v140"/>
+  <path d="M124 194c0-30 16-54 36-54s36 24 36 54"/>
+  <path d="M46 194h228"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">Four-person camping tent</span>
+          <span class="placard__meta">Marion T.</span>
+          <span class="placard__meta">Riverdale</span>
+        </span>
+      </a>
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a three-tier cake stand" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M104 84h112"/>
+  <path d="M86 134h148"/>
+  <path d="M66 184h188"/>
+  <path d="M160 60v124"/>
+  <path d="M160 56a10 10 0 1 1 0 .1"/>
+  <path d="M124 200h72"/>
+  <path d="M160 184v16"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">Three-tier cake stand for parish events</span>
+          <span class="placard__meta">Priya K.</span>
+          <span class="placard__meta">Leslieville</span>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="field-block field-block--paper">
+      <div class="stack-5">
+        <h2 class="display">Have something<br>the parish could use?</h2>
+        <p class="lede">A ladder in the garage, an afternoon free, a crib the children have outgrown.</p>
+        <div class="btn-group">
+          <a class="btn btn-primary btn-lg" href="new-listing-choose-type.html">Post a listing</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+
+</body>
+</html>

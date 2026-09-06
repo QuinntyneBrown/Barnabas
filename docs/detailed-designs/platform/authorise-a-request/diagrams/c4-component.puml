@@ -1,0 +1,22 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Authorise a request
+
+Container_Boundary(api, "Barnabas API") {
+  Component(jwt, "JwtBearerMiddleware", "ASP.NET Core middleware", "Rejects an absent, malformed, or wrongly signed token")
+  Component(session, "SessionValidator", "Authentication event handler", "Rejects a token whose session has been revoked")
+  Component(controller, "Any controller", "ASP.NET Core controller", "Dispatches the request through MediatR")
+  Component(behaviour, "AuthorisationBehaviour", "MediatR pipeline behaviour", "Applies role and ownership rules before the handler runs")
+  Component(rules, "IRequireRole and IRequireOwnership", "Marker interfaces", "Declare what a request demands")
+  Component(handler, "Any command handler", "MediatR handler", "Runs only for an authorised caller")
+  Component(problem, "ProblemDetailsFactory", "ASP.NET Core", "Renders 401 and 403 without leaking detail")
+}
+Rel(jwt, session, "Hands the validated principal to")
+Rel(session, controller, "Passes an authenticated principal on a live session")
+Rel(controller, behaviour, "Sends the request through the pipeline")
+Rel(behaviour, rules, "Reads the request's declared demands")
+Rel(behaviour, handler, "Invokes when authorised")
+Rel(behaviour, problem, "Raises when not")
+@enduml

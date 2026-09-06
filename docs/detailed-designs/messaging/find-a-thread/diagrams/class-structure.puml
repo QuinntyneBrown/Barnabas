@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+title Class structure — Find a thread
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class MessageThread {
+  +Guid Id
+  +Guid CongregationId
+  +Guid RequestId
+  +Guid ListingId
+  +Guid OwnerId
+  +Guid RequesterId
+  +DateTimeOffset OpenedOn
+  +IsParty(Guid) : bool
+}
+note bottom of MessageThread
+  RequestId is unique. One accepted
+  request opens exactly one thread,
+  and the constraint says so.
+end note
+class GetMyThreadsQuery {
+}
+class ThreadSummaryDto {
+  +Guid ThreadId
+  +Guid OtherMemberId
+  +string OtherMemberDisplayName
+  +Guid ListingId
+  +string ListingTitle
+  +string LatestMessage
+  +DateTimeOffset LatestAt
+  +bool Unread
+}
+class ListingRequest {
+  +Guid Id
+  +RequestStatus Status
+}
+class Message {
+  +Guid Id
+  +Guid ThreadId
+  +Guid SenderId
+  +DateTimeOffset SentOn
+}
+
+MessageThread --> ListingRequest : opened by exactly one accepted
+MessageThread *-- Message : holds
+GetMyThreadsQuery ..> ThreadSummaryDto : returns
+ThreadSummaryDto ..> MessageThread : projects
+@enduml

@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Sending a message
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "ThreadComponent" as page
+  participant "ThreadsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "ThreadsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "ValidationBehaviour" as behaviour
+  participant "SendMessageCommandHandler" as handler
+  participant "MessageThread" as thread
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Write a reply and send
+page -> client : Build the typed request
+client -> controller : POST /threads/{id}/messages
+controller -> behaviour : Send SendMessageCommand
+behaviour -> behaviour : Reject an empty or over-long body, per L2-067
+alt the body is within bounds
+  behaviour -> handler : Invoke
+  handler -> thread : Is the caller a party?
+  thread --> handler : Yes
+  handler -> thread : Append the message
+  thread --> handler : Message
+  handler -> db : Save
+  handler --> controller : Message
+  controller --> client : 201 Created
+  client --> page : Append to the messages signal
+  page --> actor : The message in the thread, attributed to them
+  note over page : The message appearing is the confirmation.\nNothing else is shown, because nothing else happened.
+else the body is empty or too long
+  behaviour --> controller : Validation failure
+  controller --> client : 400 Bad Request
+  client --> page : Field error
+  page --> actor : Mark the composer, keeping what was typed
+end
+@enduml

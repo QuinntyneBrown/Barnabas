@@ -1,0 +1,43 @@
+@startuml
+!pragma layout smetana
+title Class structure — Decline a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class DeclineRequestCommand {
+  +Guid RequestId
+}
+class DeclineRequestCommandHandler {
+  +Handle(DeclineRequestCommand) : DeclineRequestResult
+}
+class DeclineRequestResult {
+  +Guid RequestId
+  +RequestStatus Status
+}
+class ListingRequest {
+  +Guid Id
+  +Guid ListingId
+  +Guid RequesterId
+  +RequestStatus Status
+  +Accept() : void
+  +Decline() : void
+}
+enum RequestStatus {
+  Pending
+  Accepted
+  Declined
+}
+class RequestAlreadyDecidedException {
+  +Guid RequestId
+  +RequestStatus CurrentStatus
+}
+
+DeclineRequestCommandHandler ..> DeclineRequestCommand : handles
+DeclineRequestCommandHandler --> DeclineRequestResult : returns
+DeclineRequestCommandHandler --> ListingRequest : loads and mutates
+ListingRequest --> RequestStatus : holds
+ListingRequest ..> RequestAlreadyDecidedException : raises on a second decision
+@enduml

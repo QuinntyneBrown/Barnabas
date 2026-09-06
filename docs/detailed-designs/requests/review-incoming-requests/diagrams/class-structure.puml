@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+title Class structure — Review incoming requests
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class GetIncomingRequestsQuery {
+  +Guid CallerId
+  +Guid CongregationId
+}
+class GetIncomingRequestsQueryHandler {
+  +Handle(GetIncomingRequestsQuery) : IncomingRequestDto[]
+}
+class IncomingRequestDto {
+  +Guid RequestId
+  +Guid RequesterId
+  +string RequesterDisplayName
+  +Guid ListingId
+  +string ListingTitle
+  +ListingKind Kind
+  +string Message
+  +RequestStatus Status
+  +DateTimeOffset CreatedOn
+}
+class ListingRequest {
+  +Guid Id
+  +Guid ListingId
+  +Guid RequesterId
+  +RequestStatus Status
+}
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingKind Kind
+  +string Title
+}
+enum ListingKind {
+  Lend
+  Give
+  Sell
+  Help
+}
+
+GetIncomingRequestsQueryHandler ..> GetIncomingRequestsQuery : handles
+GetIncomingRequestsQueryHandler --> IncomingRequestDto : returns
+IncomingRequestDto ..> ListingRequest : projects
+IncomingRequestDto ..> Listing : projects
+Listing --> ListingKind : holds
+@enduml

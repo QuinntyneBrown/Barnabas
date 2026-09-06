@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+Request to buy. The asking price is restated here and the form says plainly
+  that payment is settled in person — no payment field is rendered, and none is
+  accepted.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request to buy · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html" aria-current="page">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+
+
+  <div class="masthead masthead--short masthead--plain">
+    <div class="container">
+      <a class="back-link" href="listing-sell.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      Back to the listing
+    </a>
+      <h1 class="masthead-title">Ask Marion to buy this</h1>
+    </div>
+  </div>
+
+  <div class="container section-tight">
+    <form class="form stack-7" action="request-sent.html" method="get">
+
+      <a class="thread-context" href="listing-sell.html">
+        <span class="thread-context__art" aria-hidden="true">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a cordless drill" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M74 92h108v56H74a12 12 0 0 1-12-12v-32a12 12 0 0 1 12-12Z"/>
+  <path d="M182 104h34v32h-34"/>
+  <path d="M216 120h34"/>
+  <path d="M108 148l-14 56h48l10-56"/>
+  <path d="M86 204h60v22H86Z"/>
+  <path d="M74 120h20"/></svg>
+        </span>
+        <span>
+          <span class="list-row__title">DeWalt cordless drill, two batteries</span><br>
+          <span class="list-row__meta">Marion T. is selling this, from Riverdale</span>
+        </span>
+      </a>
+
+      <div class="field">
+        <label for="message">Your message to Marion</label>
+        <p class="field-hint">Say what you need it for and roughly when. A sentence or two is plenty.</p>
+        <textarea id="message" name="message" rows="5">Hello Marion — I have a few jobs around the flat and this would do nicely. Happy to collect after the service on Sunday.</textarea>
+      </div>
+
+      <div class="field">
+        <label for="pickup">When could you collect it?</label>
+        <input type="datetime-local" id="pickup" name="pickup" value="2026-09-13T12:00">
+      </div>
+
+      <div class="field-block field-block--outline">
+        <div class="stack-2">
+          <h2>$45 CAD, paid in person</h2>
+          <p class="muted">Payment is settled directly between the two of you at pickup. Barnabas does not process payment and takes no fee.</p>
+        </div>
+      </div>
+
+      <div class="field-block field-block--stone">
+        <div class="stack-2">
+          <h2>What happens next</h2>
+          <dl class="facts">
+          <div><dt>Marion replies</dt><dd>She can accept or decline. Either way you get a notification.</dd></div>
+          <div><dt>You arrange it</dt><dd>If she accepts, a message thread opens here and the two of you settle the pickup.</dd></div>
+          <div><dt>You pay in person</dt><dd>Directly to Marion, at pickup. Barnabas never handles the money.</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg" type="submit">Send request to Marion</button>
+        <a class="btn btn-ghost btn-lg" href="listing-sell.html">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+
+</body>
+</html>

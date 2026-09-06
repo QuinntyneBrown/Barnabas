@@ -1,0 +1,55 @@
+@startuml
+!pragma layout smetana
+title Class structure — Close out and archive
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingKind Kind
+  +ListingStatus Status
+  +CloseOut() : void
+  +Archive() : void
+  +Restore() : void
+}
+enum ListingKind {
+  Lend
+  Give
+  Sell
+  Help
+}
+enum ListingStatus {
+  Active
+  Sold
+  GivenAway
+  Archived
+  Completed
+}
+class CloseOutListingCommand {
+  +Guid ListingId
+}
+class ArchiveListingCommand {
+  +Guid ListingId
+}
+class RestoreListingCommand {
+  +Guid ListingId
+}
+class DeleteListingCommand {
+  +Guid ListingId
+}
+class ListingNotActiveException {
+  +ListingStatus CurrentStatus
+}
+
+CloseOutListingCommand ..> Listing : closes out
+ArchiveListingCommand ..> Listing : archives
+RestoreListingCommand ..> Listing : restores
+DeleteListingCommand ..> Listing : removes
+Listing --> ListingKind : holds
+Listing --> ListingStatus : holds
+Listing ..> ListingNotActiveException : raises on a second transition
+@enduml

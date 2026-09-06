@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — A request with no valid token, or none on a live session
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Caller" as actor
+box "Backend — Barnabas API" #D1FADF
+  participant "JwtBearerMiddleware" as jwt
+  participant "SessionValidator" as sv
+  participant "ListingsController" as controller
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+alt no token presented
+  actor -> jwt : POST /listings
+  jwt --> actor : 401 Unauthorized
+else token is malformed, unsigned, or signed with the wrong key
+  actor -> jwt : POST /listings with a tampered token
+  jwt -> jwt : Validate signature against the configured key
+  jwt --> actor : 401 Unauthorized
+else signature valid, session revoked
+  actor -> jwt : POST /listings after signing out
+  jwt -> sv : Validated principal carrying the sid claim
+  sv -> db : Read the session named by sid
+  db --> sv : Session, revoked
+  sv --> actor : 401 Unauthorized
+  note over sv : L2-019 admits no window, so revocation is\nchecked on every request rather than waiting\nfor the access token to expire.
+else signature valid, session live
+  actor -> jwt : POST /listings
+  jwt -> sv : Validated principal
+  sv -> db : Read the session named by sid
+  db --> sv : Session, live
+  sv -> controller : Authenticated request
+end
+note over jwt : L2-093 admits only the public landing,\ninvite redemption, and sign-in endpoints\nwithout a token.
+@enduml

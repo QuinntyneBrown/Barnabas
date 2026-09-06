@@ -1,0 +1,20 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage my listings
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Exposes the caller's own listings and the edit endpoint")
+  Component(query, "GetMyListingsQueryHandler", "MediatR handler", "Reads the caller's listings with their open request counts")
+  Component(edit, "EditListingCommandHandler", "MediatR handler", "Applies changes to a listing the caller owns")
+  Component(behaviour, "AuthorisationBehaviour", "MediatR pipeline behaviour", "Rejects an edit by a member who does not own the listing")
+  Component(dto, "MyListingDto", "Read model", "Title, kind, status, and open request count")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Listings and requests")
+}
+Rel(ctrl, query, "Sends GetMyListingsQuery")
+Rel(ctrl, edit, "Sends EditListingCommand")
+Rel(edit, behaviour, "Passes through")
+Rel(query, db, "Reads listings and counts requests", "EF Core")
+Rel(query, dto, "Projects to")
+@enduml

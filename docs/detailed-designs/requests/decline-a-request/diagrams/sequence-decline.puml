@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Decline a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listing owner" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "IncomingRequestsComponent" as page
+  participant "ConfirmDeclineDialog" as dialog
+  participant "RequestsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "DeclineRequestCommandHandler" as handler
+  participant "ListingRequest" as entity
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Decline the request
+page -> dialog : Require confirmation per L2-061
+dialog --> actor : Ask to confirm
+alt owner confirms
+  actor -> dialog : Confirm
+  dialog -> client : Build typed request
+  client -> controller : POST /requests/{requestId}/decline
+  controller -> controller : Authenticate and apply endpoint policy
+  controller -> handler : Send DeclineRequestCommand
+  handler -> db : Load the request within the congregation
+  db --> handler : Request
+  handler -> entity : Apply L2-061 decline transition
+  entity --> handler : Status set to Declined
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  note over handler : No message thread is opened, per L2-061
+  handler --> controller : Typed result
+  controller --> client : 200 OK
+  client --> page : Feature result
+  page --> actor : Return to the inbox without the declined request
+else owner cancels
+  actor -> dialog : Cancel
+  dialog --> page : Dismiss
+  page --> actor : Leave the request pending
+end
+@enduml

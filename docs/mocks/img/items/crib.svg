@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a crib"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M66 92h188"/>
+  <path d="M66 182h188"/>
+  <path d="M66 92v98"/>
+  <path d="M254 92v98"/>
+  <path d="M74 190v22"/>
+  <path d="M246 190v22"/>
+  <path d="M100 96v82M132 96v82M164 96v82M196 96v82M228 96v82"/>
+</svg>

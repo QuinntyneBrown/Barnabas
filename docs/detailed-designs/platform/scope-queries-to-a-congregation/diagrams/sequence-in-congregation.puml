@@ -1,0 +1,45 @@
+@startuml
+title UML sequence behaviour — A read inside the caller's own congregation
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member of St. Aidan's" as actor
+box "Backend — Barnabas API" #D1FADF
+  participant "JwtBearerMiddleware" as jwt
+  participant "ListingsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "GetBoardQueryHandler" as handler
+  participant "CongregationContext" as ctx
+end box
+box "Backend — Infrastructure" #FFF4E5
+  participant "BarnabasDbContext" as db
+  database "Barnabas database" as store
+end box
+
+actor -> jwt : GET /board with bearer token
+jwt -> jwt : Validate signature and expiry
+jwt -> ctx : Populate congregation and member from claims
+jwt -> controller : Authenticated request
+controller -> handler : Send GetBoardQuery
+handler -> db : Query listings, naming no congregation
+db -> ctx : Read the current congregation
+ctx --> db : St. Aidan's
+db -> store : SELECT ... WHERE CongregationId = @current
+note over db : The L2-088 filter is applied by the context,\nnot by the handler, so no handler can forget it
+store --> db : Rows from St. Aidan's only
+db --> handler : Listings
+handler --> controller : Read models
+controller --> actor : 200 OK
+@enduml

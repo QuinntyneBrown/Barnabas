@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour — Listing the threads a member is party to
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "MessagesComponent" as page
+  participant "ThreadsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "ThreadsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "GetMyThreadsQueryHandler" as handler
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Open the Messages section of the inbox
+page -> client : Request my threads
+client -> controller : GET /threads
+controller -> handler : Send GetMyThreadsQuery
+handler -> db : Read threads where the caller is owner or requester
+note over db : A thread the caller is not party to is not\nreturned, per L2-065. The congregation filter\napplies underneath, from platform/scope-queries.
+db --> handler : Threads with their latest message
+handler -> handler : Project to ThreadSummaryDto with the other member and the listing
+handler --> controller : Summaries
+controller --> client : 200 OK
+client --> page : Threads
+page --> actor : Each row naming the other member, the listing, and whether it is unread
+@enduml

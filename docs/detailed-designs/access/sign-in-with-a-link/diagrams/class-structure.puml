@@ -1,0 +1,72 @@
+@startuml
+!pragma layout smetana
+title Class structure — Sign in with a link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class SignInToken {
+  +Guid Id
+  +Guid MemberId
+  +string TokenHash
+  +DateTimeOffset IssuedOn
+  +DateTimeOffset ExpiresOn
+  +DateTimeOffset? ConsumedOn
+  +IsRedeemable(DateTimeOffset) : bool
+  +Consume(DateTimeOffset) : void
+}
+class RequestSignInLinkCommand {
+  +string EmailAddress
+}
+class ExchangeSignInTokenCommand {
+  +string Token
+}
+class Session {
+  +Guid Id
+  +Guid MemberId
+  +Guid CongregationId
+  +DateTimeOffset OpenedOn
+  +DateTimeOffset? RevokedOn
+  +IsLive(DateTimeOffset) : bool
+}
+class SessionResult {
+  +Guid SessionId
+  +string AccessToken
+  +string RefreshToken
+  +DateTimeOffset ExpiresOn
+}
+class JwtIssuer {
+  +Issue(Member, Session) : SessionResult
+}
+interface IAuthenticationStore {
+  +FindMemberByEmailAddress(string) : Member
+  +FindSignInTokenByHash(string) : SignInToken
+}
+interface IEmailSender {
+  +SendSignInLink(string, string) : Task
+}
+class Member {
+  +Guid Id
+  +Guid CongregationId
+  +string EmailAddress
+  +MemberRole Role
+  +MemberState State
+}
+class TokenAlreadyConsumedException {
+  +Guid TokenId
+}
+
+SignInToken --> Member : identifies
+Session --> Member : opened for
+RequestSignInLinkCommand ..> SignInToken : results in
+ExchangeSignInTokenCommand ..> SignInToken : consumes atomically
+ExchangeSignInTokenCommand ..> Session : opens
+SignInToken ..> TokenAlreadyConsumedException : raises on reuse
+JwtIssuer --> SessionResult : returns
+JwtIssuer ..> Session : stamps the sid claim from
+IAuthenticationStore ..> Member : finds without a congregation filter
+IAuthenticationStore ..> SignInToken : finds by hash
+IEmailSender ..> SignInToken : delivers
+@enduml

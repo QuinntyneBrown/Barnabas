@@ -1,89 +1,127 @@
 <!DOCTYPE html>
 <!--
-  Profile creation page after a valid St. Aidan's invite.
-  Responsive notes:
-  - <768px: single centered form column.
-  - >=768px: no material layout change, just more surrounding whitespace around the same max-440px column.
-  - >=1280px: no material layout change, only wider page margins.
+A profile helps fellow parishioners know who they are meeting. Submitting it
+  now leads to the waiting state rather than straight to the board, because a
+  moderator approves new members first.
 -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create your profile · Barnabas</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your profile · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <div class="container">
-      <a class="brand" href="landing.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
-    </div>
-  </header>
+<a class="skip-link" href="#main">Skip to main content</a>
 
-  <main id="main" class="page-main">
-    <div class="container">
-      <div class="auth-shell">
-        <section class="card panel stack">
-          <a class="back-link" href="join-invite.html">← Back</a>
-          <div class="stack">
-            <h1>Create your profile</h1>
-            <p class="text-muted">A simple profile helps fellow parishioners know who they are meeting and what kinds of help you are open to giving.</p>
-          </div>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="landing.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+  </div>
+</header>
 
-          <form action="board.html" method="get">
-            <div class="field">
-              <label>Photo</label>
-              <div class="avatar avatar-lg" aria-hidden="true">
-                <svg viewBox="0 0 160 160" role="img" aria-label="Profile photo placeholder with camera icon">
-                  <circle cx="80" cy="80" r="80" fill="var(--color-surface-alt)"></circle>
-                  <circle cx="80" cy="64" r="28" fill="none" stroke="var(--color-text-muted)" stroke-width="6"></circle>
-                  <path d="M40 126c10-20 24-30 40-30s30 10 40 30" fill="none" stroke="var(--color-text-muted)" stroke-width="6" stroke-linecap="round"></path>
-                  <circle cx="116" cy="116" r="26" fill="var(--color-primary)"></circle>
-                  <path d="M105 117h22M116 106v22" stroke="#fff" stroke-width="6" stroke-linecap="round"></path>
-                  <rect x="101" y="104" width="30" height="26" rx="6" fill="none" stroke="#fff" stroke-width="4"></rect>
-                </svg>
-              </div>
-              <p class="field-hint">You can add a photo later if you prefer.</p>
-            </div>
+<main id="main" class="page-main">
 
-            <div class="field">
-              <label for="full-name">Full name</label>
-              <input id="full-name" name="full-name" type="text" autocomplete="name" placeholder="Lillian Osei" required>
-            </div>
-
-            <div class="field">
-              <label for="neighbourhood">Neighbourhood</label>
-              <select id="neighbourhood" name="neighbourhood" required>
-                <option value="">Choose your area</option>
-                <option>Riverdale</option>
-                <option>Leslieville</option>
-                <option>The Danforth</option>
-                <option>Scarborough</option>
-                <option>The Beaches</option>
-                <option>East York</option>
-                <option>Cabbagetown</option>
-                <option>North York</option>
-              </select>
-            </div>
-
-            <fieldset>
-              <legend>What are you willing to help with?</legend>
-              <div class="check-list">
-                <label class="check-row" for="help-rides"><input id="help-rides" name="help-rides" type="checkbox"> Rides to appointments or church events</label>
-                <label class="check-row" for="help-tutoring"><input id="help-tutoring" name="help-tutoring" type="checkbox"> Tutoring or homework help</label>
-                <label class="check-row" for="help-moving"><input id="help-moving" name="help-moving" type="checkbox"> Moving help for small jobs</label>
-                <label class="check-row" for="help-tech"><input id="help-tech" name="help-tech" type="checkbox"> Tech support for phones, email, or printers</label>
-                <label class="check-row" for="help-company"><input id="help-company" name="help-company" type="checkbox"> Sitting with someone or checking in</label>
-                <label class="check-row" for="help-repairs"><input id="help-repairs" name="help-repairs" type="checkbox"> Minor repairs around the home</label>
-              </div>
-            </fieldset>
-
-            <button class="btn btn-primary btn-block" type="submit">Finish setting up my profile</button>
-          </form>
-        </section>
+  <div class="container">
+    <div class="auth stack-6">
+      <a class="back-link" href="join-invite.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      Back
+    </a>
+      <div class="stack-2">
+        <h1>Tell the parish who you are</h1>
+        <p class="lede">A simple profile helps fellow members know who they are meeting.</p>
       </div>
+
+      <form class="stack-6" action="join-pending-approval.html" method="get">
+
+        <div class="field">
+          <span class="field-label">Photo</span>
+          <div class="upload-tile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5h3.5L8 6h8l1.5 2.5H21v11H3z"/><circle cx="12" cy="14" r="3.6"/></svg>
+            <span>Add a photo</span>
+          </div>
+          <p class="field-hint">Optional, and easy to add later.</p>
+        </div>
+
+        <div class="field">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" placeholder="Lillian Osei">
+        </div>
+
+        <div class="field">
+          <label for="hood">Neighbourhood</label>
+          <select id="hood" name="hood">
+            <option value="">Choose your neighbourhood</option>
+        <option>Riverdale</option>
+        <option>Leslieville</option>
+        <option>The Danforth</option>
+        <option>Scarborough</option>
+        <option>The Beaches</option>
+        <option>East York</option>
+        <option>Cabbagetown</option>
+        <option>North York</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="bio">A line about you</label>
+          <textarea id="bio" name="bio" rows="3" placeholder="Optional"></textarea>
+        </div>
+
+        <div class="field">
+          <span class="field-label">What are you glad to help with?</span>
+          <p class="field-hint">Optional, and changeable at any time.</p>
+          <div class="check-grid">
+          <label class="choice">
+            <input type="checkbox" name="help" value="Tutoring">
+            <span><span class="choice__title">Tutoring</span></span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="help" value="Rides">
+            <span><span class="choice__title">Rides</span></span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="help" value="Moving help">
+            <span><span class="choice__title">Moving help</span></span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="help" value="Tech support">
+            <span><span class="choice__title">Tech support</span></span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="help" value="Meal trains">
+            <span><span class="choice__title">Meal trains</span></span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="help" value="Hospital visits">
+            <span><span class="choice__title">Hospital visits</span></span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="help" value="Minor repairs">
+            <span><span class="choice__title">Minor repairs</span></span>
+          </label>
+          <label class="choice">
+            <input type="checkbox" name="help" value="Childminding">
+            <span><span class="choice__title">Childminding</span></span>
+          </label>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Ask to join</button>
+      </form>
     </div>
-  </main>
+  </div>
+</main>
+
 </body>
 </html>

@@ -1,0 +1,22 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Validate and bound input
+
+Container_Boundary(api, "Barnabas API") {
+  Component(controller, "Any controller", "ASP.NET Core controller", "Binds the request body and dispatches it")
+  Component(forbidden, "ForbiddenFieldInspector", "Model binding filter", "Reads the raw payload for fields the command forbids, before binding discards them")
+  Component(behaviour, "ValidationBehaviour", "MediatR pipeline behaviour", "Runs every validator registered for the request")
+  Component(validator, "Request validators", "FluentValidation", "Declare the bounds each field accepts")
+  Component(handler, "Any command handler", "MediatR handler", "Runs only for a valid request")
+  Component(problem, "ValidationProblemDetails", "RFC 7807", "Names the failing fields without echoing their values")
+}
+Rel(controller, forbidden, "Inspects the raw body through")
+Rel(forbidden, problem, "Builds when a forbidden field is present")
+Rel(controller, behaviour, "Sends the request through the pipeline")
+Rel(behaviour, validator, "Resolves and runs")
+Rel(behaviour, handler, "Invokes when valid")
+Rel(behaviour, problem, "Builds when not")
+Rel(problem, controller, "Rendered as 400")
+@enduml

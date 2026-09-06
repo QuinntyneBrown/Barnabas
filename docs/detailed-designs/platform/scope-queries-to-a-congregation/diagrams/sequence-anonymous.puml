@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — Finding a member before any congregation is known
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Anonymous caller" as actor
+box "Backend — Barnabas API" #D1FADF
+  participant "SessionsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "RequestSignInLinkCommandHandler" as handler
+  participant "CongregationContext" as ctx
+end box
+box "Backend — Infrastructure" #FFF4E5
+  participant "IAuthenticationStore" as store
+  participant "BarnabasDbContext" as db
+  database "Barnabas database" as sql
+end box
+
+actor -> controller : POST /sessions/link with an email address
+note over ctx : No token is presented, so the context is\nunresolved. There is no congregation to filter by.
+controller -> handler : Send RequestSignInLinkCommand
+handler -> store : Find the member by email address
+store -> sql : SELECT ... FROM Members WHERE EmailAddress = @address
+note over store : The authentication store is the single\nsanctioned bypass of the global filter. It returns\nauthentication records and never business data.
+sql --> store : Member, carrying its congregation
+store --> handler : Member
+handler -> handler : Derive the congregation from the verified record, per L2-014
+== the same request reaches for business data ==
+handler -> db : Query listings
+db -> ctx : Read the current congregation
+ctx --> db : Unresolved
+db --> handler : CongregationContextMissingException
+note over db : L2-088 requires the read be refused rather than\nreturning unfiltered rows. Failing closed is what\nstops the bypass widening beyond authentication.
+@enduml

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a baby gate"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M56 82h208v112H56Z"/>
+  <path d="M56 118h208M56 158h208"/>
+  <path d="M96 82v112M136 82v112M176 82v112M216 82v112"/>
+  <path d="M264 130h22"/>
+  <path d="M34 130h22"/>
+</svg>

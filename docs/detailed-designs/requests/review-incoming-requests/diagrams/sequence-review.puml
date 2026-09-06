@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — Review incoming requests
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listing owner" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "IncomingRequestsComponent" as page
+  participant "RequestsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "GetIncomingRequestsQueryHandler" as handler
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Open the inbox
+page -> client : Request incoming requests
+client -> controller : GET /requests/incoming
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send GetIncomingRequestsQuery
+handler -> db : Read requests on listings owned by the caller
+db --> handler : Requests with requester and listing
+handler -> handler : Project to IncomingRequestDto per L2-059
+handler --> controller : Read models
+controller --> client : 200 OK
+client --> page : Incoming requests
+page --> actor : Show requester, listing, message, and per-kind terms
+actor -> page : Open the requester
+page --> actor : Navigate to the member profile
+@enduml

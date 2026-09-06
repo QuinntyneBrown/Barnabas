@@ -1,0 +1,13 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Review incoming requests
+
+Person(owner, "Listing owner", "Member who posted the listing")
+Person(requester, "Requester", "Member who asked for the listing")
+System(barnabas, "Barnabas", "Congregation lending and helping board")
+
+Rel(owner, barnabas, "Reads requests on their listings using", "HTTPS")
+Rel(requester, barnabas, "Created the request in", "HTTPS")
+@enduml

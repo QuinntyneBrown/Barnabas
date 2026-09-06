@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — A command failing its bounds
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "PostListingComponent" as page
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "ValidationBehaviour" as behaviour
+  participant "PostLendListingCommandValidator" as validator
+  participant "PostLendListingCommandHandler" as handler
+end box
+
+actor -> page : Submit a listing with a 200-character title
+page -> controller : POST /listings
+controller -> behaviour : Send PostLendListingCommand
+behaviour -> validator : Validate the command
+validator -> validator : Title exceeds 120 characters, per L2-031
+validator --> behaviour : One failure on Title
+alt the command is valid
+  behaviour -> handler : Invoke the handler
+  handler --> behaviour : Result
+  behaviour --> controller : Result
+  controller --> page : 201 Created
+else the command is invalid
+  behaviour --> controller : ValidationProblemDetails naming Title
+  note over behaviour : L2-096 requires the field be named and\nthe submitted value not echoed back.
+  controller --> page : 400 Bad Request
+  page -> page : Mark Title and move focus to it
+  page --> actor : Show the error against the field
+end
+@enduml

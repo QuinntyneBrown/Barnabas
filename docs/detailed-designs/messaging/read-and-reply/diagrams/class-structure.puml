@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+title Class structure — Read and reply
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class MessageThread {
+  +Guid Id
+  +Guid RequestId
+  +Guid ListingId
+  +Guid OwnerId
+  +Guid RequesterId
+  +IsParty(Guid) : bool
+  +Append(Guid, string, DateTimeOffset) : Message
+}
+class Message {
+  +Guid Id
+  +Guid ThreadId
+  +Guid SenderId
+  +string Body
+  +DateTimeOffset SentOn
+}
+class ThreadReadMark {
+  +Guid ThreadId
+  +Guid MemberId
+  +DateTimeOffset ReadUpTo
+}
+class GetThreadQuery {
+  +Guid ThreadId
+}
+class SendMessageCommand {
+  +Guid ThreadId
+  +string Body
+}
+class ThreadDetailDto {
+  +Guid ThreadId
+  +Guid ListingId
+  +string ListingTitle
+  +string OtherMemberDisplayName
+  +RequestStatus RequestStatus
+  +MessageDto[] Messages
+}
+
+MessageThread *-- Message : holds in order
+MessageThread ..> ThreadReadMark : read per member
+GetThreadQuery ..> ThreadDetailDto : returns
+SendMessageCommand ..> Message : appends
+ThreadDetailDto ..> MessageThread : projects
+@enduml

@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Following a request to its decision
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Requester" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "OutgoingRequestsComponent" as page
+  participant "RequestsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "GetMyRequestsQueryHandler" as handler
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Open My requests, from the inbox or the request confirmation
+page -> client : Request my requests
+client -> controller : GET /requests/mine
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send GetMyRequestsQuery
+handler -> db : Read requests where the caller is the requester
+note over db : The congregation predicate comes from the global\nfilter. This handler adds only the requester, so a\nmember sees their own asks and no others, per L2-120.
+db --> handler : Requests with listing, owner, and any thread
+handler -> handler : Project to MyRequestDto
+handler --> controller : Rows
+controller --> client : 200 OK
+client --> page : Requests
+alt the request is pending
+  page --> actor : Show it awaiting a decision, with no thread offered
+else the request was accepted
+  page --> actor : Show it accepted, offering the thread by its identifier
+  actor -> page : Open the thread
+  page --> actor : The conversation where the handoff is arranged
+else the request was declined
+  page --> actor : Show it declined, offering no thread
+  note over page : L2-061 requires the requester to see a decline\nhere. Without this screen the decision would\nreach them only as a notification.
+end
+@enduml

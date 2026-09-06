@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Asking for a sign-in link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "SignInComponent" as page
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "SessionsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "RequestSignInLinkCommandHandler" as handler
+  participant "SignInToken" as token
+end box
+box "Backend — Infrastructure" #FFF4E5
+  participant "IAuthenticationStore" as store
+  database "Barnabas database" as db
+  participant "IEmailSender" as mail
+end box
+
+actor -> page : Enter an email address
+page -> controller : POST /sessions/link
+controller -> handler : Send RequestSignInLinkCommand
+handler -> store : Find a member with that address
+note over store : No token has been presented, so no congregation\nis in context. The authentication store is the one\nlookup permitted without one, per L2-088.
+store -> db : Read the member by email address
+alt the address belongs to a member
+  db --> store : Member
+  store --> handler : Member, carrying its congregation
+  handler -> token : Issue, expiring in 15 minutes per L2-015
+  token --> handler : Token and its hash
+  handler -> db : Store the hash, never the token
+  handler -> mail : Send the link to the address on file
+else the address belongs to nobody
+  db --> store : No member
+  store --> handler : Nothing
+  handler -> handler : Do no work, wait the same interval
+  note over handler : L2-013 requires an identical response and\ntiming, so the endpoint cannot enumerate members.
+end
+handler --> controller : Accepted
+controller --> page : 202 Accepted
+page --> actor : Check-your-email screen, naming the address
+@enduml

@@ -1,111 +1,159 @@
 <!DOCTYPE html>
 <!--
-  Notification centre for requests, messages, and moderation updates.
-  Responsive notes:
-  - <768px and >=768px: single-column notification list; no material layout change beyond wider margins.
-  - >=1280px: no material layout change beyond wider margins.
+Every row leads to the thing it is about. In the original set none of the six
+  notifications was a link, which defeats the entire purpose of a notification.
+
+  Rows are div elements holding two links — the notice itself and the member —
+  because nested anchors are invalid.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Notifications · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
     <nav class="primary-nav" aria-label="Primary">
       <a href="board.html">Board</a>
-      <a href="search-results.html">Search</a>
-      <a href="notifications.html" aria-current="page">Notifications</a>
-      <a href="requests-incoming.html">Requests</a>
-      <a href="my-listings-active.html">My listings</a>
-      <a href="my-profile-settings.html">Profile</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html" aria-current="page">You</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
   </div>
 </header>
+
 <main id="main" class="page-main">
-  <div class="container stack">
-    <div class="section-title">
-      <h1 class="mb-0">Notifications</h1>
-      <span class="badge-count" aria-label="4 unread notifications">4</span>
+
+  <div class="masthead masthead--stone masthead--short">
+    <div class="container">
+      <h1 class="masthead-title">Notifications</h1>
+    </div>
+  </div>
+
+  <div class="container section-tight">
+    <a class="back-link" href="you.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      You
+    </a>
+
+    <div class="row-between" style="margin-bottom: var(--s-5);">
+      <span class="muted small">4 unread</span>
+      <a class="btn btn-secondary btn-sm" href="notifications.html">Mark all as read</a>
     </div>
 
-    <section class="card" aria-label="Notification list">
-      <article class="list-row list-row-unread">
-        <div class="avatar avatar-md" aria-hidden="true">
-          <svg viewBox="0 0 48 48" width="48" height="48"><circle cx="24" cy="24" r="24" fill="#ece5f4"/><text x="24" y="29" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#6d4a9c" font-weight="700">PK</text></svg>
+    <div class="rows">
+        <div class="list-row list-row--unread">
+          <span class="avatar avatar--paper" aria-hidden="true">GP</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="inbox-requests-incoming.html"><span class="visually-hidden">Unread. </span>Grace Papadopoulos asked to buy your cordless drill.</a>
+            <p class="list-row__meta">2 hours ago</p>
+            <div class="list-row__actions">
+              <a class="btn btn-ghost btn-sm" href="member-profile.html">View profile</a>
+            </div>
+          </div>
         </div>
-        <div style="flex: 1;">
-          <p><strong>Priya K.</strong> requested your cordless drill.</p>
-          <p class="text-sm text-muted mb-0">2h ago</p>
+        <div class="list-row list-row--unread">
+          <span class="avatar avatar--stone" aria-hidden="true">AF</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="inbox-requests-outgoing.html"><span class="visually-hidden">Unread. </span>Angela F. accepted your request for the crib.</a>
+            <p class="list-row__meta">Yesterday</p>
+            <div class="list-row__actions">
+              <a class="btn btn-ghost btn-sm" href="member-profile.html">View profile</a>
+            </div>
+          </div>
         </div>
-      </article>
+        <div class="list-row list-row--unread">
+          <span class="avatar avatar--stone" aria-hidden="true">AF</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="message-thread.html"><span class="visually-hidden">Unread. </span>Angela F. sent you a message about the crib.</a>
+            <p class="list-row__meta">Yesterday</p>
+            <div class="list-row__actions">
+              <a class="btn btn-ghost btn-sm" href="member-profile.html">View profile</a>
+            </div>
+          </div>
+        </div>
+        <div class="list-row list-row--unread">
+          <span class="avatar avatar--ink" aria-hidden="true">MC</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="listing-owner-view.html"><span class="visually-hidden">Unread. </span>Fr. Michael Chen approved your listing for the box of books.</a>
+            <p class="list-row__meta">Two days ago</p>
+            <div class="list-row__actions">
+              <a class="btn btn-ghost btn-sm" href="member-profile.html">View profile</a>
+            </div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="avatar avatar--stone" aria-hidden="true">RN</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="inbox-requests-incoming.html">Robert Nguyen asked to borrow your step ladder.</a>
+            <p class="list-row__meta">Three days ago</p>
+            <div class="list-row__actions">
+              <a class="btn btn-ghost btn-sm" href="member-profile.html">View profile</a>
+            </div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="avatar avatar--stone" aria-hidden="true">DO</span>
+          <div class="list-row__body">
+            <a class="list-row__title link" href="listing-help.html">Desmond O. posted a new offer of help: rides to dialysis.</a>
+            <p class="list-row__meta">Last week</p>
+            <div class="list-row__actions">
+              <a class="btn btn-ghost btn-sm" href="member-profile.html">View profile</a>
+            </div>
+          </div>
+        </div>
+    </div>
 
-      <article class="list-row list-row-unread">
-        <div class="avatar avatar-md" aria-hidden="true">
-          <svg viewBox="0 0 48 48" width="48" height="48"><circle cx="24" cy="24" r="24" fill="#ece5f4"/><text x="24" y="29" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#6d4a9c" font-weight="700">AF</text></svg>
-        </div>
-        <div style="flex: 1;">
-          <p>Your request for the crib was accepted by <strong>Angela F.</strong></p>
-          <p class="text-sm text-muted mb-0">Yesterday</p>
-        </div>
-      </article>
-
-      <article class="list-row list-row-unread">
-        <div class="avatar avatar-md" aria-hidden="true">
-          <svg viewBox="0 0 48 48" width="48" height="48"><circle cx="24" cy="24" r="24" fill="#e5f0ec"/><text x="24" y="29" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#2f6d5e" font-weight="700">MT</text></svg>
-        </div>
-        <div style="flex: 1;">
-          <p>New message from <strong>Marion T.</strong>: “You can pick up the ladder after supper if that helps.”</p>
-          <p class="text-sm text-muted mb-0">Yesterday</p>
-        </div>
-      </article>
-
-      <article class="list-row list-row-unread">
-        <div class="avatar avatar-md" aria-hidden="true">
-          <svg viewBox="0 0 48 48" width="48" height="48"><circle cx="24" cy="24" r="24" fill="#e2eef4"/><text x="24" y="29" text-anchor="middle" font-size="15" font-family="Arial, sans-serif" fill="#1f6f9c" font-weight="700">MC</text></svg>
-        </div>
-        <div style="flex: 1;">
-          <p><strong>Fr. Michael Chen</strong> approved your listing for a box of books.</p>
-          <p class="text-sm text-muted mb-0">Mon</p>
-        </div>
-      </article>
-
-      <article class="list-row">
-        <div class="avatar avatar-md" aria-hidden="true">
-          <svg viewBox="0 0 48 48" width="48" height="48"><circle cx="24" cy="24" r="24" fill="#f5e9dc"/><text x="24" y="29" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#a15a1f" font-weight="700">HW</text></svg>
-        </div>
-        <div style="flex: 1;">
-          <p><strong>Hank W.</strong> asked if your bike is still available for pickup this weekend.</p>
-          <p class="text-sm text-muted mb-0">Sun</p>
-        </div>
-      </article>
-
-      <article class="list-row">
-        <div class="avatar avatar-md" aria-hidden="true">
-          <svg viewBox="0 0 48 48" width="48" height="48"><circle cx="24" cy="24" r="24" fill="#e5f0ec"/><text x="24" y="29" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#2f6d5e" font-weight="700">DO</text></svg>
-        </div>
-        <div style="flex: 1;">
-          <p><strong>Desmond O.</strong> posted a new help offer: rides to medical appointments.</p>
-          <p class="text-sm text-muted mb-0">Sat</p>
-        </div>
-      </article>
-    </section>
+    <p class="note" style="margin-top: var(--s-6);">
+      Choose what you are told about in <a class="link" href="my-profile-settings.html">profile and settings</a>.
+    </p>
   </div>
 </main>
+
 <nav class="bottom-nav" aria-label="Primary">
-  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
-  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
-  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
-  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
-  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
 </nav>
+
 </body>
 </html>

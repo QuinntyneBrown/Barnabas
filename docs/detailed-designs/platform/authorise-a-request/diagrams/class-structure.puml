@@ -1,0 +1,57 @@
+@startuml
+!pragma layout smetana
+title Class structure — Authorise a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+interface IRequireRole {
+  +MemberRole Required
+}
+interface IRequireOwnership {
+  +Guid ResourceId
+}
+enum MemberRole {
+  Member
+  Moderator
+  Administrator
+}
+class AuthorisationBehaviour<TRequest, TResponse> {
+  +Handle(TRequest, RequestHandlerDelegate, CancellationToken) : Task<TResponse>
+  -EnsureRole(TRequest) : void
+  -EnsureOwnership(TRequest) : Task
+}
+interface ICongregationContext {
+  +bool IsResolved
+  +Guid CongregationId
+  +Guid MemberId
+  +Guid SessionId
+  +MemberRole Role
+}
+class SessionValidator {
+  +Validate(ClaimsPrincipal) : Task
+}
+class Session {
+  +Guid Id
+  +Guid MemberId
+  +DateTimeOffset? RevokedOn
+  +IsLive(DateTimeOffset) : bool
+}
+class ForbiddenException {
+  +string Reason
+}
+class AcceptRequestCommand {
+  +Guid RequestId
+}
+
+AuthorisationBehaviour ..> IRequireRole : reads
+AuthorisationBehaviour ..> IRequireOwnership : reads
+AuthorisationBehaviour --> ICongregationContext : identifies the caller with
+AuthorisationBehaviour ..> ForbiddenException : raises
+IRequireRole --> MemberRole : demands
+IRequireOwnership <|.. AcceptRequestCommand
+SessionValidator --> Session : reads by the sid claim
+SessionValidator ..> ICongregationContext : populates on success
+@enduml

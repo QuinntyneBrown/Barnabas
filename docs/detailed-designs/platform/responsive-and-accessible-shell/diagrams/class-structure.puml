@@ -1,0 +1,49 @@
+@startuml
+!pragma layout smetana
+title Class structure — The responsive, accessible shell
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class AppShellComponent {
+  +Signal<boolean> isCompact
+  +Signal<NavDestination> current
+}
+class PrimaryNavComponent {
+  +input destinations : NavDestination[]
+  +input current : NavDestination
+}
+class BottomNavComponent {
+  +input destinations : NavDestination[]
+  +input current : NavDestination
+}
+class SkipLinkComponent {
+  +string targetId
+}
+class NavDestination {
+  +string key
+  +string label
+  +string route
+  +string icon
+}
+class ViewportService {
+  +Signal<Band> band
+}
+enum Band {
+  ExtraSmall
+  Small
+  Medium
+  Large
+  ExtraLarge
+}
+
+AppShellComponent *-- SkipLinkComponent : renders first
+AppShellComponent *-- PrimaryNavComponent : renders from Medium
+AppShellComponent *-- BottomNavComponent : renders below Medium
+AppShellComponent --> ViewportService : reads the current band from
+PrimaryNavComponent --> NavDestination : renders
+BottomNavComponent --> NavDestination : renders the same
+ViewportService --> Band : exposes
+@enduml

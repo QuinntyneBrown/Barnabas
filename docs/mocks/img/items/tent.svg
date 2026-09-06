@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a camping tent"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M46 194 160 54l114 140Z"/>
+  <path d="M160 54v140"/>
+  <path d="M124 194c0-30 16-54 36-54s36 24 36 54"/>
+  <path d="M46 194h228"/>
+</svg>

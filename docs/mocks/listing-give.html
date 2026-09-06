@@ -1,121 +1,211 @@
 <!DOCTYPE html>
 <!--
-  Give listing detail for Angela F.'s crib.
-  Responsive notes:
-  - <768px: full app chrome uses the bottom nav and the detail content stacks in one column.
-  - >=768px: header nav replaces the bottom nav; the detail content still stacks until wider tablet/desktop widths.
-  - >=1024px: the two-col-detail layout places the listing content and request card side by side.
-  - >=1280px: no material layout change beyond wider gutters.
+A Give listing. Cream field, indigo ink. The item is free and collected in
+  person, so the facts lead with that rather than with a price.
+
+  Responsive: one column under 1024px; two above with a sticky aside.
 -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crib with mattress included · Barnabas</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crib, mattress included · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <div class="container">
-      <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
-      <nav class="primary-nav" aria-label="Primary">
-        <a href="board.html">Board</a>
-        <a href="search-results.html">Search</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="requests-incoming.html">Requests</a>
-        <a href="my-listings-active.html">My listings</a>
-        <a href="my-profile-settings.html">Profile</a>
-      </nav>
-      <div class="header-actions">
-        <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
-      </div>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html" aria-current="page">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main id="main" class="page-main">
-    <div class="container stack">
-      <a class="back-link" href="board.html">← Back to board</a>
+<main id="main" class="page-main">
 
-      <div class="two-col two-col-detail">
-        <article class="stack">
-          <div class="detail-media">
-            <svg viewBox="0 0 800 600" role="img" aria-label="Illustration of a crib with mattress">
-              <rect width="800" height="600" fill="var(--color-give-bg)"></rect>
-              <g stroke="var(--color-give)" stroke-width="12" fill="none" stroke-linecap="round">
-                <rect x="180" y="200" width="440" height="180" rx="16"></rect>
-                <line x1="180" y1="200" x2="180" y2="470"></line>
-                <line x1="620" y1="200" x2="620" y2="470"></line>
-                <line x1="260" y1="214" x2="260" y2="360"></line>
-                <line x1="330" y1="214" x2="330" y2="360"></line>
-                <line x1="400" y1="214" x2="400" y2="360"></line>
-                <line x1="470" y1="214" x2="470" y2="360"></line>
-                <line x1="540" y1="214" x2="540" y2="360"></line>
-                <path d="M220 330h360"></path>
-              </g>
-            </svg>
-          </div>
-          <div class="stack">
-            <span class="badge-type badge-type-give">Give</span>
-            <h1>Crib with mattress included</h1>
-            <p>Angela F. would like this crib to go to another St. Aidan's family rather than sit in storage. It comes with the mattress and fitted sheet set, and it has already been taken apart so it is easier to load into a car or small van.</p>
-            <div class="tag-list">
-              <span class="tag">Free</span>
-              <span class="tag">Baby gear</span>
-            </div>
-          </div>
-        </article>
+  <div class="container">
 
-        <aside class="card detail-side-card stack">
+    <a class="back-link" href="board.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      Board
+    </a>
+
+    <div class="detail">
+
+      <div class="stack-6">
+        <div class="detail__art detail__art--paper">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a crib" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M66 92h188"/>
+  <path d="M66 182h188"/>
+  <path d="M66 92v98"/>
+  <path d="M254 92v98"/>
+  <path d="M74 190v22"/>
+  <path d="M246 190v22"/>
+  <path d="M100 96v82M132 96v82M164 96v82M196 96v82M228 96v82"/></svg>
+        </div>
+
+        <blockquote class="quote">
+          Our youngest has outgrown it. The mattress is barely used and I have washed the covers. It comes apart with an Allen key in about ten minutes.
+        </blockquote>
+
+        <dl class="facts">
           <div>
-            <span class="badge-type badge-type-give">Free</span>
+            <dt>Free</dt>
+            <dd>Given away, not sold</dd>
           </div>
-
-          <dl class="detail-list">
-            <div>
-              <dt>Pickup only</dt>
-              <dd>The Danforth, close to Coxwell Station. Angela can help bring the pieces to the front step.</dd>
-            </div>
-            <div>
-              <dt>Included</dt>
-              <dd>Crib frame, mattress, hardware bag, and one fitted sheet set.</dd>
-            </div>
-            <div>
-              <dt>Timing</dt>
-              <dd>Available this week and next; first family who can use it is welcome to take it.</dd>
-            </div>
-          </dl>
-
-          <a class="btn btn-primary btn-block" href="requests-incoming.html">Request this</a>
-
-          <div class="detail-note text-sm text-muted">This item is being given away. Barnabas helps you connect, but pickup details are worked out directly with Angela.</div>
-
-          <hr>
-
-          <div class="profile-inline">
-            <div class="avatar" aria-hidden="true">
-              <svg viewBox="0 0 64 64" role="img" aria-label="Avatar placeholder for Angela F.">
-                <circle cx="32" cy="32" r="32" fill="var(--color-give-bg)"></circle>
-                <circle cx="32" cy="24" r="10" fill="none" stroke="var(--color-give)" stroke-width="3"></circle>
-                <path d="M16 50c4-8 10-12 16-12s12 4 16 12" fill="none" stroke="var(--color-give)" stroke-width="3" stroke-linecap="round"></path>
-              </svg>
-            </div>
-            <div>
-              <p><strong><a href="member-profile.html">Angela F.</a></strong></p>
-              <p class="text-sm text-muted">The Danforth · member since 2022</p>
-            </div>
+          <div>
+            <dt>Pickup only</dt>
+            <dd>Near Coxwell Station, evenings and weekends</dd>
           </div>
-        </aside>
+          <div>
+            <dt>Included</dt>
+            <dd>Mattress, fitted sheet, and the assembly key</dd>
+          </div>
+          <div>
+            <dt>Posted</dt>
+            <dd>Two days ago</dd>
+          </div>
+        </dl>
       </div>
-    </div>
-  </main>
 
-  <nav class="bottom-nav" aria-label="Primary">
-    <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"></path><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"></path></svg>Board</a>
-    <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>Search</a>
-    <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>Post</a>
-    <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"></path><rect x="3" y="5" width="18" height="14" rx="2"></rect></svg>Requests</a>
-    <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"></path></svg>Profile</a>
-  </nav>
+      <div class="detail__aside">
+        <div class="stack-5">
+          <span class="kind kind--give">Give</span>
+          <h1 class="detail__title">Crib, mattress included</h1>
+
+          <a class="person" href="member-profile.html">
+            <span class="avatar avatar--stone" aria-hidden="true">AF</span>
+            <span>
+              <span class="person__name">Angela F.</span><br>
+              <span class="person__meta">The Danforth</span>
+            </span>
+          </a>
+
+          <a class="btn btn-primary btn-lg btn-block" href="request-give.html">Request this</a>
+
+          <p class="note">Angela arranges the pickup with you directly. Barnabas helps you connect and nothing more.</p>
+
+          <button class="btn btn-ghost btn-sm" type="button" data-open-dialog="report">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 5.5c4-2 8 2 12 0v8c-4 2-8-2-12 0"/></svg>
+            Report this listing
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container section">
+    <div class="stack-6">
+      <h2>More from Angela F.</h2>
+    <div class="mosaic">
+
+      <a class="placard placard--give" href="listing-give.html">
+        <span class="placard__kind">Give</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a box of books" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M62 118h196v96H62Z"/>
+  <path d="M62 118 84 92h152l22 26"/>
+  <path d="M104 118V60h30v58"/>
+  <path d="M144 118V44h30v74"/>
+  <path d="M184 118V70h30v48"/>
+  <path d="M104 78h30M144 66h30M184 92h30"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">Box of paperback novels</span>
+          <span class="placard__meta">Priya K.</span>
+          <span class="placard__meta">Leslieville</span>
+        </span>
+      </a>
+
+      <a class="placard placard--give" href="listing-give.html">
+        <span class="placard__kind">Give</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a baby gate" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M56 82h208v112H56Z"/>
+  <path d="M56 118h208M56 158h208"/>
+  <path d="M96 82v112M136 82v112M176 82v112M216 82v112"/>
+  <path d="M264 130h22"/>
+  <path d="M34 130h22"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">Baby gate, pressure-mounted</span>
+          <span class="placard__meta">Angela F.</span>
+          <span class="placard__meta">The Danforth</span>
+        </span>
+      </a>
+
+    </div>
+    </div>
+  </div>
+</main>
+
+<dialog id="report" aria-labelledby="report-title">
+  <h2 id="report-title">Report this listing</h2>
+  <p>A moderator at St.&nbsp;Aidan's will look at it. Angela F. is not told who reported it.</p>
+  <form method="dialog" class="stack-5">
+    <div class="field">
+      <label for="report-reason">What is wrong with it?</label>
+      <select id="report-reason" name="reason">
+        <option>It does not belong on the board</option>
+        <option>It is already gone</option>
+        <option>The description is not accurate</option>
+        <option>Something else</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="report-note">Anything to add?</label>
+      <textarea id="report-note" name="note" rows="3" placeholder="Optional"></textarea>
+    </div>
+    <div class="btn-group">
+      <a class="btn btn-primary" href="report-sent.html">Send report</a>
+      <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+<script src="mocks.js"></script>
+
 </body>
 </html>

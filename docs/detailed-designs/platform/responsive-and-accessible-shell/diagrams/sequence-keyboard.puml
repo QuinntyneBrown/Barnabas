@@ -1,0 +1,43 @@
+@startuml
+title UML sequence behaviour — Traversing a screen by keyboard
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member using a keyboard" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "SkipLinkComponent" as skip
+  participant "AppShellComponent" as shell
+  participant "Any routed screen" as screen
+  participant "ConfirmDialog" as dialog
+end box
+
+actor -> skip : Press Tab on a freshly loaded screen
+skip --> actor : Skip to main content, revealed on focus
+alt member takes the skip link
+  actor -> skip : Press Enter
+  skip -> screen : Move focus to the main landmark
+else member continues tabbing
+  actor -> shell : Tab
+  shell --> actor : Header destinations, in reading order
+  actor -> screen : Tab
+  screen --> actor : Screen controls, in reading order
+end
+note over screen : L2-112 draws the focus ring from currentColor,\nso it is cream on an indigo field and indigo on\na cream one without a per-surface rule.
+actor -> screen : Activate a destructive action
+screen -> dialog : Open
+dialog -> dialog : Move focus inside and trap it, per L2-111
+actor -> dialog : Press Escape
+dialog -> screen : Close and restore focus to the opening control
+dialog --> actor : Focus is where it was left
+@enduml

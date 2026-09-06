@@ -1,128 +1,205 @@
 <!DOCTYPE html>
 <!--
-  Editable current-member profile and settings page.
-  Responsive notes:
-  - <768px: profile fields and settings stack in a single column.
-  - >=768px: core profile fields form a two-column grid while settings remain stacked below.
-  - >=1280px: no material layout change beyond wider margins.
+Your own profile, notification preferences, and the one destructive action in
+  the product. Saving confirms in a dialog rather than on a page of its own —
+  the member stays put and there is no next step to offer.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My profile and settings · Barnabas</title>
+<title>Profile and settings · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
     <nav class="primary-nav" aria-label="Primary">
       <a href="board.html">Board</a>
-      <a href="search-results.html">Search</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="requests-incoming.html">Requests</a>
-      <a href="my-listings-active.html">My listings</a>
-      <a href="my-profile-settings.html" aria-current="page">Profile</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html" aria-current="page">You</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
   </div>
 </header>
+
 <main id="main" class="page-main">
-  <div class="container stack">
-    <div class="section-title">
-      <h1 class="mb-0">My profile</h1>
-      <span class="text-sm text-muted">Visible to St. Aidan's members</span>
+
+  <div class="masthead masthead--stone masthead--short">
+    <div class="container">
+      <h1 class="masthead-title">Profile and settings</h1>
     </div>
+  </div>
 
-    <section class="card panel">
-      <form class="stack">
-        <div class="photo-placeholder">
-          <div class="avatar" aria-hidden="true">
-            <svg viewBox="0 0 80 80" width="80" height="80" role="img">
-              <circle cx="40" cy="40" r="40" fill="#ece5f4" />
-              <text x="40" y="47" text-anchor="middle" font-size="28" font-family="Arial, sans-serif" fill="#6d4a9c" font-weight="700">PK</text>
-            </svg>
-          </div>
-          <div>
-            <h2 class="mb-0">Priya K.</h2>
-            <p class="text-muted">Current photo placeholder</p>
-            <a class="btn btn-secondary btn-sm" href="#">Change photo</a>
-          </div>
-        </div>
+  <div class="container section-tight">
+    <a class="back-link" href="you.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      You
+    </a>
 
-        <div class="form-grid">
-          <div class="field">
-            <label for="profile-name">Display name</label>
-            <input id="profile-name" type="text" value="Priya K.">
-          </div>
-          <div class="field">
-            <label for="profile-neighbourhood">Neighbourhood</label>
-            <select id="profile-neighbourhood">
-              <option>Leslieville</option>
-              <option>Riverdale</option>
-              <option>The Danforth</option>
-              <option>East York</option>
-              <option>Scarborough</option>
-              <option>The Beaches</option>
-            </select>
-          </div>
-        </div>
+    <form class="form stack-7">
 
-        <div class="field">
-          <label for="profile-bio">Short bio</label>
-          <textarea id="profile-bio">Parent of two school-age kids, usually around St. Aidan's on Sundays, and glad to swap practical help with neighbours nearby.</textarea>
-        </div>
-
-        <fieldset class="field">
-          <legend>What you can help with</legend>
-          <div class="check-list">
-            <label class="check-row"><input type="checkbox" checked> School pickup backup</label>
-            <label class="check-row"><input type="checkbox" checked> Homework help / tutoring</label>
-            <label class="check-row"><input type="checkbox"> Meal train coordination</label>
-            <label class="check-row"><input type="checkbox" checked> Baby gear advice</label>
-            <label class="check-row"><input type="checkbox"> Tech support</label>
-            <label class="check-row"><input type="checkbox"> Hospital visits</label>
-          </div>
-        </fieldset>
-
-        <div class="btn-group">
-          <button class="btn btn-primary" type="submit">Save profile</button>
-          <a class="btn btn-ghost" href="member-profile.html">Preview public profile</a>
-        </div>
-      </form>
-    </section>
-
-    <section class="card panel stack" aria-labelledby="settings-heading">
-      <h2 id="settings-heading" class="mb-0">Settings</h2>
-
-      <fieldset class="field">
-        <legend>Notification preferences</legend>
-        <div class="check-list">
-          <label class="check-row"><input type="checkbox" checked> Email me when someone requests my listing</label>
-          <label class="check-row"><input type="checkbox" checked> Notify me about new messages</label>
-          <label class="check-row"><input type="checkbox" checked> Notify me when a request is accepted or declined</label>
-          <label class="check-row"><input type="checkbox"> Weekly digest of new listings near Leslieville</label>
-        </div>
-      </fieldset>
-
-      <div class="card panel danger-zone">
-        <h3>Leave St. Aidan's board</h3>
-        <p class="text-muted">Your listings and requests would be hidden until a moderator reactivates your access.</p>
-        <a class="btn btn-danger" href="#">Leave St. Aidan's board</a>
+      <div class="row">
+        <span class="avatar avatar--ink avatar--lg" aria-hidden="true">PK</span>
+        <a class="btn btn-secondary btn-sm" href="#photo">Change photo</a>
       </div>
-    </section>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" value="Priya K.">
+        </div>
+        <div class="field">
+          <label for="hood">Neighbourhood</label>
+      <select id="hood" name="hood">
+        <option>Riverdale</option>
+        <option selected>Leslieville</option>
+        <option>The Danforth</option>
+        <option>Scarborough</option>
+        <option>The Beaches</option>
+        <option>East York</option>
+        <option>Cabbagetown</option>
+        <option>North York</option>
+      </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="bio">A line about you</label>
+        <p class="field-hint">Shown on your profile, in your own words.</p>
+        <textarea id="bio" name="bio" rows="4">Parent of two school-age kids, usually around St. Aidan's on Sundays, and glad to swap practical help with neighbours nearby.</textarea>
+      </div>
+
+      <div class="field">
+        <span class="field-label">What are you glad to help with?</span>
+        <div class="check-grid">
+        <label class="choice">
+          <input type="checkbox" name="help" value="Tutoring" checked>
+          <span><span class="choice__title">Tutoring</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="help" value="School pickup backup" checked>
+          <span><span class="choice__title">School pickup backup</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="help" value="Rides">
+          <span><span class="choice__title">Rides</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="help" value="Moving help">
+          <span><span class="choice__title">Moving help</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="help" value="Tech support">
+          <span><span class="choice__title">Tech support</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="help" value="Meal trains">
+          <span><span class="choice__title">Meal trains</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="help" value="Hospital visits">
+          <span><span class="choice__title">Hospital visits</span></span>
+        </label>
+        <label class="choice">
+          <input type="checkbox" name="help" value="Minor repairs">
+          <span><span class="choice__title">Minor repairs</span></span>
+        </label>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="field" id="notifications">
+        <span class="field-label">Tell me about</span>
+        <div class="choice-list">
+          <label class="choice"><input type="checkbox" checked><span><span class="choice__title">Requests on my listings</span></span></label>
+          <label class="choice"><input type="checkbox" checked><span><span class="choice__title">Decisions on my requests</span></span></label>
+          <label class="choice"><input type="checkbox" checked><span><span class="choice__title">New messages</span></span></label>
+          <label class="choice"><input type="checkbox"><span><span class="choice__title">Anything new posted to the board</span></span></label>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg" type="button" data-open-dialog="saved">Save changes</button>
+        <a class="btn btn-ghost btn-lg" href="member-profile.html">Preview my public profile</a>
+      </div>
+
+      <hr>
+
+      <div class="field-block field-block--outline">
+        <div class="stack-3">
+          <h2>Leave the board</h2>
+          <p class="muted">Your listings come off the board and your requests are withdrawn.</p>
+          <div class="btn-group">
+            <button class="btn btn-danger" type="button" data-open-dialog="leave">Leave St.&nbsp;Aidan's board</button>
+          </div>
+        </div>
+      </div>
+
+    </form>
   </div>
 </main>
+
+<dialog id="saved" aria-labelledby="saved-title">
+  <h2 id="saved-title">Saved</h2>
+  <p>Your profile has been updated. The congregation sees the change straight away.</p>
+  <div class="btn-group">
+    <button class="btn btn-primary" type="button" data-close-dialog>Close</button>
+  </div>
+</dialog>
+
+<dialog id="leave" aria-labelledby="leave-title">
+  <h2 id="leave-title">Leave St. Aidan's board?</h2>
+  <p>Your listings come off the board and your requests are withdrawn. Rejoining needs a fresh invite code from the parish office.</p>
+  <div class="btn-group">
+    <a class="btn btn-danger" href="landing.html">Leave the board</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
 <nav class="bottom-nav" aria-label="Primary">
-  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
-  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
-  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
-  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
-  <a href="my-profile-settings.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
 </nav>
+<script src="mocks.js"></script>
+
 </body>
 </html>

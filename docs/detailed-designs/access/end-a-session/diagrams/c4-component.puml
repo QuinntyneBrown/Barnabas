@@ -1,0 +1,21 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — End a session
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "SessionsController", "ASP.NET Core controller", "Exposes refresh and sign-out")
+  Component(refresh, "RefreshSessionCommandHandler", "MediatR handler", "Rotates the refresh token and issues a new access token")
+  Component(signout, "SignOutCommandHandler", "MediatR handler", "Revokes the refresh token")
+  Component(token, "RefreshToken", "Domain entity", "Owns rotation and revocation")
+  Component(issuer, "JwtIssuer", "Infrastructure service", "Signs the replacement access token")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Refresh token hashes")
+}
+Rel(ctrl, refresh, "Sends RefreshSessionCommand")
+Rel(ctrl, signout, "Sends SignOutCommand")
+Rel(refresh, token, "Rotates")
+Rel(refresh, issuer, "Issues through")
+Rel(signout, token, "Revokes")
+Rel(token, db, "Stored as a hash", "EF Core")
+@enduml

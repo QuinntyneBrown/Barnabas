@@ -1,0 +1,20 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Track my requests
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes GET /requests/mine")
+  Component(handler, "GetMyRequestsQueryHandler", "MediatR handler", "Reads the requests the caller made and projects them")
+  Component(dto, "MyRequestDto", "Read model", "Listing, owner, terms, status, and the thread where one exists")
+  Component(request, "ListingRequest", "Domain entity", "Holds the status the row reports")
+  Component(thread, "MessageThread", "Domain entity", "Named by an accepted request")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Requests, listings, and threads")
+}
+Rel(ctrl, handler, "Sends GetMyRequestsQuery")
+Rel(handler, db, "Reads requests made by the caller", "EF Core")
+Rel(handler, dto, "Projects to")
+Rel(dto, request, "Reports the status of")
+Rel(dto, thread, "Carries the identifier of")
+@enduml

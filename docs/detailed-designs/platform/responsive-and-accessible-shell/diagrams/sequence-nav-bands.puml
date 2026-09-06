@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour — The five destinations at every viewport band
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "ViewportService" as vp
+  participant "AppShellComponent" as shell
+  participant "PrimaryNavComponent" as primary
+  participant "BottomNavComponent" as bottom
+  participant "NavDestinations" as nav
+end box
+
+actor -> shell : Open any screen
+shell -> vp : Read the current band
+alt band is Medium or wider
+  vp --> shell : Medium, Large, or ExtraLarge
+  shell -> primary : Render with the destinations and the current one
+  primary -> nav : Read the ordered list
+  nav --> primary : Board, Search, Post, Inbox, You
+  primary --> actor : Five destinations in the header
+else band is ExtraSmall or Small
+  vp --> shell : ExtraSmall or Small
+  shell -> bottom : Render with the destinations and the current one
+  bottom -> nav : Read the same ordered list
+  nav --> bottom : Board, Search, Post, Inbox, You
+  bottom --> actor : The same five, in the same order, in the bottom bar
+end
+note over nav : L2-109 is satisfied structurally: both navigations\nread one list, so a destination cannot exist at\none band and be missing at another.
+@enduml

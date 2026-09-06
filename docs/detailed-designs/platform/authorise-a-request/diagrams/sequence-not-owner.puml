@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour — An authenticated caller acting on another member's resource
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Backend — Barnabas API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "AuthorisationBehaviour" as behaviour
+  participant "AcceptRequestCommandHandler" as handler
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> controller : POST /requests/{id}/accept
+controller -> behaviour : Send AcceptRequestCommand
+behaviour -> behaviour : Read IRequireOwnership from the command
+behaviour -> db : Load the listing that owns the request
+db --> behaviour : Listing with its owner
+alt caller owns the listing
+  behaviour -> handler : Invoke the handler
+  handler --> behaviour : Result
+  behaviour --> controller : Result
+  controller --> actor : 200 OK
+else caller does not own it
+  behaviour --> controller : L2-094 ownership failure
+  controller --> actor : 403 Forbidden
+  note over behaviour : The handler never runs, so no state\nis read or written for an unauthorised caller.
+end
+@enduml

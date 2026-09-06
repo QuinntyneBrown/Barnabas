@@ -1,0 +1,59 @@
+@startuml
+!pragma layout smetana
+title Class structure — Scope queries to a congregation
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+interface ICongregationContext {
+  +bool IsResolved
+  +Guid CongregationId
+  +Guid MemberId
+}
+class CongregationContext {
+  +bool IsResolved
+  +Guid CongregationId
+  +Guid MemberId
+}
+interface ITenantOwned {
+  +Guid CongregationId
+}
+class BarnabasDbContext {
+  +DbSet<Listing> Listings
+  +DbSet<ListingRequest> Requests
+  +DbSet<MessageThread> Threads
+  #OnModelCreating(ModelBuilder) : void
+  -ApplyCongregationFilter(ModelBuilder) : void
+}
+interface IAuthenticationStore {
+  +FindMemberByEmailAddress(string) : Member
+  +FindSignInTokenByHash(string) : SignInToken
+  +FindSessionById(Guid) : Session
+}
+class CongregationContextMissingException {
+  +string EntityName
+}
+class Listing {
+  +Guid Id
+  +Guid CongregationId
+}
+class ListingRequest {
+  +Guid Id
+  +Guid CongregationId
+}
+class MessageThread {
+  +Guid Id
+  +Guid CongregationId
+}
+
+ICongregationContext <|.. CongregationContext
+ITenantOwned <|.. Listing
+ITenantOwned <|.. ListingRequest
+ITenantOwned <|.. MessageThread
+BarnabasDbContext --> ICongregationContext : reads current congregation from
+BarnabasDbContext ..> ITenantOwned : filters every set of
+BarnabasDbContext ..> CongregationContextMissingException : raises when unresolved
+IAuthenticationStore ..> BarnabasDbContext : the one sanctioned bypass
+@enduml

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a step ladder"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M108 55h50"/>
+  <path d="M108 55 72 196"/>
+  <path d="M158 55l36 141"/>
+  <path d="M99 92h68"/>
+  <path d="M89 130h88"/>
+  <path d="M79 168h108"/>
+</svg>

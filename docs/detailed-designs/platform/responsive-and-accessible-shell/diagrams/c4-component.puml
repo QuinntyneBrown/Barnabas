@@ -1,0 +1,23 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — The responsive, accessible shell
+
+Container_Boundary(web, "Barnabas web") {
+  Component(shell, "AppShellComponent", "Angular component", "Wraps every routed screen with the skip link, header, and bottom bar")
+  Component(skip, "SkipLinkComponent", "Angular component", "First focusable element on every screen")
+  Component(primary, "PrimaryNavComponent", "Angular component", "The five destinations, shown from 768px")
+  Component(bottom, "BottomNavComponent", "Angular component", "The same five destinations, shown below 768px")
+  Component(nav, "NavDestinations", "Shared constant", "One ordered list both navigations render")
+  Component(tokens, "Design tokens", "SCSS custom properties", "Palette, type scale, spacing, and focus treatment")
+  Component(screen, "Any routed screen", "Angular component", "Rendered inside the shell")
+}
+Rel(shell, skip, "Renders first")
+Rel(shell, primary, "Renders from 768px")
+Rel(shell, bottom, "Renders below 768px")
+Rel(primary, nav, "Reads the ordered destinations")
+Rel(bottom, nav, "Reads the same ordered destinations")
+Rel(shell, screen, "Projects into the main landmark")
+Rel(screen, tokens, "Draws colour, spacing, and focus from")
+@enduml

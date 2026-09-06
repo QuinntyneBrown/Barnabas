@@ -1,0 +1,16 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Browse the board
+
+Person(member, "Member", "A parishioner looking at what is on offer")
+System_Boundary(barnabas, "Barnabas") {
+  Container(spa, "Barnabas web", "Angular", "Renders the board as a mosaic of placards")
+  Container(api, "Barnabas API", "ASP.NET Core", "Returns the congregation's active listings")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Listings and their owners")
+}
+Rel(member, spa, "Browses in", "HTTPS")
+Rel(spa, api, "Requests the board, optionally filtered by kind", "JSON/HTTPS")
+Rel(api, db, "Reads active listings for the caller's congregation", "EF Core")
+@enduml

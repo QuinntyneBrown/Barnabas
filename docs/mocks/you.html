@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<!--
+The You hub. Notifications and My listings used to live in the header nav and
+  simply vanished below 768px, where the bottom bar had five slots against the
+  header's six. Dropping to five destinations everywhere and giving the
+  low-frequency ones a hub of large labelled rows fixes that without nesting
+  anything behind a menu — which matters for an audience that runs to eighty.
+
+  This is also the only inbound link to the moderator queue and the directory.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html" aria-current="page">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+
+  <div class="masthead on-ink">
+    <div class="container">
+      <div class="row">
+        <span class="avatar avatar--ink avatar--lg" aria-hidden="true">PK</span>
+        <div>
+          <h1 class="masthead-title" style="font-size: var(--t-head);">Priya K.</h1>
+          <p class="masthead-count">Leslieville &nbsp;&mdash;&nbsp; member since 2023</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section-tight">
+    <div class="hub">
+    <a href="my-listings-active.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      <span>
+        <span class="hub__label">My listings</span><br>
+        <span class="hub__meta">4 active, 4 wrapped up</span>
+      </span>
+    </a>
+    <a href="notifications.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+      <span>
+        <span class="hub__label">Notifications</span><br>
+        <span class="hub__meta">4 new</span>
+      </span>
+    </a>
+    <a href="directory.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+      <span>
+        <span class="hub__label">Congregation directory</span><br>
+        <span class="hub__meta">34 members at St. Aidan's</span>
+      </span>
+    </a>
+    <a href="my-profile-settings.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L20 8l-4-4L4 16z"/><path d="m14.5 5.5 4 4"/></svg>
+      <span>
+        <span class="hub__label">Profile and settings</span><br>
+        <span class="hub__meta">Priya K., Leslieville</span>
+      </span>
+    </a>
+    <a href="moderation-queue.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.4-3 8-7.5 9.5-4.5-1.5-7.5-5.1-7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span>
+        <span class="hub__label">Moderator tools</span><br>
+        <span class="hub__meta">3 flagged, 3 members waiting</span>
+      </span>
+    </a>
+    <a href="landing.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v12H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg>
+      <span>
+        <span class="hub__label">How Barnabas works</span><br>
+        <span class="hub__meta">What the board is for</span>
+      </span>
+    </a>
+    </div>
+
+    <div class="btn-group" style="margin-top: var(--s-7);">
+      <button class="btn btn-ghost" type="button" data-open-dialog="signout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4H5v16h9"/><path d="M18.5 12H10"/><path d="m15.5 8.5 3.5 3.5-3.5 3.5"/></svg>
+        Sign out
+      </button>
+    </div>
+  </div>
+</main>
+
+<dialog id="signout" aria-labelledby="signout-title">
+  <h2 id="signout-title">Sign out of Barnabas?</h2>
+  <p>Your listings and requests stay exactly as they are. Signing back in needs only your email address.</p>
+  <div class="btn-group">
+    <a class="btn btn-primary" href="landing.html">Sign out</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+<script src="mocks.js"></script>
+
+</body>
+</html>

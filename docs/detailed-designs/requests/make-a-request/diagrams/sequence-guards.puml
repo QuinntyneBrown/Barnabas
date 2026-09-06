@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Eligibility guards on a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Requester" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "ListingDetailComponent" as page
+  participant "RequestsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "MakeLoanRequestCommandHandler" as handler
+  participant "RequestEligibilityPolicy" as policy
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Open a listing
+page -> page : Hide the request action when the caller owns the listing, per L2-062
+actor -> page : Send request
+page -> client : Build typed request
+client -> controller : POST /listings/{listingId}/requests/loan
+controller -> handler : Send MakeLoanRequestCommand
+handler -> db : Load the listing
+db --> handler : Listing with its owner, kind, and status
+handler -> policy : Apply the L2-062 eligibility checks
+alt caller owns the listing
+  policy --> handler : Self-request rejected
+  controller --> actor : 400 ProblemDetails
+else the listing is not active
+  policy --> handler : Closed or archived
+  controller --> actor : 409 Conflict
+  note over policy : A sold listing can still be reached by its\nidentifier, so being active is checked rather\nthan assumed.
+else the listing's kind does not match the endpoint
+  policy --> handler : Kind mismatch
+  controller --> actor : 400 ProblemDetails
+  note over policy : The loan endpoint accepts only a Lend listing.\nWithout this a Sell listing could acquire a\nrequest carrying loan terms and no price.
+else eligible
+  policy --> handler : Eligible
+  handler -> db : Insert the request
+  alt the insert succeeds
+    db --> handler : Created
+    controller --> actor : 201 Created
+  else a concurrent request already holds the open slot
+    db --> handler : Unique constraint violated on (ListingId, RequesterId)
+    controller --> actor : 409 Conflict
+    note over db : Two simultaneous requests both pass the\nlook-up. Only the constraint can decide, so the\nduplicate rule lives there as well as in the policy.
+  end
+end
+@enduml

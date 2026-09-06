@@ -1,0 +1,41 @@
+@startuml
+title UML sequence behaviour — A read reaching for another congregation's resource
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member of St. Aidan's" as actor
+box "Backend — Barnabas API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "GetListingQueryHandler" as handler
+end box
+box "Backend — Infrastructure" #FFF4E5
+  participant "BarnabasDbContext" as db
+  database "Barnabas database" as store
+end box
+
+actor -> controller : GET /listings/{id} for a listing owned by St. Mark's
+controller -> handler : Send GetListingQuery
+handler -> db : Find the listing by identifier
+db -> store : SELECT ... WHERE Id = @id AND CongregationId = @current
+store --> db : No rows
+db --> handler : null
+handler --> controller : Not found
+controller --> actor : 404 Not Found
+note over controller : L2-089 requires 404 rather than 403.\nA 403 would confirm the resource exists.
+actor -> controller : GET /listings/{id} for an identifier that exists nowhere
+controller --> actor : 404 Not Found
+note over actor : The two responses are indistinguishable,\nso existence cannot be probed.
+@enduml

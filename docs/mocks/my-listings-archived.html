@@ -1,153 +1,202 @@
 <!DOCTYPE html>
 <!--
-  Archived listings with a confirmation dialog for permanent deletion. This
-  is the one deliberate use of mocks.js in the set: it opens/closes the
-  native <dialog> confirmation. With JavaScript disabled the "Delete
-  permanently" buttons are inert (no destructive action happens) rather than
-  silently deleting, which is the safe fallback for a mock. Responsive
-  notes: no material layout change beyond wider margins; the shared header
-  nav replaces the bottom tab bar from 768px upward.
+Listings that have been wrapped up. Each keeps the outcome its kind records —
+  Sold, Given away, Archived, Completed — so the archive shows what happened
+  rather than merely that something did.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Archived listings · Barnabas</title>
+<title>My listings · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
     <nav class="primary-nav" aria-label="Primary">
       <a href="board.html">Board</a>
-      <a href="search-results.html">Search</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="requests-incoming.html">Requests</a>
-      <a href="my-listings-active.html" aria-current="page">My listings</a>
-      <a href="my-profile-settings.html">Profile</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html" aria-current="page">You</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
   </div>
 </header>
+
 <main id="main" class="page-main">
-  <div class="container">
-    <div class="section-title">
-      <div>
-        <h1>Archived listings</h1>
-        <p class="text-muted mb-0">Past listings Priya K. has already wrapped up or tucked away.</p>
-      </div>
+
+  <div class="masthead masthead--stone masthead--short">
+    <div class="container">
+      <h1 class="masthead-title">My listings</h1>
+      <nav class="chip-row" aria-label="My listings sections">
+        <a class="chip" href="my-listings-active.html">Active <span class="chip-count">4</span></a>
+        <a class="chip" href="my-listings-archived.html" aria-current="true">Wrapped up <span class="chip-count">4</span></a>
+      </nav>
     </div>
-    <nav class="chip-row" aria-label="My listing views">
-      <a class="chip" href="my-listings-active.html">Active</a>
-      <a class="chip is-active" aria-current="true" href="my-listings-archived.html">Archived</a>
-    </nav>
+  </div>
 
-    <div class="stack">
-      <article class="card">
-        <div class="list-row list-row-muted">
-          <div class="stack">
-            <p class="mb-0"><span class="badge-type badge-type-sell">Sell</span> <span class="badge-status badge-status-sold">Sold</span></p>
-            <h2 class="listing-card-title">Set of four winter tires, 16&quot;</h2>
-            <p class="text-sm mb-0">Sold to Robert Nguyen for $180 CAD · Pickup completed in East York.</p>
-            <div class="btn-group">
-              <button class="btn btn-ghost btn-sm" type="button">View details</button>
-              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="delete-confirm-tires">Delete permanently</button>
+  <div class="container section-tight">
+    <a class="back-link" href="you.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      You
+    </a>
+    <div class="rows">
+        <div class="list-row list-row--muted">
+          <span class="thread-context__art" aria-hidden="true"><svg viewBox="0 0 320 240" role="img" aria-label="Drawing of winter tires" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="160" cy="88" rx="82" ry="30"/>
+  <ellipse cx="160" cy="88" rx="34" ry="12"/>
+  <path d="M78 88v42c0 17 37 30 82 30s82-13 82-30V88"/>
+  <path d="M78 130v42c0 17 37 30 82 30s82-13 82-30v-42"/></svg></span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <span class="list-row__title">Set of four winter tires, 16&Prime;</span>
+              <span class="status status--closed">Sold</span>
+            </div>
+            <p class="list-row__meta">Sold for $180 to Robert Nguyen</p>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="my-listings-active.html">Restore</a>
+              <a class="btn btn-ghost btn-sm" href="new-listing-choose-type.html">Post it again</a>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="del0">Delete permanently</button>
             </div>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="list-row list-row-muted">
-          <div class="stack">
-            <p class="mb-0"><span class="badge-type badge-type-give">Give</span> <span class="badge-status badge-status-given">Given away</span></p>
-            <h2 class="listing-card-title">Baby gate, pressure-mounted</h2>
-            <p class="text-sm mb-0">Picked up by the Odusanya family after Sunday liturgy.</p>
-            <div class="btn-group">
-              <button class="btn btn-ghost btn-sm" type="button">View details</button>
-              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="delete-confirm-gate">Delete permanently</button>
+        <div class="list-row list-row--muted">
+          <span class="thread-context__art" aria-hidden="true"><svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a baby gate" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M56 82h208v112H56Z"/>
+  <path d="M56 118h208M56 158h208"/>
+  <path d="M96 82v112M136 82v112M176 82v112M216 82v112"/>
+  <path d="M264 130h22"/>
+  <path d="M34 130h22"/></svg></span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <span class="list-row__title">Baby gate, pressure-mounted</span>
+              <span class="status status--closed">Given away</span>
+            </div>
+            <p class="list-row__meta">Picked up by the Odusanya family after Sunday liturgy</p>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="my-listings-active.html">Restore</a>
+              <a class="btn btn-ghost btn-sm" href="new-listing-choose-type.html">Post it again</a>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="del1">Delete permanently</button>
             </div>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="list-row list-row-muted">
-          <div class="stack">
-            <p class="mb-0"><span class="badge-type badge-type-lend">Lend</span> <span class="badge-status badge-status-archived">Archived</span></p>
-            <h2 class="listing-card-title">Twelve folding chairs</h2>
-            <p class="text-sm mb-0">Archived for now after the parish hall repainting wrapped up.</p>
-            <div class="btn-group">
-              <button class="btn btn-ghost btn-sm" type="button">Restore</button>
-              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="delete-confirm-chairs">Delete permanently</button>
+        <div class="list-row list-row--muted">
+          <span class="thread-context__art" aria-hidden="true"><svg viewBox="0 0 320 240" role="img" aria-label="Drawing of folding chairs" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M92 68v104"/>
+  <path d="M92 68h56v54H92Z"/>
+  <path d="M92 122h64l14 50"/>
+  <path d="M156 122 92 172"/>
+  <path d="M170 172v-16"/>
+  <path d="M186 76v104"/>
+  <path d="M186 76h56v54h-56Z"/>
+  <path d="M186 130h64l14 50"/></svg></span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <span class="list-row__title">Twelve folding chairs</span>
+              <span class="status status--closed">Archived</span>
+            </div>
+            <p class="list-row__meta">Taken off the board in June</p>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="my-listings-active.html">Restore</a>
+              <a class="btn btn-ghost btn-sm" href="new-listing-choose-type.html">Post it again</a>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="del2">Delete permanently</button>
             </div>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="list-row list-row-muted">
-          <div class="stack">
-            <p class="mb-0"><span class="badge-type badge-type-help">Help</span> <span class="badge-status badge-status-archived">Completed</span></p>
-            <h2 class="listing-card-title">Resume review evenings</h2>
-            <p class="text-sm mb-0">Finished after helping Sam Iqbal and Marion T. prepare applications.</p>
-            <div class="btn-group">
-              <button class="btn btn-ghost btn-sm" type="button">Repost</button>
-              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="delete-confirm-resume">Delete permanently</button>
+        <div class="list-row list-row--muted">
+          <span class="thread-context__art" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.5l3.5 2"/></svg></span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <span class="list-row__title">Resume review evenings</span>
+              <span class="status status--closed">Completed</span>
+            </div>
+            <p class="list-row__meta">Four evenings through the spring</p>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="my-listings-active.html">Restore</a>
+              <a class="btn btn-ghost btn-sm" href="new-listing-choose-type.html">Post it again</a>
+              <button class="btn btn-danger btn-sm" type="button" data-open-dialog="del3">Delete permanently</button>
             </div>
           </div>
         </div>
-      </article>
     </div>
-
-    <dialog class="confirm-dialog" id="delete-confirm-tires" aria-labelledby="delete-confirm-tires-title">
-      <h2 id="delete-confirm-tires-title">Delete &quot;Set of four winter tires, 16&quot;&quot; permanently?</h2>
-      <p class="text-muted">This removes the listing from your archive for good. Request history in the mock stays implied, but the listing itself would be gone.</p>
-      <div class="btn-group">
-        <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
-        <button class="btn btn-danger" type="button" data-close-dialog>Delete permanently</button>
-      </div>
-    </dialog>
-
-    <dialog class="confirm-dialog" id="delete-confirm-gate" aria-labelledby="delete-confirm-gate-title">
-      <h2 id="delete-confirm-gate-title">Delete &quot;Baby gate, pressure-mounted&quot; permanently?</h2>
-      <p class="text-muted">This removes the listing from your archive for good. Request history in the mock stays implied, but the listing itself would be gone.</p>
-      <div class="btn-group">
-        <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
-        <button class="btn btn-danger" type="button" data-close-dialog>Delete permanently</button>
-      </div>
-    </dialog>
-
-    <dialog class="confirm-dialog" id="delete-confirm-chairs" aria-labelledby="delete-confirm-chairs-title">
-      <h2 id="delete-confirm-chairs-title">Delete &quot;Twelve folding chairs&quot; permanently?</h2>
-      <p class="text-muted">This removes the listing from your archive for good. Request history in the mock stays implied, but the listing itself would be gone.</p>
-      <div class="btn-group">
-        <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
-        <button class="btn btn-danger" type="button" data-close-dialog>Delete permanently</button>
-      </div>
-    </dialog>
-
-    <dialog class="confirm-dialog" id="delete-confirm-resume" aria-labelledby="delete-confirm-resume-title">
-      <h2 id="delete-confirm-resume-title">Delete &quot;Resume review evenings&quot; permanently?</h2>
-      <p class="text-muted">This removes the listing from your archive for good. Request history in the mock stays implied, but the listing itself would be gone.</p>
-      <div class="btn-group">
-        <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
-        <button class="btn btn-danger" type="button" data-close-dialog>Delete permanently</button>
-      </div>
-    </dialog>
   </div>
 </main>
+
+<dialog id="del0" aria-labelledby="del0-title">
+  <h2 id="del0-title">Delete this permanently?</h2>
+  <p>It goes for good, along with its requests and messages. This cannot be undone.</p>
+  <div class="btn-group">
+    <a class="btn btn-danger" href="my-listings-archived.html">Delete permanently</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="del1" aria-labelledby="del1-title">
+  <h2 id="del1-title">Delete this permanently?</h2>
+  <p>It goes for good, along with its requests and messages. This cannot be undone.</p>
+  <div class="btn-group">
+    <a class="btn btn-danger" href="my-listings-archived.html">Delete permanently</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="del2" aria-labelledby="del2-title">
+  <h2 id="del2-title">Delete this permanently?</h2>
+  <p>It goes for good, along with its requests and messages. This cannot be undone.</p>
+  <div class="btn-group">
+    <a class="btn btn-danger" href="my-listings-archived.html">Delete permanently</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="del3" aria-labelledby="del3-title">
+  <h2 id="del3-title">Delete this permanently?</h2>
+  <p>It goes for good, along with its requests and messages. This cannot be undone.</p>
+  <div class="btn-group">
+    <a class="btn btn-danger" href="my-listings-archived.html">Delete permanently</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
 <nav class="bottom-nav" aria-label="Primary">
-  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
-  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
-  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
-  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
-  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
 </nav>
 <script src="mocks.js"></script>
+
 </body>
 </html>

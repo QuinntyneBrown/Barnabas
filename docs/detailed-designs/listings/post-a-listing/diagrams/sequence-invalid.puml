@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour — A listing that fails its bounds
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "PostLendComponent" as page
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "ValidationBehaviour" as behaviour
+  participant "PostLendListingCommandHandler" as handler
+end box
+
+actor -> page : Post with an empty title and a 5000-character description
+page -> controller : POST /listings/lend
+controller -> behaviour : Send PostLendListingCommand
+behaviour -> behaviour : Run the Lend validator, per L2-031
+alt every field is within bounds
+  behaviour -> handler : Invoke the handler
+  handler --> controller : Listing identifier
+  controller --> page : 201 Created
+else one or more fields are not
+  behaviour --> controller : Failures on Title and Description
+  controller --> page : 400 with the failing field names
+  page -> page : Mark each field and move focus to the first
+  page --> actor : Errors shown against their fields, the form still filled in
+end
+note over behaviour : The mechanism is described once in\nplatform/validate-and-bound-input; this feature\nonly declares the bounds a listing accepts.
+@enduml

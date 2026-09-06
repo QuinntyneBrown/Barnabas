@@ -1,0 +1,93 @@
+@startuml
+!pragma layout smetana
+title Class structure — Make a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+hide empty members
+
+class ListingRequest {
+  +Guid Id
+  +Guid CongregationId
+  +Guid ListingId
+  +Guid RequesterId
+  +string Message
+  +RequestStatus Status
+  +byte[] RowVersion
+  +DateTimeOffset CreatedOn
+  +Accept() : void
+  +Decline() : void
+}
+note bottom of ListingRequest
+  Unique on (ListingId, RequesterId)
+  where Status is Pending, so a
+  duplicate is refused by the
+  database rather than by a check.
+end note
+
+enum RequestStatus {
+  Pending
+  Accepted
+  Declined
+}
+
+class LoanTerms {
+  +DateOnly PickupOn
+  +DateOnly ReturnBy
+  +bool LoanAcknowledged
+}
+class PickupTerms {
+  +DateTimeOffset PickupAt
+}
+class AvailabilityWindow {
+  +Guid Id
+  +DayOfWeek Day
+  +TimeOnly StartsAt
+  +TimeOnly EndsAt
+}
+
+abstract class MakeRequestCommand {
+  +Guid ListingId
+  +string Message
+}
+class MakeLoanRequestCommand {
+  +DateOnly PickupOn
+  +DateOnly ReturnBy
+  +bool LoanAcknowledged
+}
+class MakeGiftRequestCommand {
+  +DateTimeOffset PickupAt
+}
+class MakePurchaseRequestCommand {
+  +DateTimeOffset PickupAt
+}
+class MakeHelpRequestCommand {
+  +Guid AvailabilityWindowId
+}
+
+class RequestEligibilityPolicy {
+  +EnsureNotOwnListing(Listing, Guid) : void
+  +EnsureListingActive(Listing) : void
+  +EnsureKindMatchesEndpoint(Listing, ListingKind) : void
+  +EnsureNoOpenRequest(Guid, Guid) : void
+}
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingKind Kind
+  +ListingStatus Status
+}
+
+MakeRequestCommand <|-- MakeLoanRequestCommand
+MakeRequestCommand <|-- MakeGiftRequestCommand
+MakeRequestCommand <|-- MakePurchaseRequestCommand
+MakeRequestCommand <|-- MakeHelpRequestCommand
+
+ListingRequest --> RequestStatus : holds
+ListingRequest *-- LoanTerms : composes for Lend
+ListingRequest *-- PickupTerms : composes for Give and Sell
+ListingRequest --> AvailabilityWindow : chosen for Help
+RequestEligibilityPolicy ..> Listing : inspects
+RequestEligibilityPolicy ..> ListingRequest : guards creation of
+@enduml

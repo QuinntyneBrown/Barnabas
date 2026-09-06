@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — A field the command forbids, and one it merely does not know
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "PostLendComponent" as page
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "ListingsController" as controller
+  participant "ForbiddenFieldInspector" as inspector
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "PostLendListingCommandHandler" as handler
+end box
+
+alt the body carries a forbidden field
+  actor -> page : Post a Lend listing carrying a price
+  page -> controller : POST /listings/lend with { title, price }
+  controller -> inspector : Inspect the raw body against the command's forbidden names
+  inspector -> inspector : price is forbidden for a Lend listing, per L2-027
+  inspector --> controller : Failure on price
+  controller --> page : 400 naming price
+  page --> actor : Explain a Lend listing carries no price
+  note over inspector : Inspection reads the raw payload. After binding\nthe value is already gone, because the command\nhas no property to hold it.
+else the body carries an unrecognised field
+  actor -> page : Post a listing carrying a superseded field
+  page -> controller : POST /listings/lend with { title, legacyTag }
+  controller -> inspector : Inspect
+  inspector --> controller : No forbidden field present
+  controller -> handler : Bind, discarding legacyTag, and dispatch
+  note over controller : L2-096 keeps an unrecognised field harmless,\nso an older client is not broken by a deployment.
+  handler --> controller : Listing identifier
+  controller --> page : 201 Created
+end
+@enduml

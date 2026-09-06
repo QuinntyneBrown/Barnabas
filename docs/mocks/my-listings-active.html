@@ -1,118 +1,189 @@
 <!DOCTYPE html>
 <!--
-  My active listings for the signed-in member. Responsive notes: no material layout change beyond wider margins; the shared header nav replaces the bottom tab bar from 768px upward.
+Your listings that are still on the board. The request count is now a link to
+  the requests themselves — in the original set it was plain text, so there was
+  no route from a listing to the people asking for it.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My listings · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+
 <header class="site-header">
   <div class="container">
-    <a class="brand" href="board.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
     <nav class="primary-nav" aria-label="Primary">
       <a href="board.html">Board</a>
-      <a href="search-results.html">Search</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="requests-incoming.html">Requests</a>
-      <a href="my-listings-active.html" aria-current="page">My listings</a>
-      <a href="my-profile-settings.html">Profile</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html" aria-current="page">You</a>
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="new-listing-choose-type.html">+ Post</a>
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
     </div>
   </div>
 </header>
+
 <main id="main" class="page-main">
-  <div class="container">
-    <div class="section-title">
-      <div>
-        <h1>My listings</h1>
-        <p class="text-muted mb-0">Everything Priya K. is currently sharing with St. Aidan's.</p>
-      </div>
+
+  <div class="masthead masthead--stone masthead--short">
+    <div class="container">
+      <h1 class="masthead-title">My listings</h1>
+      <nav class="chip-row" aria-label="My listings sections">
+        <a class="chip" href="my-listings-active.html" aria-current="true">Active <span class="chip-count">4</span></a>
+        <a class="chip" href="my-listings-archived.html">Wrapped up <span class="chip-count">4</span></a>
+      </nav>
     </div>
-    <nav class="chip-row" aria-label="My listing views">
-      <a class="chip is-active" aria-current="true" href="my-listings-active.html">Active</a>
-      <a class="chip" href="my-listings-archived.html">Archived</a>
-    </nav>
+  </div>
 
-    <div class="stack">
-      <article class="card">
+  <div class="container section-tight">
+    <a class="back-link" href="you.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      You
+    </a>
+    <div class="rows">
         <div class="list-row">
-          <div class="stack">
-            <p class="mb-0"><span class="badge-type badge-type-sell">Sell</span> <span class="badge-count">3 requests</span></p>
-            <h2 class="listing-card-title">Kids' 20&quot; bike, barely used</h2>
-            <p class="text-sm text-muted mb-0">Leslieville · $60 CAD · Posted yesterday</p>
-            <p class="text-sm mb-0">A family from East York and two grandparents from St. Aidan's have asked about weekend pickup.</p>
-            <div class="btn-group">
-              <a class="btn btn-secondary btn-sm" href="new-listing-details-goods.html">Edit</a>
-              <button class="btn btn-ghost btn-sm" type="button">Mark as sold</button>
-              <button class="btn btn-ghost btn-sm" type="button">Archive</button>
+          <span class="thread-context__art" aria-hidden="true"><svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a cordless drill" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M74 92h108v56H74a12 12 0 0 1-12-12v-32a12 12 0 0 1 12-12Z"/>
+  <path d="M182 104h34v32h-34"/>
+  <path d="M216 120h34"/>
+  <path d="M108 148l-14 56h48l10-56"/>
+  <path d="M86 204h60v22H86Z"/>
+  <path d="M74 120h20"/></svg></span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <a class="list-row__title link" href="listing-owner-view.html">DeWalt cordless drill, two batteries</a>
+              <span class="kind kind--sell">Sell</span>
+            </div>
+            <span class="list-row__meta">$45</span>
+            <div class="row"><a class="count-pill" href="inbox-requests-incoming.html">3 requests</a></div>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="edit-listing.html">Edit</a>
+              <button class="btn btn-secondary btn-sm" type="button" data-open-dialog="closeout">Mark as sold</button>
+              <button class="btn btn-ghost btn-sm" type="button" data-open-dialog="archive">Archive</button>
             </div>
           </div>
         </div>
-      </article>
-
-      <article class="card">
         <div class="list-row">
-          <div class="stack">
-            <p class="mb-0"><span class="badge-type badge-type-give">Give</span> <span class="badge-count">1 request</span></p>
-            <h2 class="listing-card-title">Box of paperback novels</h2>
-            <p class="text-sm text-muted mb-0">Leslieville · Free pickup · Posted 2 days ago</p>
-            <p class="text-sm mb-0">Grace Papadopoulos asked if mystery titles are included for her mother's book club.</p>
-            <div class="btn-group">
-              <a class="btn btn-secondary btn-sm" href="new-listing-details-goods.html">Edit</a>
-              <button class="btn btn-ghost btn-sm" type="button">Mark as taken</button>
-              <button class="btn btn-ghost btn-sm" type="button">Archive</button>
+          <span class="thread-context__art" aria-hidden="true"><svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a step ladder" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M108 55h50"/>
+  <path d="M108 55 72 196"/>
+  <path d="M158 55l36 141"/>
+  <path d="M99 92h68"/>
+  <path d="M89 130h88"/>
+  <path d="M79 168h108"/></svg></span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <a class="list-row__title link" href="listing-owner-view.html">6ft aluminum step ladder</a>
+              <span class="kind kind--lend">Lend</span>
+            </div>
+            
+            <div class="row"><a class="count-pill" href="inbox-requests-incoming.html">1 request</a></div>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="edit-listing.html">Edit</a>
+              <button class="btn btn-secondary btn-sm" type="button" data-open-dialog="closeout">Mark as taken</button>
+              <button class="btn btn-ghost btn-sm" type="button" data-open-dialog="archive">Archive</button>
             </div>
           </div>
         </div>
-      </article>
-
-      <article class="card">
         <div class="list-row">
-          <div class="stack">
-            <p class="mb-0"><span class="badge-type badge-type-help">Help</span> <span class="badge-count">2 requests</span></p>
-            <h2 class="listing-card-title">After-school math tutoring for grades 6–8</h2>
-            <p class="text-sm text-muted mb-0">Leslieville · Tue &amp; Thu afternoons · Posted this week</p>
-            <p class="text-sm mb-0">One family asked about homework help before confirmation class, and another asked about algebra review.</p>
-            <div class="btn-group">
-              <a class="btn btn-secondary btn-sm" href="new-listing-details-help.html">Edit</a>
-              <button class="btn btn-ghost btn-sm" type="button">Mark as booked</button>
-              <button class="btn btn-ghost btn-sm" type="button">Archive</button>
+          <span class="thread-context__art" aria-hidden="true"><svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a box of books" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M62 118h196v96H62Z"/>
+  <path d="M62 118 84 92h152l22 26"/>
+  <path d="M104 118V60h30v58"/>
+  <path d="M144 118V44h30v74"/>
+  <path d="M184 118V70h30v48"/>
+  <path d="M104 78h30M144 66h30M184 92h30"/></svg></span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <a class="list-row__title link" href="listing-owner-view.html">Box of paperback novels</a>
+              <span class="kind kind--give">Give</span>
+            </div>
+            
+            <div class="row"><a class="count-pill" href="inbox-requests-incoming.html">1 request</a></div>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="edit-listing.html">Edit</a>
+              <button class="btn btn-secondary btn-sm" type="button" data-open-dialog="closeout">Mark as taken</button>
+              <button class="btn btn-ghost btn-sm" type="button" data-open-dialog="archive">Archive</button>
             </div>
           </div>
         </div>
-      </article>
-
-      <article class="card">
         <div class="list-row">
-          <div class="stack">
-            <p class="mb-0"><span class="badge-type badge-type-lend">Lend</span> <span class="badge-count">0 requests</span></p>
-            <h2 class="listing-card-title">Three-tier cake stand for parish events</h2>
-            <p class="text-sm text-muted mb-0">Leslieville · Return within one week · Posted last Sunday</p>
-            <p class="text-sm mb-0">Ideal for coffee hour or baby showers. No new requests yet.</p>
-            <div class="btn-group">
-              <a class="btn btn-secondary btn-sm" href="new-listing-details-goods.html">Edit</a>
-              <button class="btn btn-ghost btn-sm" type="button">Mark as taken</button>
-              <button class="btn btn-ghost btn-sm" type="button">Archive</button>
+          <span class="thread-context__art" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.5l3.5 2"/></svg></span>
+          <div class="list-row__body">
+            <div class="row-between">
+              <a class="list-row__title link" href="listing-owner-view.html">After-school math tutoring</a>
+              <span class="kind kind--help">Help</span>
+            </div>
+            
+            <div class="row"><span class="muted small">No requests yet</span></div>
+            <div class="list-row__actions">
+              <a class="btn btn-secondary btn-sm" href="edit-listing.html">Edit</a>
+              <button class="btn btn-secondary btn-sm" type="button" data-open-dialog="closeout">Mark as booked</button>
+              <button class="btn btn-ghost btn-sm" type="button" data-open-dialog="archive">Archive</button>
             </div>
           </div>
         </div>
-      </article>
     </div>
   </div>
 </main>
+
+<dialog id="closeout" aria-labelledby="closeout-title">
+  <h2 id="closeout-title">Mark this as gone?</h2>
+  <p>It comes off the board and moves to your wrapped-up listings, where it keeps its outcome.</p>
+  <div class="btn-group">
+    <a class="btn btn-primary" href="my-listings-archived.html">Mark it</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="archive" aria-labelledby="archive2-title">
+  <h2 id="archive2-title">Archive this listing?</h2>
+  <p>It comes off the board without recording an outcome. You can restore it later.</p>
+  <div class="btn-group">
+    <a class="btn btn-primary" href="my-listings-archived.html">Archive</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
 <nav class="bottom-nav" aria-label="Primary">
-  <a href="board.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Board</a>
-  <a href="search-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
-  <a href="new-listing-choose-type.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Post</a>
-  <a href="requests-incoming.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Requests</a>
-  <a href="my-profile-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Profile</a>
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
 </nav>
+<script src="mocks.js"></script>
+
 </body>
 </html>

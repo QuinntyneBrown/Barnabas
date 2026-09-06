@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of folding chairs"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M92 68v104"/>
+  <path d="M92 68h56v54H92Z"/>
+  <path d="M92 122h64l14 50"/>
+  <path d="M156 122 92 172"/>
+  <path d="M170 172v-16"/>
+  <path d="M186 76v104"/>
+  <path d="M186 76h56v54h-56Z"/>
+  <path d="M186 130h64l14 50"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a folding ladder"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M118 62h44"/>
+  <path d="M118 62 92 190"/>
+  <path d="M162 62l26 128"/>
+  <path d="M111 96h58"/>
+  <path d="M104 130h72"/>
+  <path d="M97 164h86"/>
+  <path d="M188 74l38 116"/>
+  <path d="M170 128h44"/>
+</svg>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+Your own listing as you see it. The original set had no owner perspective at
+  all — a member could only ever view a listing as a stranger, with a request
+  action and no way to edit or close it out.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeWalt cordless drill · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html" aria-current="page">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+
+  <div class="container">
+
+    <a class="back-link" href="my-listings-active.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-6 7 6 7"/></svg>
+      My listings
+    </a>
+
+    <div class="detail">
+
+      <div class="stack-6">
+        <div class="detail__art detail__art--stone">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a cordless drill" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M74 92h108v56H74a12 12 0 0 1-12-12v-32a12 12 0 0 1 12-12Z"/>
+  <path d="M182 104h34v32h-34"/>
+  <path d="M216 120h34"/>
+  <path d="M108 148l-14 56h48l10-56"/>
+  <path d="M86 204h60v22H86Z"/>
+  <path d="M74 120h20"/></svg>
+        </div>
+
+        <blockquote class="quote">
+          Bought it for one job and it has sat in the cupboard since. Both batteries still hold a charge.
+        </blockquote>
+
+        <dl class="facts">
+          <div><dt>Condition</dt><dd>Used twice, no marks</dd></div>
+          <div><dt>What is included</dt><dd>Drill, two batteries, charger, and the case</dd></div>
+          <div><dt>Pickup</dt><dd>Riverdale, or after the 10:30 service</dd></div>
+          <div><dt>Posted</dt><dd>A week ago</dd></div>
+        </dl>
+      </div>
+
+      <div class="detail__aside">
+        <div class="stack-5">
+          <span class="kind kind--sell">Sell</span>
+          <h1 class="detail__title">DeWalt cordless drill, two batteries</h1>
+          <p class="detail__price">$45 CAD</p>
+
+          <div class="field-block field-block--outline">
+            <div class="stack-2">
+              <h2>3 members have asked</h2>
+              <p class="muted">Grace, Lillian, and Robert are waiting on you.</p>
+              <a class="btn btn-primary btn-block" href="inbox-requests-incoming.html">Read the requests</a>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <a class="btn btn-secondary" href="edit-listing.html">Edit</a>
+            <button class="btn btn-secondary" type="button" data-open-dialog="closeout">Mark as sold</button>
+          </div>
+
+          <p class="note">This is your listing, so it shows what you can do with it rather than a way to ask for it.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<dialog id="closeout" aria-labelledby="closeout-title">
+  <h2 id="closeout-title">Mark this as sold?</h2>
+  <p>It comes off the board and moves to your wrapped-up listings, recorded as sold.</p>
+  <div class="btn-group">
+    <a class="btn btn-primary" href="my-listings-archived.html">Mark as sold</a>
+    <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+  </div>
+</dialog>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+<script src="mocks.js"></script>
+
+</body>
+</html>

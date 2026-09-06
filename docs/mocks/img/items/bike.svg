@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a bicycle"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <circle cx="80" cy="164" r="44"/>
+  <circle cx="240" cy="164" r="44"/>
+  <path d="M80 164h44l38-72 40 72"/>
+  <path d="M124 164l38-72"/>
+  <path d="M162 92h34"/>
+  <path d="M196 92l-14-26h-22"/>
+  <path d="M240 164l-24-72h-20"/>
+  <path d="M116 116h34"/>
+</svg>

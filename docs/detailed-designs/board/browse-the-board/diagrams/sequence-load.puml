@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Loading the board
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Barnabas web" #E0F2FE
+  participant "BoardComponent" as page
+  participant "BoardStore" as store
+  participant "ListingsApi" as client
+end box
+box "Backend — Barnabas API" #D1FADF
+  participant "BoardController" as controller
+end box
+box "Backend — Application and Domain" #ECFDF3
+  participant "GetBoardQueryHandler" as handler
+end box
+box "Backend — Infrastructure" #FFF4E5
+  database "Barnabas database" as db
+end box
+
+actor -> page : Open the board
+page -> store : Read the listings signal
+store -> client : Request the board
+client -> controller : GET /board
+controller -> handler : Send GetBoardQuery
+handler -> db : Read active listings for the congregation
+note over db : The congregation predicate comes from the\nglobal filter described in platform/scope-queries,\nnot from this handler.
+db --> handler : Listings with owner and neighbourhood
+handler -> handler : Project to BoardListingDto, per L2-042
+handler --> controller : BoardPage with per-kind counts
+controller --> client : 200 OK
+client --> store : Set the listings signal
+store --> page : Listings
+page --> actor : A mosaic of placards, each naming its kind in text
+note over page : L2-044 requires the kind be readable without\ncolour, so each placard carries the word as well\nas the field it sits on.
+@enduml

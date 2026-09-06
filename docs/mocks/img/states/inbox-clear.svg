@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="An empty in-tray"
+     fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M20 62h18l6 10h32l6-10h18"/>
+  <path d="M26 34h68l14 28v26a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V62z"/>
+  <path d="m52 20 8 8 8-8"/>
+</svg>

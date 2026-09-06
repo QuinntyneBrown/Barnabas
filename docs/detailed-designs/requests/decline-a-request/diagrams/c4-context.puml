@@ -1,0 +1,15 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Decline a request
+
+Person(owner, "Listing owner", "Member deciding the request")
+Person(requester, "Requester", "Member who asked for the listing")
+System(barnabas, "Barnabas", "Congregation lending and helping board")
+System_Ext(email, "Email provider", "Delivers notifications")
+
+Rel(owner, barnabas, "Declines the request using", "HTTPS")
+Rel(barnabas, email, "Notifies the requester via", "SMTP")
+Rel(requester, barnabas, "Reads the decision in", "HTTPS")
+@enduml

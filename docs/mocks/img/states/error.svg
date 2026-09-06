@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="A disconnected cable"
+     fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M20 44h26v32H20a16 16 0 0 1 0-32Z"/>
+  <path d="M74 44h26a16 16 0 0 1 0 32H74Z"/>
+  <path d="M46 60h10M64 60h10"/>
+  <path d="M60 22v10M78 30l-6 8M42 30l6 8"/>
+</svg>

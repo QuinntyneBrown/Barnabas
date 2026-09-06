@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Drawing of a three-tier cake stand"
+     fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+     style="color:#020029">
+  <path d="M104 84h112"/>
+  <path d="M86 134h148"/>
+  <path d="M66 184h188"/>
+  <path d="M160 60v124"/>
+  <path d="M160 56a10 10 0 1 1 0 .1"/>
+  <path d="M124 200h72"/>
+  <path d="M160 184v16"/>
+</svg>

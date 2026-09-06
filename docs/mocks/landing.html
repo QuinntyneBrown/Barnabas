@@ -1,50 +1,147 @@
 <!DOCTYPE html>
 <!--
-  Landing / invite welcome for Barnabas at St. Aidan's.
-  Responsive notes:
-  - <768px: single centered content column with stacked calls to action.
-  - >=768px: no material layout change, just more surrounding whitespace around the same max-440px column.
-  - >=1280px: no material layout change, only wider page margins.
+The public welcome. The hero is not a slogan over a stock photograph — it is
+  the board, showing four real listings, because the quickest way to explain
+  Barnabas is to let someone see what is on it.
+
+  Responsive: the mosaic runs one to four columns; the hero type scales with
+  the viewport.
 -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Barnabas</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A board for St.&nbsp;Aidan's · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <div class="container">
-      <a class="brand" href="landing.html"><span class="brand-mark" aria-hidden="true">B</span> Barnabas</a>
-    </div>
-  </header>
+<a class="skip-link" href="#main">Skip to main content</a>
 
-  <main id="main" class="page-main">
-    <div class="container">
-      <div class="auth-shell stack">
-        <section class="card panel stack auth-header">
-          <span class="badge-type badge-type-help">St. Aidan's</span>
-          <h1>Helping one another, close to home</h1>
-          <p class="text-muted">Barnabas is the shared board for St. Aidan's. Members can lend, give, sell, or offer help to one another, then arrange the handoff directly by message or in person.</p>
-          <p class="text-muted">It is meant for practical care inside the congregation: a spare ladder in Riverdale, a crib in The Danforth, a ride to an appointment from The Beaches, or help moving a few boxes in East York. Barnabas does not handle payments or shipping — it simply makes the asking and offering easier.</p>
-          <div class="auth-actions">
-            <a class="btn btn-primary btn-block" href="join-invite.html">I have an invite code</a>
-            <a class="btn btn-secondary btn-block" href="sign-in.html">Sign in</a>
-          </div>
-        </section>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="landing.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+  </div>
+</header>
 
-        <section class="card panel stack">
-          <h2>How it works</h2>
-          <ol>
-            <li><strong>Join with your invite code.</strong> Use the code shared in the bulletin, parish email, or by a church leader to create your profile.</li>
-            <li><strong>Browse or post.</strong> Look for something you need, or share something you can lend, give, sell, or do for someone else.</li>
-            <li><strong>Arrange it directly.</strong> Members connect with each other to sort out pickup times, prices, return plans, or practical details.</li>
-          </ol>
-        </section>
+<main id="main" class="page-main">
+
+  <div class="masthead masthead--tall on-ink">
+    <div class="container">
+      <h1 class="mega">A ladder,<br>a crib,<br>a ride to dialysis.</h1>
+      <p class="masthead-note">Barnabas is the shared board for St.&nbsp;Aidan's. Ask the people you already sit beside.</p>
+      <div class="btn-group" style="margin-top: var(--s-4);">
+        <a class="btn btn-primary btn-lg" href="join-invite.html">I have an invite code</a>
+        <a class="btn btn-secondary btn-lg" href="sign-in.html">Sign in</a>
       </div>
     </div>
-  </main>
+  </div>
+
+  <div class="container section">
+    <div class="mosaic">
+
+      <a class="placard placard--lend" href="listing-lend.html">
+        <span class="placard__kind">Lend</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a step ladder" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M108 55h50"/>
+  <path d="M108 55 72 196"/>
+  <path d="M158 55l36 141"/>
+  <path d="M99 92h68"/>
+  <path d="M89 130h88"/>
+  <path d="M79 168h108"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">6ft aluminum step ladder</span>
+          <span class="placard__meta">Marion T.</span>
+          <span class="placard__meta">Riverdale</span>
+        </span>
+      </a>
+
+      <a class="placard placard--give" href="listing-give.html">
+        <span class="placard__kind">Give</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a crib" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M66 92h188"/>
+  <path d="M66 182h188"/>
+  <path d="M66 92v98"/>
+  <path d="M254 92v98"/>
+  <path d="M74 190v22"/>
+  <path d="M246 190v22"/>
+  <path d="M100 96v82M132 96v82M164 96v82M196 96v82M228 96v82"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">Crib, mattress included</span>
+          <span class="placard__meta">Angela F.</span>
+          <span class="placard__meta">The Danforth</span>
+        </span>
+      </a>
+
+      <a class="placard placard--help" href="listing-help.html">
+        <span class="placard__kind">Help</span>
+        <span class="placard__words">&ldquo;Tuesdays and Thursdays I have the car anyway. Happy to wait during the appointment.&rdquo;</span>
+        <span class="placard__body">
+          <span class="placard__title">Rides to dialysis</span>
+          <span class="placard__meta">Desmond O.</span>
+          <span class="placard__meta">The Beaches</span>
+        </span>
+      </a>
+
+      <a class="placard placard--sell" href="listing-sell.html">
+        <span class="placard__kind">Sell</span>
+        <span class="placard__art">
+          <svg viewBox="0 0 320 240" role="img" aria-label="Drawing of a cordless drill" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M74 92h108v56H74a12 12 0 0 1-12-12v-32a12 12 0 0 1 12-12Z"/>
+  <path d="M182 104h34v32h-34"/>
+  <path d="M216 120h34"/>
+  <path d="M108 148l-14 56h48l10-56"/>
+  <path d="M86 204h60v22H86Z"/>
+  <path d="M74 120h20"/></svg>
+        </span>
+        <span class="placard__body">
+          <span class="placard__title">DeWalt cordless drill, two batteries</span>
+          <span class="placard__price">$45</span>
+          <span class="placard__meta">Marion T.</span>
+          <span class="placard__meta">Riverdale</span>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="container section-tight">
+    <div class="two-col">
+      <div class="field-block field-block--paper">
+        <div class="stack-3">
+          <h2>Lend, give, sell, or offer a hand</h2>
+          <p>Post something you can spare, or time you can give. Members ask, you decide.</p>
+        </div>
+      </div>
+      <div class="field-block field-block--stone">
+        <div class="stack-3">
+          <h2>Barnabas makes the introduction</h2>
+          <p>It handles no payment, no delivery, and no deposits. You arrange the rest in person.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section">
+    <div class="stack-6">
+      <h2 class="display">Three steps</h2>
+      <dl class="facts">
+        <div><dt>Join with your code</dt><dd>From the Sunday bulletin, the parish email, or a church leader.</dd></div>
+        <div><dt>Browse or post</dt><dd>Look for what you need, or share what you can spare.</dd></div>
+        <div><dt>Arrange it directly</dt><dd>Sort out pickup, price, and timing between yourselves.</dd></div>
+      </dl>
+    </div>
+  </div>
+</main>
+
 </body>
 </html>

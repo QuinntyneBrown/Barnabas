@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--
+Step two of two, for a Help listing. Each kind has its own form
+  because each collects different terms. Help is time rather than a thing, so this form collects availability windows and no photo.
+
+  Responsive: fields stack under 768px and sit two-up above.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post &mdash; Help · Barnabas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="board.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="1.4" y="1.4" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"/>
+  <rect x="9.6" y="9.6" width="15" height="15" fill="currentColor"/>
+      </svg>
+      Barnabas
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="board.html">Board</a>
+      <a href="search.html">Search</a>
+      <a class="nav-post" href="new-listing-choose-type.html" aria-current="page">Post</a>
+      <a href="inbox-requests-incoming.html">Inbox</a>
+      <a href="you.html">You</a>
+    </nav>
+    <div class="header-actions">
+      <a class="bell" href="notifications.html" aria-label="Notifications, 4 new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="bell-count" aria-hidden="true">4</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+
+  <div class="masthead on-ink">
+    <div class="container">
+      <h1 class="masthead-title">What can you offer?</h1>
+      <p class="step-marker">Step 2 of 2</p>
+    </div>
+  </div>
+
+  <div class="container section-tight">
+    <form class="form stack-7" action="listing-posted.html" method="get">
+
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" placeholder="Say plainly what it is">
+      </div>
+
+      <div class="field">
+        <label for="cat">Category</label>
+        <select id="cat" name="cat">
+        <option>Rides</option>
+        <option>Tutoring</option>
+        <option>Moving help</option>
+        <option>Tech support</option>
+        <option>Companionship</option>
+        <option>Minor repairs</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="desc">Description</label>
+        <p class="field-hint">Written in your own words, and shown that way to the congregation.</p>
+        <textarea id="desc" name="desc" rows="5"></textarea>
+      </div>
+
+      <div class="field">
+        <span class="field-label">When are you free?</span>
+        <p class="field-hint">Members choose one of these windows when they ask.</p>
+        <div class="stack-3">
+          <div class="time-row">
+            <div class="field">
+              <label for="d1">Day</label>
+              <select id="d1"><option>Tuesday</option><option>Thursday</option><option>Saturday</option></select>
+            </div>
+            <div class="field">
+              <label for="s1">From</label>
+              <input type="time" id="s1" value="07:30">
+            </div>
+            <div class="field">
+              <label for="e1">Until</label>
+              <input type="time" id="e1" value="10:30">
+            </div>
+          </div>
+          <div class="time-row">
+            <div class="field">
+              <label for="d2">Day</label>
+              <select id="d2"><option selected>Thursday</option><option>Tuesday</option><option>Saturday</option></select>
+            </div>
+            <div class="field">
+              <label for="s2">From</label>
+              <input type="time" id="s2" value="13:00">
+            </div>
+            <div class="field">
+              <label for="e2">Until</label>
+              <input type="time" id="e2" value="16:30">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="area">Area you can cover</label>
+        <input type="text" id="area" name="area" placeholder="The Beaches, East York, as far as Michael Garron">
+      </div>
+
+      <div class="field">
+        <label for="hood">Neighbourhood</label>
+      <select id="hood" name="hood">
+        <option selected>Riverdale</option>
+        <option>Leslieville</option>
+        <option>The Danforth</option>
+        <option>Scarborough</option>
+        <option>The Beaches</option>
+        <option>East York</option>
+        <option>Cabbagetown</option>
+        <option>North York</option>
+      </select>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg" type="submit">Post listing</button>
+        <a class="btn btn-ghost btn-lg" href="new-listing-choose-type.html">Back</a>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="board.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z"/></svg>
+    Board
+  </a>
+  <a href="search.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+    Search
+  </a>
+  <a href="new-listing-choose-type.html" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Post
+  </a>
+  <a href="inbox-requests-incoming.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h5l1.6 3h4.8L16 12h5"/><path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>
+    Inbox
+  </a>
+  <a href="you.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></svg>
+    You
+  </a>
+</nav>
+
+</body>
+</html>

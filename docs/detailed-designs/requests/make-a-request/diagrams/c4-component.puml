@@ -1,0 +1,29 @@
+@startuml
+!pragma layout smetana
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Make a request
+
+Container_Boundary(api, "Barnabas API") {
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes the four request endpoints under /listings/{listingId}/requests")
+  Component(loan, "MakeLoanRequestCommandHandler", "MediatR handler", "Creates a pending request carrying loan terms")
+  Component(gift, "MakeGiftRequestCommandHandler", "MediatR handler", "Creates a pending request for a Give listing")
+  Component(purchase, "MakePurchaseRequestCommandHandler", "MediatR handler", "Creates a pending request for a Sell listing")
+  Component(help, "MakeHelpRequestCommandHandler", "MediatR handler", "Creates a pending request against a declared availability window")
+  Component(policy, "RequestEligibilityPolicy", "Domain service", "Rejects self-requests and duplicate open requests")
+  Component(entity, "ListingRequest", "Domain entity", "Owns request state and terms")
+  ComponentDb(db, "Barnabas database", "SQL Server", "Persists requests")
+}
+
+Rel(ctrl, loan, "Sends MakeLoanRequestCommand")
+Rel(ctrl, gift, "Sends MakeGiftRequestCommand")
+Rel(ctrl, purchase, "Sends MakePurchaseRequestCommand")
+Rel(ctrl, help, "Sends MakeHelpRequestCommand")
+Rel(loan, policy, "Checks eligibility")
+Rel(gift, policy, "Checks eligibility")
+Rel(purchase, policy, "Checks eligibility")
+Rel(help, policy, "Checks eligibility")
+Rel(loan, entity, "Creates")
+Rel(help, entity, "Creates")
+Rel(entity, db, "Persisted to", "EF Core")
+@enduml
