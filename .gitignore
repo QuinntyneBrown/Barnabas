@@ -12,6 +12,8 @@ node_modules/
 /frontend/tests/e2e/.output/
 /frontend/tests/e2e/.report/
 /frontend/tests/e2e/.auth/
+/frontend/test-results/
+/frontend/playwright-report/
 
 # Editors
 .idea/
