@@ -14,7 +14,8 @@ and `Active → Archived` — so the domain layer holds behaviour instead of pas
 through.
 
 On completion the slice shall satisfy **33 of the 120 L2 requirements**, spread across
-**9 of the 18 L1 requirements**.
+**9 of the 18 L1 requirements**. In the event it satisfied 31 in full and 2 in part; see
+*Coverage on completion* below.
 
 ## What completion establishes
 
@@ -231,6 +232,21 @@ slice grew from 32 requirements to 33 and from 16 designs to 17. The same review
 - **Only the Lend kind shall be implemented.** The four kinds differ in their fields, not
   their architecture, so building all four first would teach one pattern four times while
   exercising no authorisation and no state transition.
+
+## Coverage on completion
+
+The slice was built as **31 requirements in full and 2 in part**, rather than 33 in full. Two
+requirements reach past the slice's own boundary, and narrowing them was chosen over widening the
+slice to meet them:
+
+| L2 | Covered | Not covered | Why |
+|----|---------|-------------|-----|
+| `L2-037` | AC3 — a Lend listing closes out as `Archived` | AC1, AC2, AC4, AC5 — the Sell, Give, and Help outcomes | Only the Lend kind can be posted in this slice. `Listing.CloseOut` is already kind-aware, so the other three need no new code when their forms arrive — only tests. |
+| `L2-088` | AC1, AC3, AC4 | AC2 — a search term must not match another congregation's listing | Search is `L1-008`, deferred entirely. The predicate it would be tested through does not exist. |
+
+Every other requirement in the tables above has at least one acceptance test that failed before
+its implementation and passed after. The tests that are narrower than the requirement they trace
+to say so in their own trace comment.
 
 ## Definition of done
 

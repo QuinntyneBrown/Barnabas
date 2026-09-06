@@ -13,6 +13,6 @@ namespace Barnabas.Application.Requests.MakeLoanRequest;
 public sealed record MakeLoanRequestCommand(
     Guid ListingId,
     string Message,
-    DateOnly PickupOn,
-    DateOnly ReturnBy,
+    DateOnly? PickupOn,
+    DateOnly? ReturnBy,
     bool LoanAcknowledged) : IRequest<MadeRequestResult>;

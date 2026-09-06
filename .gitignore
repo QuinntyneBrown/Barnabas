@@ -15,6 +15,14 @@ node_modules/
 /frontend/test-results/
 /frontend/playwright-report/
 
+# Local databases
+#
+# The development and acceptance runs use SQLite so neither needs a container runtime. The files
+# are disposable: the schema is created from the model and the congregation is seeded on start.
+*.db
+*.db-shm
+*.db-wal
+
 # Editors
 .idea/
 *.swp

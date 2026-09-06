@@ -1,0 +1,12 @@
+<nav class="primary-nav" aria-label="Primary" [attr.inert]="hidden() ? '' : null" [attr.aria-hidden]="hidden() ? 'true' : null">
+  @for (destination of destinations(); track destination.path) {
+    <a
+      [routerLink]="destination.path"
+      routerLinkActive
+      #active="routerLinkActive"
+      [attr.aria-current]="active.isActive ? 'page' : null"
+      [class]="destination.cssClass"
+      >{{ destination.label }}</a
+    >
+  }
+</nav>

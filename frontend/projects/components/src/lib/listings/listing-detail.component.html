@@ -1,0 +1,82 @@
+<div class="container section">
+  @if (missing()) {
+    <div class="state stack-4">
+      <h1>That listing is not here</h1>
+      <p>It may have been taken off the board, or it may never have been on it.</p>
+      <a class="btn btn-primary" routerLink="/board">Back to the board</a>
+    </div>
+  } @else if (listing(); as detail) {
+    <a class="back-link" routerLink="/board">&larr; Board</a>
+
+    <div class="detail">
+      <div class="stack-6">
+        <blockquote class="quote">{{ detail.description }}</blockquote>
+
+        <dl class="facts">
+          @if (detail.returnBy) {
+            <div>
+              <dt>Return by</dt>
+              <dd>{{ detail.returnBy }}</dd>
+            </div>
+          }
+          <div>
+            <dt>Neighbourhood</dt>
+            <dd>{{ detail.neighbourhood }}</dd>
+          </div>
+          <div>
+            <dt>Category</dt>
+            <dd>{{ detail.category }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="detail__aside stack-4">
+        <!-- The kind in words, not only in the colour of the field. -->
+        <span class="kind kind--{{ detail.kind.toLowerCase() }}">{{ detail.kind }}</span>
+
+        <h1 class="detail__title">{{ detail.title }}</h1>
+
+        @if (detail.price !== null) {
+          <p class="detail__price">${{ detail.price }} CAD</p>
+        }
+
+        <span class="person">
+          <span class="person__name">{{ detail.ownerDisplayName }}</span>
+          <span class="person__meta">{{ detail.neighbourhood }}</span>
+        </span>
+
+        @if (detail.isOwnedByCaller) {
+          <div class="btn-group">
+            <button class="btn btn-secondary" type="button" (click)="closeOutDialog.open()">
+              Mark as taken
+            </button>
+          </div>
+          <p class="note">
+            This is your listing, so it shows what you can do with it rather than a way to ask for
+            it.
+          </p>
+        } @else if (detail.status === 'Active') {
+          <a
+            class="btn btn-primary btn-lg btn-block"
+            [routerLink]="['/listings', detail.listingId, 'request']"
+            >Request to borrow</a
+          >
+          <p class="note">
+            {{ detail.ownerDisplayName }} arranges the handoff with you directly. Barnabas does not
+            manage deposits, delivery, or returns.
+          </p>
+        } @else {
+          <p class="note">This listing has been taken off the board.</p>
+        }
+      </div>
+    </div>
+
+    <bar-confirm-dialog
+      #closeOutDialog
+      heading="Mark this as gone?"
+      body="It comes off the board and moves to your wrapped-up listings, where it keeps its outcome."
+      confirmLabel="Mark it"
+      (confirmed)="closeOut()"
+    />
+  }
+</div>

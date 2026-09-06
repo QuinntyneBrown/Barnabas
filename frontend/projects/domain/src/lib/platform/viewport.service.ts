@@ -7,8 +7,11 @@ import { Band, NAV_SWAP_WIDTH, bandFor } from './band';
  * each subscribing to a media query.
  *
  * A `matchMedia` change handler writing to a signal is simpler than an observable and,
- * under zoneless change detection, is exactly what schedules a repaint. There is no
- * `resize` listener.
+ * under zoneless change detection, is exactly what schedules a repaint.
+ *
+ * The media query answers the question the shell actually asks - which navigation is in play -
+ * and the resize listener alongside it keeps the band correct as a window is dragged across a
+ * boundary the query does not cover.
  */
 @Injectable({ providedIn: 'root' })
 export class ViewportService {

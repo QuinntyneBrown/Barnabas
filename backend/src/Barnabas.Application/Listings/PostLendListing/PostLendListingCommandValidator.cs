@@ -30,7 +30,8 @@ public sealed class PostLendListingCommandValidator : AbstractValidator<PostLend
         RuleFor(command => command.Neighbourhood).NotEmpty().MaximumLength(200);
 
         RuleFor(command => command.ReturnBy)
-            .NotEqual(default(DateOnly))
+            .NotNull()
+            .Must(returnBy => returnBy != default(DateOnly))
             .WithMessage("Say when you expect the item back.");
     }
 }

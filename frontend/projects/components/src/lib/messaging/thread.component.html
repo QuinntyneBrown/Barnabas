@@ -1,0 +1,63 @@
+@if (thread(); as conversation) {
+  <div class="masthead masthead--stone masthead--short">
+    <div class="container stack-2">
+      <a class="back-link" routerLink="/inbox/messages">&larr; All messages</a>
+      <h1 class="masthead-title">{{ conversation.otherMemberDisplayName }}</h1>
+    </div>
+  </div>
+
+  <div class="container section stack-5">
+    <a class="thread-context" [routerLink]="['/listings', conversation.listingId]">
+      <span>
+        <span class="list-row__title">{{ conversation.listingTitle }}</span>
+      </span>
+    </a>
+
+    <div class="row">
+      <span class="status status--{{ conversation.requestStatus.toLowerCase() }}"
+        >Request {{ conversation.requestStatus.toLowerCase() }}</span
+      >
+      <span class="muted small">Arrange the handoff between yourselves.</span>
+    </div>
+
+    <div class="messages">
+      @for (message of conversation.messages; track message.messageId) {
+        <div class="message" [class.message--out]="message.sentByCaller" [class.message--in]="!message.sentByCaller">
+          <div class="message__bubble">{{ message.body }}</div>
+          <span class="message__meta">
+            {{ message.sentByCaller ? 'You' : message.senderDisplayName }} &mdash; {{ message.sentAt }}
+          </span>
+        </div>
+      }
+    </div>
+
+    <form class="composer" (ngSubmit)="send()">
+      <div class="field">
+        <label for="reply">Reply to {{ conversation.otherMemberDisplayName }}</label>
+        <textarea
+          id="reply"
+          name="reply"
+          rows="3"
+          placeholder="Write a message…"
+          [ngModel]="draft()"
+          (ngModelChange)="draft.set($event)"
+          [attr.aria-invalid]="errors().has('body') ? 'true' : null"
+          [attr.aria-describedby]="errors().has('body') ? 'reply-error' : null"
+        ></textarea>
+        @if (errors().messageFor('body'); as text) {
+          <p class="field-error" id="reply-error">{{ text }}</p>
+        }
+      </div>
+
+      <button class="btn btn-primary" type="submit" [disabled]="sending()">Send</button>
+    </form>
+  </div>
+} @else if (!loading()) {
+  <div class="container section">
+    <div class="state stack-4">
+      <h1>That conversation is not here</h1>
+      <p>It may belong to two other members.</p>
+      <a class="btn btn-primary" routerLink="/inbox/messages">Back to messages</a>
+    </div>
+  </div>
+}

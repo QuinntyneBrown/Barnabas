@@ -90,17 +90,20 @@ Barnabas/
 │   │   └── Barnabas.Infrastructure/  persistence, email, external services
 │   └── tests/
 │       └── Barnabas.IntegrationTests/
-├── frontend/
-│   ├── src/app/
-│   │   ├── api/             generated clients and interfaces
-│   │   ├── components/      presentational components
-│   │   └── domain/          models and services
+├── frontend/                         Angular multi-project workspace
+│   ├── projects/
+│   │   ├── api/                      contracts, DTOs, typed clients, interceptors
+│   │   ├── domain/                   models, stores, services, guards
+│   │   ├── components/               the shell and the routed screens
+│   │   └── barnabas/                 the application that consumes the three
 │   └── tests/
 │       └── e2e/
 │           ├── page-objects/
-│           └── specs/
+│           ├── specs/
+│           └── support/
 └── docs/
     ├── mocks/               static HTML mocks of every screen
+    ├── detailed-designs/    one folder per feature, with C4 and sequence diagrams
     └── specs/
         ├── L1.md high level requirements
         └── L2.md detailed requirments linked to a L1.md also acceptance criteria that shall be linked to acceptance tests

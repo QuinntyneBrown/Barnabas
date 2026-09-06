@@ -1,0 +1,30 @@
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2.2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  @switch (icon()) {
+    @case ('board') {
+      <path d="M3 5h8v6H3zM13 5h8v4h-8zM3 15h8v4H3zM13 13h8v6h-8z" />
+    }
+    @case ('search') {
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m20 20-4.8-4.8" />
+    }
+    @case ('post') {
+      <path d="M12 5v14M5 12h14" />
+    }
+    @case ('inbox') {
+      <path d="M3 12h5l1.6 3h4.8L16 12h5" />
+      <path d="M4.6 5.5h14.8L21 12v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z" />
+    }
+    @case ('person') {
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6" />
+    }
+  }
+</svg>

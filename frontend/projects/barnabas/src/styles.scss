@@ -5,3 +5,32 @@
 // as one unmodified file is deliberate: `diff docs/mocks/styles.css
 // projects/barnabas/src/styles/barnabas.css` stays short and reviewable, which is the
 // strongest guarantee we can give that the build still matches the visual authority.
+
+// --------------------------------------------------------------------------
+// Form errors
+//
+// The mocks carry no error state, so this is the one pattern the screens need that the
+// design system does not already hold. It is added here rather than in barnabas.css so
+// that file stays a clean carry of docs/mocks/styles.css.
+//
+// The message is bound to its control by aria-describedby and the control is marked
+// aria-invalid, so the colour is the least of what says a field is wrong. L2-031 asks
+// for the field to be named and for focus to move to the first one; the ring below is
+// drawn from currentColor for the same reason every other focus ring is, so it resolves
+// on white, cream, stone and indigo alike.
+// --------------------------------------------------------------------------
+
+.field-error {
+  margin-top: var(--s-2);
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 600;
+  border-left: 3px solid currentColor;
+  padding-left: var(--s-3);
+}
+
+[aria-invalid='true'] {
+  border-color: currentColor;
+  border-width: 2px;
+  outline-offset: 2px;
+}

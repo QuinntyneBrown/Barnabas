@@ -69,8 +69,8 @@ public sealed class MakeLoanRequestCommandHandler : IRequestHandler<MakeLoanRequ
             listing.Id,
             requester,
             request.Message,
-            request.PickupOn,
-            request.ReturnBy,
+            request.PickupOn!.Value,
+            request.ReturnBy!.Value,
             _time.GetUtcNow());
 
         _context.ListingRequests.Add(made);

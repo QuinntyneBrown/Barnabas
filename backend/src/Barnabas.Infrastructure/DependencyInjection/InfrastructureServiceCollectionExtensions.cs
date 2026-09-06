@@ -58,6 +58,7 @@ public static class InfrastructureServiceCollectionExtensions
 
         services.AddScoped<CongregationSeeder>();
         services.AddScoped<DatabaseInitialiser>();
+        services.AddScoped<DatabaseReset>();
 
         services.AddSingleton<IAccessTokenIssuer, JwtIssuer>();
         services.AddSingleton<ISecretService, SecretService>();

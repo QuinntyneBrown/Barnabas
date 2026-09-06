@@ -40,7 +40,7 @@ public sealed class PostLendListingCommandHandler : IRequestHandler<PostLendList
             request.Description,
             request.Category,
             request.Neighbourhood,
-            request.ReturnBy,
+            request.ReturnBy!.Value,
             _time.GetUtcNow());
 
         _context.Listings.Add(listing);

@@ -7,3 +7,11 @@
 
 export * from './lib/platform/band';
 export * from './lib/platform/viewport.service';
+
+export * from './lib/access/session.store';
+export * from './lib/access/auth.guard';
+
+export * from './lib/board/board.store';
+export * from './lib/listings/my-listings.store';
+export * from './lib/requests/request.store';
+export * from './lib/messaging/thread.store';

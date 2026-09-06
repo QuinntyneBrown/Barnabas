@@ -1,0 +1,49 @@
+<div class="masthead on-ink">
+  <div class="container stack-3">
+    <h1 class="masthead-title">Inbox</h1>
+    <p class="masthead-note">Requests, replies, and the threads where handoffs get arranged.</p>
+    <bar-inbox-chips />
+  </div>
+</div>
+
+<div class="container section">
+  @if (loading()) {
+    <p role="status">Loading your messages.</p>
+  } @else if (mine().length === 0) {
+    <div class="state stack-3">
+      <h2>No conversations yet</h2>
+      <p>A thread opens when a request is accepted. There is no other way to start one.</p>
+    </div>
+  } @else {
+    <div class="rows">
+      @for (thread of mine(); track thread.threadId) {
+        <a
+          class="list-row"
+          [class.list-row--unread]="thread.unread"
+          [routerLink]="['/threads', thread.threadId]"
+        >
+          <div class="list-row__body stack-1">
+            <div class="row-between">
+              <span class="list-row__title">
+                @if (thread.unread) {
+                  <span class="visually-hidden">Unread. </span>
+                }
+                {{ thread.otherMemberDisplayName }}
+              </span>
+            </div>
+
+            <p class="list-row__meta">About {{ thread.listingTitle }}</p>
+
+            @if (thread.latestMessage) {
+              <p class="voice">{{ thread.latestMessage }}</p>
+            }
+          </div>
+
+          @if (thread.unread) {
+            <span class="unread-dot" aria-hidden="true"></span>
+          }
+        </a>
+      }
+    </div>
+  }
+</div>

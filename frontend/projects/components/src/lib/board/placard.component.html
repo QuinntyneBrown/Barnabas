@@ -1,0 +1,18 @@
+<a [class]="fieldClass()" [routerLink]="['/listings', listing().listingId]">
+  <span class="placard__kind">{{ listing().kind }}</span>
+
+  @if (isHelp()) {
+    <span class="placard__words">&ldquo;{{ listing().offerInOwnWords }}&rdquo;</span>
+  }
+
+  <span class="placard__body">
+    <span class="placard__title">{{ listing().title }}</span>
+
+    @if (listing().price !== null) {
+      <span class="placard__price">${{ listing().price }}</span>
+    }
+
+    <span class="placard__meta">{{ listing().ownerDisplayName }}</span>
+    <span class="placard__meta">{{ listing().neighbourhood }}</span>
+  </span>
+</a>

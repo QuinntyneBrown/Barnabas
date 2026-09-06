@@ -9,6 +9,6 @@ namespace Barnabas.Api.Contracts;
 /// </remarks>
 public sealed record MakeLoanRequestRequest(
     string Message,
-    DateOnly PickupOn,
-    DateOnly ReturnBy,
+    DateOnly? PickupOn,
+    DateOnly? ReturnBy,
     bool LoanAcknowledged);

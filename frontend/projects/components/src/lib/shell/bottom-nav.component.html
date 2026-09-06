@@ -1,0 +1,13 @@
+<nav class="bottom-nav" aria-label="Primary" [attr.inert]="hidden() ? '' : null" [attr.aria-hidden]="hidden() ? 'true' : null">
+  @for (destination of destinations(); track destination.path) {
+    <a
+      [routerLink]="destination.path"
+      routerLinkActive
+      #active="routerLinkActive"
+      [attr.aria-current]="active.isActive ? 'page' : null"
+    >
+      <bar-nav-icon [icon]="destination.icon" />
+      {{ destination.label }}
+    </a>
+  }
+</nav>

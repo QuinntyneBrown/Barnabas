@@ -13,16 +13,18 @@ public sealed class MakeLoanRequestCommandValidator : AbstractValidator<MakeLoan
             .WithMessage("Say what you need it for. A sentence or two is plenty.");
 
         RuleFor(command => command.PickupOn)
-            .NotEqual(default(DateOnly))
+            .NotNull()
+            .Must(pickupOn => pickupOn != default(DateOnly))
             .WithMessage("Say when you could pick it up.");
 
         RuleFor(command => command.ReturnBy)
-            .NotEqual(default(DateOnly))
+            .NotNull()
+            .Must(returnBy => returnBy != default(DateOnly))
             .WithMessage("Say when you would bring it back.");
 
         RuleFor(command => command.ReturnBy)
             .GreaterThanOrEqualTo(command => command.PickupOn)
-            .When(command => command.PickupOn != default && command.ReturnBy != default)
+            .When(command => command.PickupOn.HasValue && command.ReturnBy.HasValue)
             .WithMessage("The return date cannot be before the pickup date.");
 
         // Not decorative. A loan the requester has not acknowledged as a loan is precisely the
