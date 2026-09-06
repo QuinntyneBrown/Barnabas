@@ -131,6 +131,27 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         return client;
     }
 
+    /// <summary>
+    /// Writes directly, to arrange state a test is not itself about.
+    /// </summary>
+    /// <remarks>
+    /// Used sparingly. A test for what the board shows should go through the posting endpoint,
+    /// because that is the path a member takes; a test for how my-listings counts open requests
+    /// should not also be a test of the request endpoint.
+    /// </remarks>
+    public async Task ArrangeAsync(Func<BarnabasDbContext, Task> arrange)
+    {
+        ArgumentNullException.ThrowIfNull(arrange);
+
+        await using var scope = Services.CreateAsyncScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<BarnabasDbContext>();
+
+        await arrange(context);
+
+        await context.SaveChangesAsync();
+    }
+
     /// <summary>Reads the database directly, for assertions the API deliberately does not expose.</summary>
     public async Task<T> QueryAsync<T>(Func<BarnabasDbContext, Task<T>> query)
     {

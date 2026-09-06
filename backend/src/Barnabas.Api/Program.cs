@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,11 @@ builder.WebHost.ConfigureKestrel(kestrel => kestrel.Limits.MaxRequestBodySize = 
 
 builder.Services
     .AddControllers(options => options.Filters.Add<ForbiddenFieldInspector>())
+    .AddJsonOptions(options =>
+        // The four kinds and the request states travel as their names. The web client's own
+        // models are string unions, and a number on the wire would make the two disagree about
+        // a domain the whole product is written in the vocabulary of.
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
     .ConfigureApplicationPartManager(manager =>
     {
         if (!builder.Environment.IsDevelopment())
