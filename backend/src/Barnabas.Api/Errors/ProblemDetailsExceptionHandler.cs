@@ -1,4 +1,6 @@
 using Barnabas.Application.Common.Exceptions;
+using Barnabas.Domain.Congregations;
+using Barnabas.Domain.Members;
 using Barnabas.Domain.Access;
 using Barnabas.Domain.Common;
 using Barnabas.Domain.Listings;
@@ -89,6 +91,26 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
             "The sign-in link has expired or has already been used."),
 
         RefreshTokenNotActiveException => Problem(StatusCodes.Status401Unauthorized, "The session could not be renewed."),
+
+        SlugAlreadyTakenException => Problem(
+            StatusCodes.Status409Conflict,
+            "Another congregation already uses that slug."),
+
+        EmailAlreadyRegisteredException => Problem(
+            StatusCodes.Status409Conflict,
+            "That email address is already in use."),
+
+        MemberNotAwaitingApprovalException => Problem(
+            StatusCodes.Status409Conflict,
+            "That member is not waiting to be approved."),
+
+        MemberNotApprovedException => Problem(
+            StatusCodes.Status409Conflict,
+            "That member has not been approved yet."),
+
+        RoleNotGrantableException => Problem(
+            StatusCodes.Status400BadRequest,
+            "That role cannot be granted here."),
 
         ListingNotActiveException => Problem(StatusCodes.Status409Conflict, "The listing is no longer active."),
 

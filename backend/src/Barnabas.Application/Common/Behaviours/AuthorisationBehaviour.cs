@@ -49,7 +49,11 @@ public sealed class AuthorisationBehaviour<TRequest, TResponse> : IPipelineBehav
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (request is IRequireRole roleRequirement && _context.Role < roleRequirement.RequiredRole)
+        // The unresolved case is checked first because reading Role without a session throws,
+        // and an anonymous caller on a role-gated request would then get 500 where L2-095 asks
+        // for 403. Having no role at all is the clearest case of not having the required one.
+        if (request is IRequireRole roleRequirement
+            && (!_context.IsResolved || _context.Role < roleRequirement.RequiredRole))
         {
             throw new ForbiddenException();
         }

@@ -37,6 +37,7 @@ public static class InfrastructureServiceCollectionExtensions
 
         services.AddScoped<IBarnabasDbContext>(provider => provider.GetRequiredService<BarnabasDbContext>());
         services.AddScoped<IAuthenticationStore, AuthenticationStore>();
+        services.AddScoped<IProvisioningStore, ProvisioningStore>();
         services.AddScoped(typeof(IOwnerLookup<>), typeof(OwnerLookup<>));
 
         // Registered after the open generic so it wins for this one closed type. Deciding a
