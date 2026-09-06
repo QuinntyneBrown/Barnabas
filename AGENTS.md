@@ -44,8 +44,20 @@ say what it cost rather than quietly narrowing scope.
 
 - Prefer signals over RxJS. Reach for RxJS only for genuine streams and events.
 - No single-file components. Template, styles, and class each live in their own file.
-- Consume services through an interface, never a concrete class. The component
-  depends on the abstraction; the implementation is provided by DI.
+- Consume services through an interface, never a concrete class. A contract is a
+  TypeScript `interface` and an `InjectionToken` declared together in a
+  `*.contract.ts` file; a consumer calls `inject(THE_TOKEN)` and has no
+  compile-time knowledge of any implementation.
+- Name a service for the one thing it serves, singular, with a `Service` suffix.
+  Never an `Api` suffix: the interface says what the caller may ask for, not that
+  an HTTP call happens to be how the answer arrives.
+- Prefix an interface with `I` only where it is a behavioural contract with
+  swappable implementations — `IListingService`, against `ListingService` and
+  `ListingServiceMock`. The implementation drops the prefix and never takes an
+  `Impl` suffix. A data structure that nothing polymorphs over carries no prefix.
+- Bind a token to an implementation at the host and nowhere else: the application
+  binds the real one, a test host binds the mock. Nothing beneath the host names
+  both, which is what makes the seam a real one.
 - Organize the workspace into `api`, `components`, and `domain` libraries.
 - Keep components presentational. Behavior belongs in services, state in signals.
 
@@ -90,17 +102,20 @@ Barnabas/
 │   │   └── Barnabas.Infrastructure/  persistence, email, external services
 │   └── tests/
 │       └── Barnabas.IntegrationTests/
-├── frontend/
-│   ├── src/app/
-│   │   ├── api/             generated clients and interfaces
-│   │   ├── components/      presentational components
-│   │   └── domain/          models and services
+├── frontend/                         Angular multi-project workspace
+│   ├── projects/
+│   │   ├── api/                      contracts, DTOs, typed clients, interceptors
+│   │   ├── domain/                   models, stores, services, guards
+│   │   ├── components/               the shell and the routed screens
+│   │   └── barnabas/                 the application that consumes the three
 │   └── tests/
 │       └── e2e/
 │           ├── page-objects/
-│           └── specs/
+│           ├── specs/
+│           └── support/
 └── docs/
     ├── mocks/               static HTML mocks of every screen
+    ├── detailed-designs/    one folder per feature, with C4 and sequence diagrams
     └── specs/
         ├── L1.md high level requirements
         └── L2.md detailed requirments linked to a L1.md also acceptance criteria that shall be linked to acceptance tests

@@ -1,0 +1,114 @@
+@if (listing(); as detail) {
+  <div class="masthead masthead--short masthead--plain">
+    <div class="container stack-2">
+      <a class="back-link" [routerLink]="['/listings', detail.listingId]">&larr; Back to the listing</a>
+      <h1 class="masthead-title">Ask {{ detail.ownerDisplayName }} to borrow this</h1>
+    </div>
+  </div>
+
+  <div class="container section">
+    <form class="form stack-7" (ngSubmit)="submit()">
+      <a class="thread-context" [routerLink]="['/listings', detail.listingId]">
+        <span>
+          <span class="list-row__title">{{ detail.title }}</span><br />
+          <span class="list-row__meta"
+            >{{ detail.ownerDisplayName }} lends this, from {{ detail.neighbourhood }}</span
+          >
+        </span>
+      </a>
+
+      @if (refused(); as reason) {
+        <p class="field-error" role="alert">{{ reason }}</p>
+      }
+
+      <div class="field">
+        <label for="message">Your message to {{ detail.ownerDisplayName }}</label>
+        <p class="field-hint">
+          Say what you need it for and roughly when. A sentence or two is plenty.
+        </p>
+        <textarea
+          id="message"
+          name="message"
+          rows="5"
+          [ngModel]="message()"
+          (ngModelChange)="message.set($event)"
+          [attr.aria-invalid]="errors().has('message') ? 'true' : null"
+          [attr.aria-describedby]="errors().has('message') ? 'message-error' : null"
+        ></textarea>
+        @if (errors().messageFor('message'); as text) {
+          <p class="field-error" id="message-error">{{ text }}</p>
+        }
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="pickupOn">When could you pick it up?</label>
+          <input
+            type="date"
+            id="pickupOn"
+            name="pickupOn"
+            [ngModel]="pickupOn()"
+            (ngModelChange)="pickupOn.set($event)"
+            [attr.aria-invalid]="errors().has('pickupOn') ? 'true' : null"
+            [attr.aria-describedby]="errors().has('pickupOn') ? 'pickupOn-error' : null"
+          />
+          @if (errors().messageFor('pickupOn'); as text) {
+            <p class="field-error" id="pickupOn-error">{{ text }}</p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="returnBy">When would you bring it back?</label>
+          <input
+            type="date"
+            id="returnBy"
+            name="returnBy"
+            [ngModel]="returnBy()"
+            (ngModelChange)="returnBy.set($event)"
+            [attr.aria-invalid]="errors().has('returnBy') ? 'true' : null"
+            [attr.aria-describedby]="errors().has('returnBy') ? 'returnBy-error' : null"
+          />
+          @if (detail.returnBy) {
+            <p class="field-hint">{{ detail.ownerDisplayName }} asks for it back by {{ detail.returnBy }}.</p>
+          }
+          @if (errors().messageFor('returnBy'); as text) {
+            <p class="field-error" id="returnBy-error">{{ text }}</p>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="choice-list">
+          <label class="choice" for="loanAcknowledged">
+            <input
+              type="checkbox"
+              id="loanAcknowledged"
+              name="loanAcknowledged"
+              [ngModel]="acknowledged()"
+              (ngModelChange)="acknowledged.set($event)"
+              [attr.aria-invalid]="errors().has('loanAcknowledged') ? 'true' : null"
+              [attr.aria-describedby]="errors().has('loanAcknowledged') ? 'loanAcknowledged-error' : null"
+            />
+            <span>
+              <span class="choice__title">I understand this is a loan</span>
+              <span class="choice__desc"
+                >It stays {{ detail.ownerDisplayName }}'s, and I will return it in the condition I
+                borrowed it.</span
+              >
+            </span>
+          </label>
+        </div>
+        @if (errors().messageFor('loanAcknowledged'); as text) {
+          <p class="field-error" id="loanAcknowledged-error">{{ text }}</p>
+        }
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg" type="submit" [disabled]="sending()">
+          Send request to {{ detail.ownerDisplayName }}
+        </button>
+        <a class="btn btn-ghost btn-lg" [routerLink]="['/listings', detail.listingId]">Cancel</a>
+      </div>
+    </form>
+  </div>
+}

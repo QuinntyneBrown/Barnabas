@@ -1,0 +1,32 @@
+<div class="masthead on-ink">
+  <div class="container state stack-2">
+    <h1 class="masthead-title">Your listing is on the board</h1>
+    <p class="masthead-note">The congregation can see it now.</p>
+  </div>
+</div>
+
+<div class="container section stack-5">
+  <div class="stack-2">
+    <h2>What happens next</h2>
+    <dl class="facts">
+      <div>
+        <dt>Members ask</dt>
+        <dd>A request arrives in your inbox with a message from whoever wants it.</dd>
+      </div>
+      <div>
+        <dt>You decide</dt>
+        <dd>Accept or decline. Accepting opens a thread so the two of you can arrange the handoff.</dd>
+      </div>
+      <div>
+        <dt>You close it out</dt>
+        <dd>Once it has gone, mark it so and it leaves the board.</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="btn-group">
+    <a class="btn btn-primary btn-lg" [routerLink]="['/listings', listingId()]">View your listing</a>
+    <a class="btn btn-secondary btn-lg" routerLink="/post">Post another</a>
+    <a class="btn btn-ghost btn-lg" routerLink="/board">Back to the board</a>
+  </div>
+</div>

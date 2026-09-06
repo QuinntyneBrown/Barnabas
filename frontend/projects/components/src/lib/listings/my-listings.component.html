@@ -1,0 +1,62 @@
+<div class="masthead masthead--stone masthead--short">
+  <div class="container stack-2">
+    <a class="back-link" routerLink="/you">&larr; You</a>
+    <h1 class="masthead-title">My listings</h1>
+  </div>
+</div>
+
+<div class="container section">
+  @if (loading()) {
+    <p role="status">Loading your listings.</p>
+  } @else if (mine().length === 0) {
+    <div class="state stack-4">
+      <h2>You have not posted anything yet</h2>
+      <a class="btn btn-primary" routerLink="/post">Post a listing</a>
+    </div>
+  } @else {
+    <div class="rows">
+      @for (listing of mine(); track listing.listingId) {
+        <div class="list-row">
+          <div class="list-row__body stack-2">
+            <div class="row-between">
+              <a class="list-row__title link" [routerLink]="['/listings', listing.listingId]">{{
+                listing.title
+              }}</a>
+              <span class="kind kind--{{ listing.kind.toLowerCase() }}">{{ listing.kind }}</span>
+            </div>
+
+            @if (listing.price !== null) {
+              <span class="list-row__meta">${{ listing.price }}</span>
+            }
+
+            <div class="row">
+              @if (listing.openRequestCount > 0) {
+                <a class="count-pill" routerLink="/inbox/requests">{{ requestLabel(listing) }}</a>
+              } @else {
+                <span class="muted small">No requests yet</span>
+              }
+            </div>
+
+            <div class="list-row__actions">
+              <button
+                class="btn btn-secondary btn-sm"
+                type="button"
+                (click)="closing.set(listing); closeOutDialog.open()"
+              >
+                {{ closeOutLabel(listing) }}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<bar-confirm-dialog
+  #closeOutDialog
+  heading="Mark this as gone?"
+  body="It comes off the board and moves to your wrapped-up listings, where it keeps its outcome."
+  confirmLabel="Mark it"
+  (confirmed)="confirmCloseOut()"
+/>

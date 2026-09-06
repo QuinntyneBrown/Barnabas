@@ -1,0 +1,37 @@
+<div class="masthead on-ink">
+  <div class="container state stack-2">
+    <h1 class="masthead-title">
+      @if (requester()) {
+        You have accepted {{ requester() }}'s request
+      } @else {
+        You have accepted the request
+      }
+    </h1>
+    <p class="masthead-note">A message thread is open between the two of you.</p>
+  </div>
+</div>
+
+<div class="container section stack-5">
+  <div class="stack-2">
+    <h2>Arrange the handoff</h2>
+    <dl class="facts">
+      <div>
+        <dt>Agree a time</dt>
+        <dd>The thread is where the two of you settle when and where.</dd>
+      </div>
+      <div>
+        <dt>Meet in person</dt>
+        <dd>Barnabas arranges no delivery and holds no payment.</dd>
+      </div>
+      <div>
+        <dt>Close it out</dt>
+        <dd>Once it has gone, mark the listing and it leaves the board.</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="btn-group">
+    <a class="btn btn-primary btn-lg" [routerLink]="['/threads', threadId()]">Open the message thread</a>
+    <a class="btn btn-secondary btn-lg" routerLink="/inbox/requests">Back to my inbox</a>
+  </div>
+</div>

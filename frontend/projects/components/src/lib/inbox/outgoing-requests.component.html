@@ -1,0 +1,48 @@
+<div class="masthead on-ink">
+  <div class="container stack-3">
+    <h1 class="masthead-title">Inbox</h1>
+    <p class="masthead-note">Requests, replies, and the threads where handoffs get arranged.</p>
+    <bar-inbox-chips />
+  </div>
+</div>
+
+<div class="container section">
+  @if (loading()) {
+    <p role="status">Loading your requests.</p>
+  } @else if (outgoing().length === 0) {
+    <div class="state stack-3">
+      <h2>You have not asked for anything yet</h2>
+      <a class="btn btn-primary" routerLink="/board">Find something on the board</a>
+    </div>
+  } @else {
+    <div class="rows">
+      @for (request of outgoing(); track request.requestId) {
+        <div class="list-row">
+          <div class="list-row__body stack-2">
+            <div class="row-between">
+              <span class="list-row__title">{{ request.listingTitle }}</span>
+              <span class="status status--{{ request.status.toLowerCase() }}">{{ request.status }}</span>
+            </div>
+
+            <p class="list-row__meta">{{ request.ownerDisplayName }} &mdash; {{ request.neighbourhood }}</p>
+
+            <!-- The terms of the ask, which L2-120 wants shown alongside its standing. -->
+            <p class="list-row__meta">{{ request.terms }}</p>
+
+            <div class="list-row__actions">
+              @if (request.status === 'Accepted' && request.threadId) {
+                <a class="btn btn-secondary btn-sm" [routerLink]="['/threads', request.threadId]"
+                  >Open the message thread</a
+                >
+              } @else if (request.status === 'Pending') {
+                <span class="muted small">Waiting on {{ request.ownerDisplayName }}.</span>
+              } @else {
+                <a class="btn btn-ghost btn-sm" routerLink="/board">Find something similar</a>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

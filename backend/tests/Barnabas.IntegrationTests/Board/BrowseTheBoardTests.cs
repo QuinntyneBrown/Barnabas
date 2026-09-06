@@ -1,0 +1,120 @@
+using System.Net;
+using Barnabas.Domain.Listings;
+using Barnabas.IntegrationTests.Fixtures;
+using Barnabas.Infrastructure.Persistence.Seeding;
+
+namespace Barnabas.IntegrationTests.Board;
+
+// Acceptance Test
+// Traces to: L2-042, L2-044
+// Description: The board shows the congregation's active listings with what a placard renders,
+// and carries each listing's kind as data rather than only as a colour.
+public sealed class BrowseTheBoardTests : AcceptanceTest
+{
+    public BrowseTheBoardTests(BarnabasApiFactory api)
+        : base(api)
+    {
+    }
+
+    // L2-042 AC1: Given a congregation with active listings, when a member requests the board,
+    // then each is returned with kind, title, owner display name, and neighbourhood.
+    [Fact]
+    public async Task The_board_carries_what_a_placard_renders()
+    {
+        using var client = await Api.ClientForAsync(SeedData.Priya.Id);
+
+        var response = await client.GetAsync("/board", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var page = await response.ReadAsync<BoardPageBody>();
+
+        page.Listings.Count.ShouldBe(2);
+
+        var ladder = page.Listings.Single(listing => listing.ListingId == SeedData.Listings.Ladder);
+
+        ladder.Kind.ShouldBe(nameof(ListingKind.Lend));
+        ladder.Title.ShouldBe(SeedData.Listings.LadderTitle);
+        ladder.OwnerDisplayName.ShouldBe(SeedData.Marion.DisplayName);
+        ladder.Neighbourhood.ShouldBe(SeedData.Marion.Neighbourhood);
+
+        page.Listings.Single(listing => listing.ListingId == SeedData.Listings.Drill).Price.ShouldBe(45.00m);
+    }
+
+    // L2-042 AC2: Given a congregation with an archived listing, when a member requests the
+    // board, then that listing is absent.
+    [Fact]
+    public async Task A_closed_out_listing_is_absent_from_the_board()
+    {
+        using var marion = await Api.ClientForAsync(SeedData.Marion.Id);
+
+        await marion.PostJsonAsync(
+            $"/listings/{SeedData.Listings.Drill}/close-out",
+            new { },
+            TestContext.Current.CancellationToken);
+
+        var page = await (await marion.GetAsync("/board", TestContext.Current.CancellationToken))
+            .ReadAsync<BoardPageBody>();
+
+        page.Listings.ShouldNotContain(listing => listing.ListingId == SeedData.Listings.Drill);
+        page.Counts.ShouldNotContainKey(nameof(ListingKind.Sell));
+    }
+
+    // L2-044 AC1: Given any listing on the board, when it is rendered, then its kind is present
+    // as text within the listing.
+    //
+    // The screen half of this is a Playwright test. Its API half is that the kind travels as its
+    // own name rather than as a number the screen would have to translate into a colour.
+    [Fact]
+    public async Task Every_listing_carries_its_kind_as_a_name()
+    {
+        using var client = await Api.ClientForAsync(SeedData.Priya.Id);
+
+        var page = await (await client.GetAsync("/board", TestContext.Current.CancellationToken))
+            .ReadAsync<BoardPageBody>();
+
+        page.Listings.ShouldAllBe(listing => listing.Kind.Length > 0);
+        page.Listings.Select(listing => listing.Kind)
+            .ShouldBeSubsetOf([
+                nameof(ListingKind.Lend),
+                nameof(ListingKind.Give),
+                nameof(ListingKind.Sell),
+                nameof(ListingKind.Help),
+            ]);
+    }
+
+    // The counts label the filter chips, so they describe the whole board rather than the page.
+    [Fact]
+    public async Task The_board_reports_a_count_for_each_kind_present()
+    {
+        using var client = await Api.ClientForAsync(SeedData.Priya.Id);
+
+        var page = await (await client.GetAsync("/board", TestContext.Current.CancellationToken))
+            .ReadAsync<BoardPageBody>();
+
+        page.Counts[nameof(ListingKind.Lend)].ShouldBe(1);
+        page.Counts[nameof(ListingKind.Sell)].ShouldBe(1);
+    }
+
+    // A parish board is small, but the shape is settled now rather than when a large
+    // congregation joins.
+    [Fact]
+    public async Task The_board_pages_by_cursor()
+    {
+        using var client = await Api.ClientForAsync(SeedData.Priya.Id);
+
+        var first = await (await client.GetAsync("/board?limit=1", TestContext.Current.CancellationToken))
+            .ReadAsync<BoardPageBody>();
+
+        first.Listings.Count.ShouldBe(1);
+        first.NextCursor.ShouldNotBeNull();
+
+        var second = await (await client.GetAsync(
+            $"/board?limit=1&cursor={Uri.EscapeDataString(first.NextCursor)}",
+            TestContext.Current.CancellationToken)).ReadAsync<BoardPageBody>();
+
+        second.Listings.Count.ShouldBe(1);
+        second.Listings[0].ListingId.ShouldNotBe(first.Listings[0].ListingId);
+        second.NextCursor.ShouldBeNull();
+    }
+}

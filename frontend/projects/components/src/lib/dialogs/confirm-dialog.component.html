@@ -1,0 +1,8 @@
+<dialog #dialog [attr.aria-label]="heading()" (close)="onClosed()">
+  <h2>{{ heading() }}</h2>
+  <p>{{ body() }}</p>
+  <div class="btn-group">
+    <button class="btn btn-primary" type="button" (click)="confirm()">{{ confirmLabel() }}</button>
+    <button class="btn btn-ghost" type="button" (click)="cancel()">{{ cancelLabel() }}</button>
+  </div>
+</dialog>

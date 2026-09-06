@@ -1,0 +1,33 @@
+<div class="container">
+  <div class="auth stack-6">
+    <div class="stack-2">
+      <h1>Sign in to St.&nbsp;Aidan's</h1>
+      <p class="lede">No password. Barnabas emails a link that signs you in.</p>
+    </div>
+
+    <form class="stack-5" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="email">Your email address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          autocomplete="email"
+          placeholder="you@example.com"
+          [ngModel]="emailAddress()"
+          (ngModelChange)="emailAddress.set($event)"
+        />
+        <p class="field-hint">Use the address the parish office has for you.</p>
+      </div>
+
+      <button class="btn btn-primary btn-lg btn-block" type="submit" [disabled]="sending()">
+        Email me a sign-in link
+      </button>
+    </form>
+
+    <!--
+      The mock offers "Join with an invite code" here. Redeeming an invite is L1-002 and out of
+      this slice, and a link to a route that does not exist would be worse than its absence.
+    -->
+  </div>
+</div>

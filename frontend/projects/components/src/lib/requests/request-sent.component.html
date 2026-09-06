@@ -1,0 +1,37 @@
+<div class="masthead on-ink">
+  <div class="container state stack-2">
+    @if (request(); as sent) {
+      <h1 class="masthead-title">Your request is on its way to {{ sent.ownerDisplayName }}</h1>
+      <p class="masthead-note">
+        They will see it the next time they open the board.
+      </p>
+    } @else {
+      <h1 class="masthead-title">Your request is on its way</h1>
+    }
+  </div>
+</div>
+
+<div class="container section stack-5">
+  <div class="stack-2">
+    <h2>What happens next</h2>
+    <dl class="facts">
+      <div>
+        <dt>They reply</dt>
+        <dd>They can accept or decline. Either way you will hear.</dd>
+      </div>
+      <div>
+        <dt>You arrange it</dt>
+        <dd>If they accept, a message thread opens and the two of you settle the pickup.</dd>
+      </div>
+      <div>
+        <dt>You collect it</dt>
+        <dd>In person. Barnabas handles no payment, delivery, or deposit.</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="btn-group">
+    <a class="btn btn-primary btn-lg" routerLink="/inbox/my-requests">See my requests</a>
+    <a class="btn btn-secondary btn-lg" routerLink="/board">Back to the board</a>
+  </div>
+</div>

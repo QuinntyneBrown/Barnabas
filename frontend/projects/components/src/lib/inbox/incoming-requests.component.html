@@ -1,0 +1,63 @@
+<div class="masthead on-ink">
+  <div class="container stack-3">
+    <h1 class="masthead-title">Inbox</h1>
+    <p class="masthead-note">Requests, replies, and the threads where handoffs get arranged.</p>
+    <bar-inbox-chips />
+  </div>
+</div>
+
+<div class="container section">
+  @if (loading()) {
+    <p role="status">Loading your requests.</p>
+  } @else if (incoming().length === 0) {
+    <div class="state stack-3">
+      <h2>Nobody has asked for anything yet</h2>
+      <p>When somebody asks for one of your listings, it will appear here.</p>
+    </div>
+  } @else {
+    <div class="rows">
+      @for (request of incoming(); track request.requestId) {
+        <div class="list-row">
+          <div class="list-row__body stack-2">
+            <div class="row-between">
+              <span class="list-row__title">{{ request.requesterDisplayName }}</span>
+              <span class="status status--{{ request.status.toLowerCase() }}">{{ request.status }}</span>
+            </div>
+
+            <p class="list-row__meta">
+              Asked for
+              <a class="link" [routerLink]="['/listings', request.listingId]">{{ request.listingTitle }}</a>
+            </p>
+
+            <p class="list-row__meta">{{ request.terms }}</p>
+
+            <blockquote class="quote">{{ request.message }}</blockquote>
+
+            @if (request.status === 'Pending') {
+              <div class="list-row__actions">
+                <button class="btn btn-primary btn-sm" type="button" (click)="accept(request)">
+                  Accept
+                </button>
+                <button
+                  class="btn btn-secondary btn-sm"
+                  type="button"
+                  (click)="declining.set(request); declineDialog.open()"
+                >
+                  Decline
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<bar-confirm-dialog
+  #declineDialog
+  heading="Decline this request?"
+  body="The member is told it was declined. No message thread is opened, and the listing stays on the board."
+  confirmLabel="Decline"
+  (confirmed)="confirmDecline()"
+/>

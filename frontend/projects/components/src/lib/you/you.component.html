@@ -1,0 +1,28 @@
+<div class="masthead on-ink">
+  <div class="container stack-2">
+    <h1 class="masthead-title">You</h1>
+  </div>
+</div>
+
+<div class="container section stack-5">
+  <div class="hub">
+    <a routerLink="/my-listings">
+      <span class="hub__label">My listings</span>
+      <span class="hub__meta">What you have on the board</span>
+    </a>
+    <a routerLink="/inbox/requests">
+      <span class="hub__label">Inbox</span>
+      <span class="hub__meta">Requests and messages</span>
+    </a>
+  </div>
+
+  <button class="btn btn-ghost" type="button" (click)="signOutDialog.open()">Sign out</button>
+</div>
+
+<bar-confirm-dialog
+  #signOutDialog
+  heading="Sign out of Barnabas?"
+  body="Your listings and requests stay exactly as they are. Signing back in needs only your email address."
+  confirmLabel="Sign out"
+  (confirmed)="signOut()"
+/>

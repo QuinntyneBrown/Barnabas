@@ -1,0 +1,5 @@
+<nav class="chip-row" aria-label="Inbox sections">
+  <a class="chip" routerLink="/inbox/requests" routerLinkActive #incoming="routerLinkActive" [attr.aria-current]="incoming.isActive ? 'true' : null">Requests to me</a>
+  <a class="chip" routerLink="/inbox/my-requests" routerLinkActive #outgoing="routerLinkActive" [attr.aria-current]="outgoing.isActive ? 'true' : null">My requests</a>
+  <a class="chip" routerLink="/inbox/messages" routerLinkActive #messages="routerLinkActive" [attr.aria-current]="messages.isActive ? 'true' : null">Messages</a>
+</nav>

@@ -1,0 +1,53 @@
+<div class="masthead on-ink">
+  <div class="container stack-3">
+    <h1 class="masthead-title">St.&nbsp;Aidan's board</h1>
+
+    @if (loading()) {
+      <p class="masthead-note">Loading listings…</p>
+      <!-- Announced as well as drawn, so a member who cannot see the skeletons is told to wait. -->
+      <span class="visually-hidden" role="status">Loading listings.</span>
+    } @else if (failed()) {
+      <p class="masthead-note">The board did not load.</p>
+    } @else if (isEmpty()) {
+      <p class="masthead-note">Nothing is posted yet.</p>
+    } @else {
+      <p class="masthead-note">
+        {{ total() }} things your congregation is lending, giving, selling, or offering to do.
+      </p>
+    }
+  </div>
+</div>
+
+<div class="container section">
+  @if (failed()) {
+    <div class="state stack-4">
+      <h2>The board did not load</h2>
+      <p>Something went wrong between here and St.&nbsp;Aidan's. Nothing you posted has been lost.</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" type="button" (click)="retry()">Try again</button>
+      </div>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="state stack-4">
+      <h2>The board is empty</h2>
+      <p>Nobody has posted anything yet. The first listing tends to bring the rest.</p>
+      <div class="btn-group">
+        <a class="btn btn-primary btn-lg" routerLink="/post">Post the first listing</a>
+      </div>
+    </div>
+  } @else {
+    <div class="mosaic">
+      @for (placard of placards(); track placard.listingId) {
+        <bar-placard [listing]="placard" />
+      }
+    </div>
+  }
+</div>
+
+<div class="container section">
+  <div class="field-block field-block--paper stack-3">
+    <h2 class="display">Have something<br />the parish could use?</h2>
+    <p class="lede">A ladder in the garage, an afternoon free, a crib the children have outgrown.</p>
+    <a class="btn btn-primary btn-lg" routerLink="/post">Post a listing</a>
+  </div>
+</div>
