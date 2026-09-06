@@ -98,6 +98,15 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
 
         NotFoundException => Problem(StatusCodes.Status404NotFound, "The resource was not found."),
 
+        // The four conditions a request has to satisfy do not answer alike. Asking for your own
+        // listing, or through the endpoint for the wrong kind, is a malformed ask. Asking for
+        // something already gone, or asking twice, is a well-formed ask the board refuses.
+        RequestNotEligibleException ineligible => Problem(
+            ineligible.Reason is RequestEligibility.OwnListing or RequestEligibility.KindMismatch
+                ? StatusCodes.Status400BadRequest
+                : StatusCodes.Status409Conflict,
+            Explain(ineligible.Reason)),
+
         CongregationContextMissingException => Problem(
             StatusCodes.Status500InternalServerError,
             "The request could not be completed."),
@@ -106,4 +115,13 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
     };
 
     private static ProblemDetails Problem(int status, string title) => new() { Status = status, Title = title };
+
+    private static string Explain(RequestEligibility reason) => reason switch
+    {
+        RequestEligibility.OwnListing => "You cannot request your own listing.",
+        RequestEligibility.KindMismatch => "That listing does not take this kind of request.",
+        RequestEligibility.ListingNotActive => "The listing is no longer active.",
+        RequestEligibility.DuplicateRequest => "You already have an open request against this listing.",
+        _ => "The request cannot be made against this listing.",
+    };
 }

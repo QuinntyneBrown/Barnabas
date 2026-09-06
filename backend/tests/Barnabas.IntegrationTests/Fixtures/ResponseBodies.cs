@@ -49,3 +49,33 @@ public sealed record MyListingBody(
     int OpenRequestCount);
 
 public sealed record ClosedOutListing(Guid ListingId, string Status);
+
+public sealed record MadeRequest(Guid RequestId);
+
+public sealed record IncomingRequestBody(
+    Guid RequestId,
+    Guid RequesterId,
+    string RequesterDisplayName,
+    Guid ListingId,
+    string ListingTitle,
+    string Kind,
+    string Message,
+    string Terms,
+    string Status,
+    DateTimeOffset MadeAt);
+
+public sealed record MyRequestBody(
+    Guid RequestId,
+    Guid ListingId,
+    string ListingTitle,
+    string Kind,
+    string OwnerDisplayName,
+    string Neighbourhood,
+    string Terms,
+    string Status,
+    DateTimeOffset MadeAt,
+    Guid? ThreadId);
+
+public sealed record AcceptedRequest(Guid RequestId, Guid ThreadId);
+
+public sealed record DeclinedRequest(Guid RequestId, string Status);

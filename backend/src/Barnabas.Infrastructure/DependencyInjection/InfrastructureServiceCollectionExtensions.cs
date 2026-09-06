@@ -2,6 +2,7 @@ using Barnabas.Application.Common.Authorisation;
 using Barnabas.Application.Common.Email;
 using Barnabas.Application.Common.Persistence;
 using Barnabas.Application.Common.Security;
+using Barnabas.Application.Requests.Common;
 using Barnabas.Infrastructure.Email;
 using Barnabas.Infrastructure.Persistence;
 using Barnabas.Infrastructure.Persistence.Seeding;
@@ -48,8 +49,12 @@ public static class InfrastructureServiceCollectionExtensions
 
         services.AddScoped<IBarnabasDbContext>(provider => provider.GetRequiredService<BarnabasDbContext>());
         services.AddScoped<IAuthenticationStore, AuthenticationStore>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IOwnerLookup<>), typeof(OwnerLookup<>));
+
+        // Registered after the open generic so it wins for this one closed type. Deciding a
+        // request is authorised against the listing it was made on, which no set of requests
+        // can answer on its own.
+        services.AddScoped<IOwnerLookup<RequestOwnership>, RequestOwnershipLookup>();
 
         services.AddScoped<CongregationSeeder>();
         services.AddScoped<DatabaseInitialiser>();
