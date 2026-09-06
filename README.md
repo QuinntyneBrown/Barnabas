@@ -13,6 +13,7 @@ moving. Barnabas brokers the introduction; the handoff happens in person.
 [![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
 [![Code of Conduct](https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-ff69b4.svg)](CODE_OF_CONDUCT.md)
 
+[Watch the demo](docs/demo/) ·
 [Getting started](#getting-started) ·
 [Architecture](#architecture) ·
 [Testing](#testing) ·
@@ -22,6 +23,19 @@ moving. Barnabas brokers the introduction; the handoff happens in person.
 </div>
 
 ---
+
+## See it work
+
+**[A five-minute demonstration](docs/demo/)** — the real application driving itself, in one
+continuous take. No compositing, no screen capture, no second attempt: it is a Playwright script
+using the same page objects as the acceptance suite, and it asserts as it goes, so it cannot show
+something that did not happen.
+
+[![The board, with a listing and its photograph](docs/demo/poster.png)](docs/demo/)
+
+Signing in without a password · the board and its four kinds · posting with a photograph · asking,
+accepting, and the thread it opens · closing out in the words of the kind · reporting and
+moderating · issuing an invitation and letting somebody in.
 
 ## What Barnabas is
 
@@ -276,6 +290,7 @@ Barnabas/
 | [`docs/adr/`](docs/adr) | Why the load-bearing decisions were taken, and what was rejected. |
 | [`docs/detailed-designs/`](docs/detailed-designs) | Feature designs, with C4 and sequence diagrams. |
 | [`docs/slices/`](docs/slices) | One document per feature slice: what it delivered, what it decided, and what it found or failed to finish. |
+| [`docs/demo/`](docs/demo) | A five-minute recording of the product working, and how to re-record it. |
 | [`docs/mocks/`](docs/mocks) | Static HTML for every screen. The design system in `frontend/projects/barnabas/src/styles/` is a clean carry of `docs/mocks/styles.css`, so a diff between them stays short and reviewable. |
 | [`AGENTS.md`](AGENTS.md) | The conventions this codebase is written to — architecture, naming, component placement, and the domain's vocabulary. Read this before your first pull request. |
 

@@ -8,6 +8,7 @@ import {
   PostHelpPage,
 } from '../page-objects/post-listing.page';
 import { ListingDetailPage } from '../page-objects/listing-detail.page';
+import { aJpeg } from '../support/images';
 import { Members } from '../support/members';
 import { expect, test } from '../support/barnabas';
 
@@ -45,6 +46,17 @@ test('a photograph reaches the board, and the board loads it lazily', async ({
   // L2-106 AC1: the board asks for the board's rendition, not the listing screen's.
   await expect(photo).toHaveAttribute('src', /\/photos\/[0-9a-f-]+\/board$/);
 
+  // And it actually loaded.
+  //
+  // This is the assertion that matters, and the one this test first went without: the src pattern
+  // and the loading attribute were both right while the picture itself was never fetched. The
+  // API answers with a path of its own, the client is served from a different root, and the
+  // browser resolved it against the wrong origin - so every listing showed its alt text. An
+  // attribute is what the markup says; naturalWidth is what the browser got.
+  await expect
+    .poll(async () => photo.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBeGreaterThan(0);
+
   // The listing screen asks for the other one.
   await board.open('Cast iron frying pan');
 
@@ -52,6 +64,10 @@ test('a photograph reaches the board, and the board loads it lazily', async ({
 
   await expect(detail.title).toHaveText('Cast iron frying pan');
   await expect(detail.photo).toHaveAttribute('src', /\/photos\/[0-9a-f-]+$/);
+
+  await expect
+    .poll(async () => detail.photo.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBeGreaterThan(0);
 });
 
 // Help offers time rather than a thing, so its form does not ask for a photograph at all.
@@ -139,8 +155,8 @@ async function postWithAPhotoAsync(page: Page, title: string): Promise<void> {
 
   await form.fill({ title, description: 'Seasoned, heavy, and surplus to requirements.' });
 
-  // A real JPEG, made here rather than checked in — a binary fixture is a file nobody can read
-  // in a diff.
+  // A real JPEG, made rather than checked in — a binary fixture is a file nobody can read in a
+  // diff.
   await form.photo.setInputFiles({
     name: 'pan.jpg',
     mimeType: 'image/jpeg',
@@ -155,23 +171,4 @@ async function postWithAPhotoAsync(page: Page, title: string): Promise<void> {
 
   // Waits for the product's own confirmation rather than navigating with the upload in flight.
   await expect(new ListingPostedPage(page).heading).toBeVisible();
-}
-
-/**
- * The smallest valid JPEG this suite needs.
- *
- * A one-pixel grey image, byte for byte: the start marker, a baseline quantisation table, a frame
- * and a scan. The API decodes and re-encodes whatever arrives, so what matters is only that these
- * bytes really are a JPEG.
- */
-function aJpeg(): Buffer {
-  return Buffer.from(
-    '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a' +
-      'HBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAHwAAAQUBAQEB' +
-      'AQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1Fh' +
-      'ByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZ' +
-      'WmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG' +
-      'x8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/AP3wooooA//Z',
-    'base64',
-  );
 }

@@ -23,7 +23,23 @@ export class ListingService implements IListingService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
 
-  board(kind?: ListingKind, cursor?: string): Promise<BoardPage> {
+  /**
+   * Makes a photograph's address one this client can actually fetch.
+   *
+   * The API answers with a path of its own — `/photos/{id}` — because where a photograph lives is
+   * the deployment's business, and an absolute URL baked into a row would be wrong the first time
+   * one moved. But the client is served from its own root and reaches the API under `/api`, so
+   * that path resolves against the wrong origin: the browser asks the client's own server for
+   * `/photos/…`, gets the single-page fallback, and renders the alt text instead of the picture.
+   *
+   * Resolved here rather than in each template, because a component that forgot would show a
+   * broken image and nothing else in the product would notice.
+   */
+  private served(url: string | null): string | null {
+    return url === null ? null : `${this.baseUrl}${url}`;
+  }
+
+  async board(kind?: ListingKind, cursor?: string): Promise<BoardPage> {
     let params = new HttpParams();
 
     if (kind) {
@@ -34,11 +50,25 @@ export class ListingService implements IListingService {
       params = params.set('cursor', cursor);
     }
 
-    return firstValueFrom(this.http.get<BoardPage>(`${this.baseUrl}/board`, { params }));
+    const page = await firstValueFrom(
+      this.http.get<BoardPage>(`${this.baseUrl}/board`, { params }),
+    );
+
+    return {
+      ...page,
+      listings: page.listings.map((listing) => ({
+        ...listing,
+        photoUrl: this.served(listing.photoUrl),
+      })),
+    };
   }
 
-  get(listingId: string): Promise<ListingDetail> {
-    return firstValueFrom(this.http.get<ListingDetail>(`${this.baseUrl}/listings/${listingId}`));
+  async get(listingId: string): Promise<ListingDetail> {
+    const listing = await firstValueFrom(
+      this.http.get<ListingDetail>(`${this.baseUrl}/listings/${listingId}`),
+    );
+
+    return { ...listing, photoUrl: this.served(listing.photoUrl) };
   }
 
   mine(includeClosed = false): Promise<readonly MyListing[]> {
@@ -85,14 +115,20 @@ export class ListingService implements IListingService {
    * No Content-Type is set by hand: the browser writes it, and the boundary it has to carry is
    * something only the browser knows.
    */
-  attachPhoto(listingId: string, photo: File): Promise<AttachedPhoto> {
+  async attachPhoto(listingId: string, photo: File): Promise<AttachedPhoto> {
     const body = new FormData();
 
     body.append('file', photo, photo.name);
 
-    return firstValueFrom(
+    const attached = await firstValueFrom(
       this.http.post<AttachedPhoto>(`${this.baseUrl}/listings/${listingId}/photo`, body),
     );
+
+    return {
+      ...attached,
+      url: this.served(attached.url)!,
+      boardUrl: this.served(attached.boardUrl)!,
+    };
   }
 
   closeOut(listingId: string): Promise<ClosedOutListing> {
