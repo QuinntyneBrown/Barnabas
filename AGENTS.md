@@ -48,9 +48,12 @@ say what it cost rather than quietly narrowing scope.
   TypeScript `interface` and an `InjectionToken` declared together in a
   `*.contract.ts` file; a consumer calls `inject(THE_TOKEN)` and has no
   compile-time knowledge of any implementation.
+- Name a service for the one thing it serves, singular, with a `Service` suffix.
+  Never an `Api` suffix: the interface says what the caller may ask for, not that
+  an HTTP call happens to be how the answer arrives.
 - Prefix an interface with `I` only where it is a behavioural contract with
-  swappable implementations — `IListingsApi`, against `ListingsApi` and
-  `ListingsApiMock`. The implementation drops the prefix and never takes an
+  swappable implementations — `IListingService`, against `ListingService` and
+  `ListingServiceMock`. The implementation drops the prefix and never takes an
   `Impl` suffix. A data structure that nothing polymorphs over carries no prefix.
 - Bind a token to an implementation at the host and nowhere else: the application
   binds the real one, a test host binds the mock. Nothing beneath the host names
