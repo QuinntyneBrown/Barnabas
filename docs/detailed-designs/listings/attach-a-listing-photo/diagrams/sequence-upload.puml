@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour - Attach a listing photo: upload
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "Goods listing forms / ListingPhotoComponent (planned)" as page
+  participant "IListingPhotoService / LISTING_PHOTO_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ListingPhotosController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "AttachListingPhotoCommandHandler / GetListingPhotoQueryHandler (planned)" as handler
+  participant "ListingPhoto / Listing" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Attach goods photo
+page -> client : attach(listingId, file)
+client -> api : PUT /listings/{id}/photo
+note over api : Multipart body exception and ceiling: TO SUPPLY [L2-032 / L2-096]
+api -> handler : Authorised AttachListingPhotoCommand
+handler -> db : Load scoped owner goods listing
+db --> handler : Listing
+handler -> entity : Check goods kind and one-photo association [L2-032]
+handler -> handler : IImageProcessor validates bytes, media type, pixels [L2-102]
+alt Oversized
+  handler --> api : 413; no storage
+else Mismatch or invalid image
+  handler --> api : 415; no storage
+else Valid raster
+  handler -> handler : Re-encode; strip metadata; create derivatives
+  handler -> db : Replace unique listing photo in transaction
+  db --> handler : Commit or stale 409
+  handler --> api : ListingPhotoDto
+  api --> client : Success
+  client --> page : Display image result
+end
+@enduml

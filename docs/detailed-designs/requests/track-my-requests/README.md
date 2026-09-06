@@ -2,87 +2,48 @@
 
 ## Overview
 
-A member who asks for something needs to find out what became of the ask. This feature is
-that screen: the requests a member has made, each with its listing, its owner, and its
-current standing.
+Barnabas keeps requests within the congregation that owns their listing.
 
-**outgoing request** — a request the reader made against another member's listing, as
-distinct from an incoming request made against one of their own
-
-It is the counterpart to *Review incoming requests*, and the two sit beside each other as
-chips in the inbox along with messages. The distinction is who owns the listing: incoming
-requests are decisions the member owes other people, outgoing requests are decisions the
-member is waiting on.
-
-The screen closes a loop that would otherwise be open. Sending a request offers to see the
-member's own requests, and a decline is something the requester is meant to discover here —
-both stated in the criteria of `L2-058` and `L2-061`. Until this feature those criteria
-referred to a screen no requirement mandated and no design described, so the flow ended at a
-confirmation and resumed only if a notification happened to be read.
-
-An accepted request carries the identifier of the thread it opened, so the member moves from
-the decision to the conversation where the handoff is arranged. A declined request carries
-no thread, because declining creates none.
+An **outgoing request** — ask made by the reader against another member's listing — records the listing, owner, terms, and current decision. Accepted requests carry the message thread opened for their handoff. Pending and declined requests offer no thread.
 
 ## Description
 
-A read-only slice with one query, mirroring `review-incoming-requests` on the other side of
-the relationship.
+**Implementation boundary: Existing Lend projection; planned other-kind terms and bounded collection.**
 
-- **`OutgoingRequestsComponent`** — Angular screen rendering the rows, the second of three
-  chips in the inbox. Template, styles, and class in separate files; the rows are held in a
-  signal.
-- **`IRequestsApi`** and **`RequestsApi`** — the interface the component depends on and its
-  typed HTTP client, shared with the sibling request features.
-- **`RequestsController`** — exposes `GET /requests/mine`.
-- **`GetMyRequestsQuery`** and **`GetMyRequestsQueryHandler`** — read the requests where the
-  caller is the requester, with the listing, its owner, and any thread, and project them.
-  The requester is taken from the session; the congregation comes from the global filter, so
-  the handler adds one predicate rather than three.
-- **`MyRequestDto`** — read model carrying the listing title and kind, the owner's display
-  name and neighbourhood, the terms as the requester stated them, the status, and the thread
-  identifier where the request was accepted.
+`OutgoingRequestsComponent` composes the outgoing inbox screen. `RequestStore.loadOutgoing` calls `IRequestService.mine`. `RequestsController` dispatches `GetMyRequestsQuery(Status)` for `GET /requests/mine`. The handler scopes by `RequesterId` from the session, joins listing and owner, and projects `MyRequestDto`. It reads a nullable `ThreadId` from the accepted request relationship. The DTO neighbourhood is the listing's neighbourhood, rather than a separate owner-profile field.
 
-`ThreadId` is nullable, and its nullability is the design. A pending request has no thread
-because no decision has been made; a declined request has none because declining creates
-none. Only an accepted request carries one, so the screen decides what to offer from the
-data rather than from a second lookup.
+`LoanTermsText` renders the existing Lend terms. Planned Give, Sell, and Help requests extend the same summary projection. A domain request-row region receives route destinations from the page; only a non-null accepted `ThreadId` produces the coordination link. The confirmation after sending a request and decision notifications both reach `/inbox/my-requests`. Loading, empty, and retry state preserve the selected view. This collection currently has no cursor; the planned collection contract bounds it.
 
-The terms are projected as text rather than as the per-kind value types. The requester is
-reading a summary of what they asked for, not editing it, and flattening avoids the screen
-branching over four shapes to render one line.
+**Source anchors.** [GetMyRequestsQueryHandler.cs](../../../../backend/src/Barnabas.Application/Requests/GetMyRequests/GetMyRequestsQueryHandler.cs), [request.store.ts](../../../../frontend/projects/domain/src/lib/requests/request.store.ts).
+
+**Acceptance verification.** [L2-120](../../../specs/L2.md#l2-120-review-my-own-requests): API AC 1, 2, 3; E2E AC 4, 5. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-120` | `L1-009` | 1 | A member shall be able to see the requests they have made, each showing the listing, its owner, the terms of the request, and its status, with a route to the message thread where a request was accepted. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-120` | `L1-009` | A member shall be able to see the requests they have made, each showing the listing, its owner, the terms of the request, and its status, with a route to the message thread where a request was accepted. |
 
 ## Diagrams
 
-### Components
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-One controller, one query, one read model. The thread identifier is carried on the row so
-that an accepted request leads straight to its conversation.
+![C4 context view for track my requests](diagrams/c4-context.png)
 
-![C4 component view for tracking requests](diagrams/c4-component.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Class structure
+![C4 container view for track my requests](diagrams/c4-container.png)
 
-`MyRequestDto` flattens the request, its listing, and its owner into one row, and carries a
-nullable thread identifier that is populated only for an accepted request.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![Class diagram for tracking requests](diagrams/class-structure.png)
+![C4 component view for track my requests](diagrams/c4-component.png)
 
-### Behaviour — following a request to its decision
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-The handler filters on the caller being the requester; the congregation predicate is already
-applied underneath. The three branches are the three things a member can find here, and the
-declined branch is the one `L2-061` depends on.
+![Class structure for track my requests](diagrams/class-structure.png)
 
-![Sequence diagram for tracking requests](diagrams/sequence-track.png)
+The handler constrains the collection to the reader and projects destinations with the request summary.
+
+![Sequence for track](diagrams/sequence-track.png)

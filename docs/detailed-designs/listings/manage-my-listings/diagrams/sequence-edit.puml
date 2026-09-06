@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Editing a listing, and an edit by someone who does not own it
+title UML sequence behaviour - Manage my listings: edit
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,44 +15,55 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "MyListingsComponent" as page
-  participant "EditListingComponent" as form
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "MyListingsComponent / planned EditListingComponent" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ListingsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ListingsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "AuthorisationBehaviour" as behaviour
-  participant "EditListingCommandHandler" as handler
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetMyListingsQueryHandler / planned EditListingCommandHandler" as handler
   participant "Listing" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Open my listings
-page --> actor : Each listing with its kind, status, and open request count
-note over page : L2-035 makes the count a link to the requests\nthemselves, so a listing leads to the people\nasking for it.
-actor -> page : Choose Edit
-page -> form : Open, headed as an edit and populated
-actor -> form : Save changes
-form -> controller : PUT /listings/{id}
-controller -> behaviour : Send EditListingCommand
-behaviour -> db : Load the listing named by IRequireOwnership
-db --> behaviour : Listing with its owner
-alt the caller owns it
-  behaviour -> handler : Invoke
-  handler -> entity : Apply the changes
-  entity --> handler : Updated
-  handler -> db : Save
-  handler --> controller : Result
-  controller --> form : 200 OK
-  form --> actor : Return to my listings
-else the caller does not
-  behaviour --> controller : L2-041 ownership failure
-  controller --> form : 403 Forbidden
-  form --> actor : Report that the listing is not theirs
+actor -> page : Submit action
+page -> client : Send typed values
+client -> api : PUT /listings/{listingId}
+api -> api : Validate JWT and live session
+api -> handler : Validate and authorise; send EditListingCommand
+handler -> db : Load resource within congregation
+db --> handler : Resource or absent
+alt Resource absent or outside congregation
+  handler --> api : NotFoundException
+  api --> client : 404
+else Resource available
+  handler -> entity : Edit editable fields; keep Kind and OwnerId [L2-036, L2-041]
+  alt Invalid current state
+    entity --> handler : Transition refused
+    handler --> api : Conflict
+    api --> client : 409; no committed change
+  else Transition allowed
+    entity --> handler : In-memory transition accepted
+    handler -> db : Save with target Listing rowversion
+    alt Rowversion or expected uniqueness conflict
+      db --> handler : Reject write; roll back unit of work
+      handler --> api : Conflict
+      api --> client : 409; reload current state
+      client --> page : Explain conflict; preserve unsaved values
+    else Storage failure
+      db --> handler : Roll back
+      handler --> api : Safe server failure
+      api --> client : Failure; no committed change
+    else Commit succeeds
+      db --> handler : Commit
+      handler --> api : Updated listing
+      api --> client : Success result
+      client --> page : Update signals
+      page --> actor : Confirm result
+    end
+  end
 end
-note over entity : The kind cannot be changed. A Lend listing\ncannot become a Sell listing, because the terms\nit carries are not interchangeable.
 @enduml

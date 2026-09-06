@@ -1,49 +1,44 @@
 @startuml
-!pragma layout smetana
-title Class structure — The responsive, accessible shell
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
-class AppShellComponent {
-  +Signal<boolean> isCompact
-  +Signal<NavDestination> current
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
 }
-class PrimaryNavComponent {
-  +input destinations : NavDestination[]
-  +input current : NavDestination
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
 }
-class BottomNavComponent {
-  +input destinations : NavDestination[]
-  +input current : NavDestination
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
 }
-class SkipLinkComponent {
-  +string targetId
-}
-class NavDestination {
-  +string key
-  +string label
-  +string route
-  +string icon
+title Class structure - Use the responsive and accessible shell
+class AppShellComponent
+class PublicShellComponent
+class PrimaryNavComponent
+class BottomNavComponent
+class ConfirmDialogComponent {
+  +open(): void
 }
 class ViewportService {
-  +Signal<Band> band
+  +band: Signal<Band>
 }
-enum Band {
-  ExtraSmall
-  Small
-  Medium
-  Large
-  ExtraLarge
+enum Band <<TypeScript string union>> {
+  xs
+  sm
+  md
+  lg
+  xl
 }
-
-AppShellComponent *-- SkipLinkComponent : renders first
-AppShellComponent *-- PrimaryNavComponent : renders from Medium
-AppShellComponent *-- BottomNavComponent : renders below Medium
-AppShellComponent --> ViewportService : reads the current band from
-PrimaryNavComponent --> NavDestination : renders
-BottomNavComponent --> NavDestination : renders the same
+AppShellComponent *-- PrimaryNavComponent : header
+AppShellComponent *-- BottomNavComponent : narrow layout
+AppShellComponent ..> ConfirmDialogComponent : plain input / output primitive
+PublicShellComponent ..> ConfirmDialogComponent : plain input / output primitive
 ViewportService --> Band : exposes
 @enduml

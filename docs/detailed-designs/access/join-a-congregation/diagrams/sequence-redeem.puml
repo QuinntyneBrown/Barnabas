@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour - Join a congregation: redeem
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Prospective member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "JoinInviteComponent / CreateProfileComponent / AwaitingApprovalComponent (planned)" as page
+  participant "IInvitationService / INVITATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "InvitesController / JoiningController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "RedeemInviteCodeCommandHandler / SubmitJoiningProfileCommandHandler (planned)" as handler
+  participant "InviteCode / JoiningSession / Member" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Submit invite code
+page -> client : redeem(code)
+client -> api : POST /invites/redeem; rate-limited public route
+api -> handler : RedeemInviteCodeCommand
+handler -> db : Narrow hash lookup; conditional redeem and create JoiningSession [L2-006, L2-009]
+alt Unknown code
+  db --> handler : Not found
+  handler --> api : 404 [L2-007]
+else Expired, used, revoked, or concurrent loser
+  db --> handler : No redeemable row
+  handler --> api : 410; same generic error body [L2-008, L2-009]
+else Winner
+  db --> handler : Transaction committed
+  handler --> api : Congregation and restricted joining credential
+  api --> client : 200
+  client --> page : Show profile form
+end
+opt Failure response
+  api --> client : 404 or 410
+  client --> page : Invalid-code screen; retry or moderator contact
+end
+@enduml

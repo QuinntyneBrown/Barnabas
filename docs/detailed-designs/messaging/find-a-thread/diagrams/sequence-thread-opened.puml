@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — A thread coming into existence
+title UML sequence behaviour - Find a thread: thread opened
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,33 +14,56 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Listing owner" as actor
-box "Backend — Barnabas API" #D1FADF
-  participant "RequestsController" as controller
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ThreadsComponent" as page
+  participant "IThreadService / THREAD_SERVICE" as client
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "AcceptRequestCommandHandler" as handler
-  participant "ListingRequest" as request
-  participant "MessageThread" as thread
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ThreadsController" as api
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetMyThreadsQueryHandler / AcceptRequestCommandHandler" as handler
+  participant "MessageThread" as entity
 end box
-
-actor -> controller : Accept a pending request
-controller -> handler : Send AcceptRequestCommand
-handler -> request : Apply the acceptance transition
-request --> handler : Status set to Accepted
-handler -> thread : Open, naming the request and carrying the listing and both members
-thread --> handler : Thread
-handler -> db : Save the transition and the thread in one unit of work
-note over handler : L2-064 makes the thread a consequence of\nacceptance rather than a separate act. A committed\nacceptance without a thread would leave the\nrequester notified of a decision they cannot act on.
-alt the request was still pending
-  db --> handler : Commit result
-else another caller decided it first
-  db --> handler : Conflict on the request's concurrency token,\nor on the unique RequestId of the thread
-  handler --> actor : 409 Conflict, with no second thread created
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Submit action
+page -> client : Send typed values
+client -> api : POST /requests/{id}/accept
+api -> api : Validate JWT and live session
+api -> handler : Validate and authorise; send AcceptRequestCommand
+handler -> db : Load resource within congregation
+db --> handler : Resource or absent
+alt Resource absent or outside congregation
+  handler --> api : NotFoundException
+  api --> client : 404
+else Resource available
+  handler -> entity : Accept request; MessageThread.OpenFor [L2-064]
+  alt Invalid current state
+    entity --> handler : Transition refused
+    handler --> api : Conflict
+    api --> client : 409; no committed change
+  else Transition allowed
+    entity --> handler : In-memory transition accepted
+    handler -> db : Save request rowversion and unique thread in one transaction
+    alt Rowversion or expected uniqueness conflict
+      db --> handler : Reject write; roll back unit of work
+      handler --> api : Conflict
+      api --> client : 409; reload current state
+      client --> page : Explain conflict; preserve unsaved values
+    else Storage failure
+      db --> handler : Roll back
+      handler --> api : Safe server failure
+      api --> client : Failure; no committed change
+    else Commit succeeds
+      db --> handler : Commit
+      handler --> api : AcceptRequestResult
+      api --> client : Success result
+      client --> page : Update signals
+      page --> actor : Confirm result
+    end
+  end
 end
-handler --> controller : Request and thread identifiers
-controller --> actor : The acceptance, offering the thread
 @enduml

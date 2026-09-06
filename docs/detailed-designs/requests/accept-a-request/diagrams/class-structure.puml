@@ -1,64 +1,60 @@
 @startuml
-!pragma layout smetana
-title Class structure — Accept a request
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
-class AcceptRequestCommand {
-  +Guid RequestId
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
 }
-class AcceptRequestCommandHandler {
-  +Handle(AcceptRequestCommand) : AcceptRequestResult
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
 }
-class AcceptRequestResult {
-  +Guid RequestId
-  +Guid ThreadId
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
 }
+title Class structure - Accept a request
 class ListingRequest {
   +Guid Id
   +Guid ListingId
   +Guid RequesterId
+  +string Message
   +RequestStatus Status
   +byte[] RowVersion
-  +Accept() : void
-  +Decline() : void
+  +Accept(asOf: DateTimeOffset): void
+  +Decline(asOf: DateTimeOffset): void
 }
-note bottom of ListingRequest
-  RowVersion is checked on save.
-  Accept and decline racing resolve
-  to one winner and one 409.
-end note
+class LoanRequestTerms {
+  +DateOnly PickupOn
+  +DateOnly ReturnBy
+}
 enum RequestStatus {
   Pending
   Accepted
   Declined
 }
 class MessageThread {
-  +Guid Id
   +Guid RequestId
   +Guid ListingId
   +Guid OwnerId
   +Guid RequesterId
-  +DateTimeOffset OpenedOn
+  +IsParty(memberId: Guid): bool
 }
-note bottom of MessageThread
-  RequestId is unique, so one
-  accepted request opens exactly
-  one thread even under a race.
-end note
-class RequestAlreadyDecidedException {
-  +Guid RequestId
-  +RequestStatus CurrentStatus
-}
-
-AcceptRequestCommandHandler ..> AcceptRequestCommand : handles
-AcceptRequestCommandHandler --> AcceptRequestResult : returns
-AcceptRequestCommandHandler --> ListingRequest : loads and mutates
-AcceptRequestCommandHandler --> MessageThread : creates
 ListingRequest --> RequestStatus : holds
-ListingRequest ..> RequestAlreadyDecidedException : raises on a second decision
-MessageThread --> ListingRequest : opened by exactly one
+ListingRequest "1" *-- "0..1" LoanRequestTerms : owns
+ListingRequest "1" <-- "0..1" MessageThread : arises from acceptance
+
+class AcceptRequestCommand {
+  +Guid RequestId
+}
+class AcceptRequestCommandHandler {
+  +Handle(command: AcceptRequestCommand): Task<AcceptRequestResult>
+}
+AcceptRequestCommandHandler ..> AcceptRequestCommand : handles
+AcceptRequestCommandHandler --> ListingRequest : decides
 @enduml

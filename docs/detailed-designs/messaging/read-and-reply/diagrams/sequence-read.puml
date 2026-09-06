@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Opening a thread
+title UML sequence behaviour - Read and reply: read
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,40 +15,36 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
+box "Frontend - barnabas application and libraries" #E0F2FE
   participant "ThreadComponent" as page
-  participant "ThreadsApi" as client
+  participant "IThreadService / THREAD_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ThreadsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ThreadsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "GetThreadQueryHandler" as handler
-  participant "MessageThread" as thread
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetThreadQueryHandler / SendMessageCommandHandler" as handler
+  participant "MessageThread / Message / ThreadReadMark" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Open a thread from the messages list
-page -> client : Request the thread
-client -> controller : GET /threads/{id}
-controller -> handler : Send GetThreadQuery
-handler -> db : Load the thread and its messages
-db --> handler : Thread and messages
-handler -> thread : Is the caller a party?
-alt the caller is a party
-  thread --> handler : Yes
-  handler -> db : Move this member's read mark to now
-  note over handler : L2-066 marks the thread read for this member\nonly. The other party's unread state is untouched.
-  handler --> controller : Messages in ascending time order, with the listing
-  controller --> client : 200 OK
-  client --> page : Thread
-  page --> actor : The conversation, the listing it concerns, and the request status
-else the caller is not a party
-  thread --> handler : No
-  handler --> controller : Not found
-  controller --> client : 404 Not Found
-  note over controller : 404 rather than 403, so a thread's existence\nis not disclosed to a member outside it.
+actor -> page : Open thread
+page -> client : get(threadId)
+client -> api : GET /threads/{id}
+api -> handler : GetThreadQuery
+handler -> db : Load scoped thread and message page
+db --> handler : Thread and displayed messages
+handler -> entity : IsParty(caller) [L2-066]
+alt Not a party or missing
+  handler --> api : 404
+  api --> client : Not found
+else Party
+  handler -> entity : Target MarkRead through returned messages only
+  handler -> db : Monotonic read-mark upsert (planned)
+  db --> handler : Commit; other reader unchanged
+  handler --> api : ThreadDetailDto ordered by time and identifier
+  api --> client : 200
+  client --> page : Messages, listing link, other-member profile link [L2-068]
 end
 @enduml

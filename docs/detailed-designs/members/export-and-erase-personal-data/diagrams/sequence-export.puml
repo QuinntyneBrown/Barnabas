@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour - Export and erase personal data: export
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "DataSettingsComponent (planned)" as page
+  participant "IDataRightsService / DATA_RIGHTS_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "DataRightsController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "ExportMemberDataQueryHandler / EraseMemberDataCommandHandler (planned)" as handler
+  participant "MemberErasure / Member data" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open screen
+page -> client : Load; set loading signal
+client -> api : GET /members/me/export
+api -> api : Validate JWT and live session
+api -> handler : Send ExportMemberDataQuery
+handler -> db : Member-bound profile, listings, requests, authored messages; omit others emails [L2-101]
+db --> handler : Scoped rows
+handler --> api : MemberExportDto
+api --> client : 200 / typed result
+client --> page : Set result and clear loading
+alt Empty collection
+  page --> actor : Explain empty state
+else Rows available
+  page --> actor : Present rows and destinations
+end
+opt Transport or server failure
+  client --> page : Failure; retain retry action
+  page --> actor : Explain failure; retry reloads the query
+end
+@enduml

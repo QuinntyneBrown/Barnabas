@@ -2,91 +2,57 @@
 
 ## Overview
 
-A message thread in Barnabas is always about something. It comes into existence when a
-listing's owner accepts a request, and it carries that listing for as long as it lasts.
+Barnabas is a private board where church congregation members offer goods or time through listings.
 
-**thread** — a conversation between two members about one listing, opened by an accepted
-request
+A **message thread** — conversation between the two members of an accepted request about its listing — provides a place to arrange the handoff. A member sees only threads to which they are a party.
 
-There is no way to start a conversation any other way. A member cannot message another
-member out of the blue, and that is a deliberate product stance rather than a missing
-feature: it keeps the board the centre of gravity, stops the parish turning into a chat
-application, and means every thread has a subject a reader can see six weeks later.
-
-It also makes the thread list legible. Each row can name what the conversation is about,
-because there is no such thing as a conversation about nothing.
-
-A member sees the threads they are party to and no others.
+Each thread summary names the other member and listing, shows the latest message, and indicates unread content for the reader. A pending or declined request does not create a thread.
 
 ## Description
 
-A thread is created by another feature and read by this one.
+**Implementation boundary: Existing list and thread creation; planned bounded projections.**
 
-- **`MessageThread`** — domain entity carrying the congregation, **the request that opened
-  it**, the listing, the owner, and the requester, with the time it opened. `IsParty`
-  answers whether a given member may see it.
+`ThreadsComponent` is the routed screen in `barnabas`; no `MessagesComponent` exists. `ThreadStore.load` consumes `IThreadService.mine` through `THREAD_SERVICE`. `ThreadsController` dispatches `GetMyThreadsQuery` for `GET /threads`. The handler filters by owner or requester within the congregation and projects `ThreadSummaryDto` with the other member, listing, latest message, and unread flag.
 
-  `RequestId` carries a uniqueness constraint, and that constraint is what makes "one thread
-  per accepted request" a fact rather than an intention. Without it, two callers accepting
-  the same request at once would each create a thread and both would be valid; a declined
-  request that somehow acquired a thread would be indistinguishable from an accepted one at
-  the data layer.
-- **`AcceptRequestCommandHandler`** — belongs to `requests/accept-a-request`, and is where
-  a thread is created. It commits the acceptance and the thread in one unit of work.
-- **`ThreadsController`** — exposes `GET /threads`.
-- **`GetMyThreadsQuery`** and its handler — read the threads where the caller is owner or
-  requester, with each thread's latest message, and project them.
-- **`ThreadSummaryDto`** — read model carrying the other member's display name, the listing
-  title, the latest message, and whether the thread is unread for this reader.
-- **`MessagesComponent`** — the Angular screen, one of three chips in the inbox alongside
-  requests received and requests made.
+`MessageThread.OpenFor` is called by `AcceptRequestCommandHandler`, which commits thread creation with acceptance. The unique `MessageThread.RequestId` index prevents a duplicate thread. It does not independently prove that the referenced request is accepted; that rule is enforced by the accepting application path. No controller or service contract offers free-form thread creation.
 
-Unread is a property of the reader rather than the thread. Two members looking at the same
-thread can disagree about whether it is unread, so it is computed per caller from when each
-last opened it.
+`MessageThread.IsUnreadFor` compares the latest message from the other party with the reader's `ThreadReadMark`. A new empty thread has no unread message. The current handler loads complete message collections before projection. The target selects only the latest message and relevant read mark, and pages thread summaries as described in [collections](../../platform/serve-collections-under-load/README.md). A planned `ThreadSummaryComponent` in `domain` accepts destinations from the page. Empty and failure states remain distinct and provide retry where appropriate.
 
-The query filters on the caller being a party. The congregation filter applies underneath,
-from `platform/scope-queries-to-a-congregation`, so a thread in another congregation is
-already invisible before this predicate is considered.
+**Source anchors.** [GetMyThreadsQueryHandler.cs](../../../../backend/src/Barnabas.Application/Messaging/GetMyThreads/GetMyThreadsQueryHandler.cs), [thread.service.contract.ts](../../../../frontend/projects/api/src/lib/threads/thread.service.contract.ts).
+
+**Acceptance verification.** [L2-064](../../../specs/L2.md#l2-064-create-a-message-thread-when-a-request-is-accepted): API AC 1, 2, 3. [L2-065](../../../specs/L2.md#l2-065-list-a-members-message-threads): API AC 1, 2; E2E AC 3. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-064` | `L1-010` | &mdash; | A thread shall exist only as the consequence of an accepted request, and shall always carry the listing it concerns. |
-| `L2-065` | `L1-010` | 1 | A member shall be able to see all their threads, each showing the other member, the listing, the latest message, and whether it is unread. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-064` | `L1-010` | A thread shall exist only as the consequence of an accepted request, and shall always carry the listing it concerns. |
+| `L2-065` | `L1-010` | A member shall be able to see all their threads, each showing the other member, the listing, the latest message, and whether it is unread. |
 
 ## Diagrams
 
-### Components
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-Creation and reading sit in different features. `AcceptRequestCommandHandler` is shown here
-because it is the only thing that brings a thread into existence.
+![C4 context view for find a thread](diagrams/c4-context.png)
 
-![C4 component view for finding a thread](diagrams/c4-component.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Class structure
+![C4 container view for find a thread](diagrams/c4-container.png)
 
-A thread references the listing it concerns and both members. `IsParty` is what the read
-path uses to decide visibility.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![Class diagram for finding a thread](diagrams/class-structure.png)
+![C4 component view for find a thread](diagrams/c4-component.png)
 
-### Behaviour — a thread coming into existence
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-The thread and the acceptance commit together. `L2-064` makes the thread a consequence of
-accepting rather than a second act the owner has to remember.
+![Class structure for find a thread](diagrams/class-structure.png)
 
-![Sequence diagram for a thread opening](diagrams/sequence-thread-opened.png)
+An accepted request creates its thread within the same transaction. No separate create-thread endpoint exists.
 
-### Behaviour — listing the threads a member is party to
+![Sequence for thread opened](diagrams/sequence-thread-opened.png)
 
-The handler filters on party membership; the congregation filter has already applied
-underneath. Each row can name its listing because every thread has one.
+The query restricts the thread list to parties before projecting the latest message and reader-specific unread flag.
 
-![Sequence diagram for listing threads](diagrams/sequence-list-threads.png)
+![Sequence for list threads](diagrams/sequence-list-threads.png)

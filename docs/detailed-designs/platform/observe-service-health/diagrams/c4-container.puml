@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Observe service health
+Person(operator, "Operator", "Uses an HTTP probe client")
+System_Boundary(system, "Barnabas") {
+  Container(api, "Barnabas API", "ASP.NET Core", "Readiness endpoint and request instrumentation")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Probed dependency; no contents in health response")
+}
+System_Ext(collector, "Telemetry collector (planned)", "Protected metrics and redacted logs")
+Rel(operator, api, "GET /health", "HTTPS")
+Rel(api, db, "Runs bounded readiness query")
+Rel(collector, api, "Scrapes metrics through configured operational authentication")
+Rel(api, collector, "Exports bounded, redacted telemetry")
+@enduml

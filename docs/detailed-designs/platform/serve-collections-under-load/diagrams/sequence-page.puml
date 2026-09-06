@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour - Serve collections under load: page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "BoardComponent / collection pages" as page
+  participant "IListingService / planned collection contracts" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "BoardController / collection controllers" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetBoardQueryHandler / planned collection query handlers" as handler
+  participant "BoardCursor / bounded collection DTOs" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open board then load more
+page -> client : board(kind, cursor)
+client -> api : GET /board?limit=500&cursor=...
+api -> handler : Clamp limit to 100; validate cursor [L2-105]
+handler -> db : Scoped Active query; posted-time/id cursor; take limit + 1
+db --> handler : Ordered bounded rows
+handler --> api : Page and NextCursor
+api --> client : 200
+client --> page : Append once; retain next cursor
+page --> actor : Following listings without repeated identifiers
+@enduml

@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour - Receive notifications: message notification
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "Request/message pages / planned NotificationsComponent" as page
+  participant "IRequestService / IThreadService / planned INotificationService" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "RequestsController / ThreadsController" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Source command handlers / planned NotificationWriter" as handler
+  participant "Notification / NotificationPreference" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Send message
+page -> client : send(threadId, body)
+client -> api : POST /threads/{id}/messages
+api -> handler : SendMessageCommand
+handler -> entity : Append; determine OtherParty(sender)
+handler -> db : Read other party preference
+db --> handler : Enabled or disabled
+alt Enabled
+  handler -> entity : Stage notification for other party only [L2-072]
+else Disabled
+  handler -> handler : No notification staged
+end
+handler -> db : Commit message and any notification
+db --> handler : Commit
+handler --> api : MessageDto
+api --> client : 201
+client --> page : Display sent message
+@enduml

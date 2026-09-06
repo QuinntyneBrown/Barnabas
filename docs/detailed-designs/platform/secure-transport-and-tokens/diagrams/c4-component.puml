@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Component - Secure transport and tokens
+Container(web, "SessionStore and session pages", "Angular", "Memory-only access token; ISessionService contract")
+Container_Boundary(api, "Barnabas API") {
+  Component(host, "HTTPS and trusted proxy pipeline (planned)", "API hosting", "Redirects HTTP and supplies HSTS")
+  Component(controller, "SessionsController", "API", "Binds requests and returns token/cookie result")
+  Component(handler, "RefreshSessionCommandHandler", "Application", "Validates session and rotates through contracts")
+  Component(issuer, "JwtIssuer (IAccessTokenIssuer)", "Infrastructure", "Signs claims using validated JwtOptions")
+  Component(store, "AuthenticationStore (IAuthenticationStore)", "Infrastructure", "Conditional SQL token operations")
+}
+ContainerDb(db, "Barnabas database", "SQL Server", "Sessions and token hashes")
+Rel(web, host, "HTTPS request through ISessionService")
+Rel(host, controller, "Forwards to protected hosting pipeline")
+Rel(controller, handler, "Dispatches through MediatR 12.5.0")
+Rel(handler, issuer, "Calls IAccessTokenIssuer")
+Rel(handler, store, "Calls IAuthenticationStore")
+Rel(store, db, "Performs atomic target rotation")
+@enduml

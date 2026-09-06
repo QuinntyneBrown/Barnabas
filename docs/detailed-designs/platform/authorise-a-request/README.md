@@ -2,103 +2,60 @@
 
 ## Overview
 
-Every action in Barnabas is taken by an identified member, and most act on something a
-particular member owns. Authorisation answers two questions in order: whether the caller is
-who they claim, and whether this caller may do this to this resource.
+Barnabas is a private board where church congregation members offer goods or time through listings.
 
-**ownership** — the relation between a member and a resource that member created, which
-determines who may modify or decide it
+**Authentication** — verification of an issued token and its live session — identifies the member making an HTTP request. **Authorisation** — decision that the identified member has the role or ownership needed for an action — controls access to the requested capability.
 
-The questions are answered in different places, deliberately. Authentication is a property
-of the request and belongs at the edge, where an unauthenticated call is rejected before any
-application code runs. Ownership is a property of the domain and belongs in the pipeline,
-where the resource can be loaded and compared against the caller.
-
-Authentication itself has two halves. A signature proves the token was issued by this system
-and has not been altered; it cannot prove the session behind it still stands. Revocation is
-state, so it is read as state — once per authenticated request, by key.
-
-Placing ownership in a pipeline behaviour rather than in each handler means a handler
-cannot forget it, and a handler that is reached has already been authorised. Failure is
-reported before any state is read or written.
+Protected endpoints reject invalid credentials with 401. A same-congregation member lacking ownership or a required role receives 403. Foreign resource identifiers remain indistinguishable from absent identifiers.
 
 ## Description
 
-Authorisation runs in two stages either side of the controller.
+**Implementation boundary: Existing JWT and ownership; planned current-status policy and administrative surfaces.**
 
-- **`JwtBearerMiddleware`** — rejects an absent, malformed, expired, or wrongly signed
-  token with 401 before routing. Only the public landing, invite redemption, and sign-in
-  endpoints are exempt.
-- **`SessionValidator`** — runs on the validated principal and rejects a token whose
-  session has been revoked. It reads the session named by the token's `sid` claim, by
-  primary key, once per authenticated request. That read is the price of `L2-019`, which
-  requires a signed-out member's tokens to stop being accepted and admits no window; a
-  signature alone cannot express revocation. A single keyed read sits comfortably inside
-  the 300 ms `L2-103` allows at the scale of a congregation.
-- **`ICongregationContext`** — carries the caller's member identifier and role alongside
-  the congregation, all read from signed claims.
-- **`IRequireRole`** — marker interface a request implements to declare the role it demands.
-  A moderation command declares `Moderator`; a provisioning command declares
-  `Administrator`.
-- **`IRequireOwnership`** — marker interface a request implements to declare the resource
-  whose owner may issue it, exposing the identifier to check.
-- **`AuthorisationBehaviour<TRequest, TResponse>`** — MediatR pipeline behaviour. It reads
-  whichever markers the request implements, checks role against the context, loads the
-  resource and compares its owner, then either invokes the handler or raises.
-- **`ForbiddenException`** — raised on failure and mapped to 403 by the API's exception
-  handler, carrying no detail about the resource.
+`Program.cs` configures JWT bearer authentication, issuer, audience, signature, lifetime, zero clock skew, and an authenticated fallback policy. `SessionValidator.ValidateAsync` checks a valid `sid` and a live `Session` after cryptographic validation. It currently does not compare all token claims with session/member records. The target validates `sub` and congregation against the session and loads current member status and role, so approval and role changes take effect without waiting for JWT expiry.
 
-The behaviour runs after validation and before the handler, so a request that is both
-invalid and unauthorised is reported as invalid. That ordering leaks nothing: a caller who
-cannot act on a resource learns only that their input was malformed.
+`AuthorisationBehaviour<TRequest,TResponse>` runs after `ValidationBehaviour`. Commands declare `IRequireRole` or `IRequireOwnership<TResource>`. `IOwnerLookup<TResource>` implementations load through congregation filters. A wrong owner raises `ForbiddenException`; an absent resource reaches the handler's 404 path. Requests use `RequestOwnershipLookup` to authorise the listing owner. Thread party checks belong to `MessageThread`, which has two authorised members rather than one owner. Controllers bind, dispatch, and return.
 
-Role and ownership are separate markers rather than one policy, because they are
-independent. A moderator removing a flagged listing demands a role and no ownership; a
-member accepting a request demands ownership and no particular role.
+The target introduces an approved-member policy for board and business endpoints. Pending and declined members retain only their permitted status/account capabilities and receive 403 from the board. Public exceptions currently include sign-in, refresh-by-cookie, and `/health`, with development endpoints removed outside Development. Joining adds public invite redemption and a restricted signed joining capability for profile submission. `L2-093` and `L2-116` disagree about anonymous health; the explicit conflict is recorded in [open decisions](../../open-decisions.md). No undocumented public business route is introduced.
+
+Role authority remains congregation-scoped even when the token names Moderator. Planned administrative endpoints require Administrator; moderator removal has a separate role-based command and does not bypass ownership for ordinary edits. Forged role or congregation claims fail signature validation before policy evaluation. Source tests demonstrate existing authentication and ownership paths; unimplemented administrative routes remain planned.
+
+**Source anchors.** [Program.cs](../../../../backend/src/Barnabas.Api/Program.cs), [SessionValidator.cs](../../../../backend/src/Barnabas.Api/Security/SessionValidator.cs), [AuthorisationBehaviour.cs](../../../../backend/src/Barnabas.Application/Common/Behaviours/AuthorisationBehaviour.cs).
+
+**Acceptance verification.** [L2-093](../../../specs/L2.md#l2-093-authenticate-every-non-public-endpoint): API AC 1, 2, 3. [L2-094](../../../specs/L2.md#l2-094-authorise-by-ownership): API AC 1, 2. [L2-095](../../../specs/L2.md#l2-095-authorise-by-role): API AC 1, 2, 3. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-093` | `L1-015` | 1 | Every endpoint other than the public landing, invite redemption, and sign-in shall require a valid token. |
-| `L2-094` | `L1-015` | 1 | A resource shall be modifiable only by the member who owns it. |
-| `L2-095` | `L1-015` | &mdash; | An endpoint reserved to a role shall reject a caller who does not hold that role. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-093` | `L1-015` | Every endpoint other than the public landing, invite redemption, and sign-in shall require a valid token. |
+| `L2-094` | `L1-015` | A resource shall be modifiable only by the member who owns it. |
+| `L2-095` | `L1-015` | An endpoint reserved to a role shall reject a caller who does not hold that role. |
 
 ## Diagrams
 
-### Components
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-Authentication sits at the edge in two stages, signature then session; ownership sits in the
-pipeline. A handler is reached only by a caller who has passed all three.
+![C4 context view for authorise a request](diagrams/c4-context.png)
 
-![C4 component view for authorisation](diagrams/c4-component.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Class structure
+![C4 container view for authorise a request](diagrams/c4-container.png)
 
-A request declares what it demands by implementing `IRequireRole`, `IRequireOwnership`, or
-neither. `AuthorisationBehaviour` reads those declarations rather than knowing about
-individual commands. `SessionValidator` sits earlier, turning the token's `sid` claim into a
-liveness check.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![Class diagram for authorisation](diagrams/class-structure.png)
+![C4 component view for authorise a request](diagrams/c4-component.png)
 
-### Behaviour — a request with no valid token, or none on a live session
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-The first three failures — absent, tampered, and wrongly signed — return 401 from the
-middleware, satisfying `L2-093` before any application code runs. The fourth is the one a
-signature cannot catch: a token that is genuine but belongs to a session the member has
-ended. `L2-019` admits no window, so that is read rather than waited out.
+![Class structure for authorise a request](diagrams/class-structure.png)
 
-![Sequence diagram for an unauthenticated request](diagrams/sequence-unauthenticated.png)
+JWT verification and session lookup precede protected feature dispatch.
 
-### Behaviour — an authenticated caller acting on another member's resource
+![Sequence for unauthenticated](diagrams/sequence-unauthenticated.png)
 
-The behaviour loads the owning resource and compares it against the caller. On failure the
-handler is never invoked, so `L2-094` holds without each handler restating it.
+Ownership is checked on a scoped resource. A moderator still needs the explicitly granted moderation capability.
 
-![Sequence diagram for an ownership failure](diagrams/sequence-not-owner.png)
+![Sequence for not owner](diagrams/sequence-not-owner.png)

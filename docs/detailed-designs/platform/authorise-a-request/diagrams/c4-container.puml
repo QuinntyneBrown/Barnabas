@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Authorise a request
+Person(actor, "Member", "Authorise a request")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "ListingDetailComponent / IncomingRequestsComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Authorise a request")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Session / Listing / RequestOwnership")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IListingService / IRequestService", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

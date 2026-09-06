@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Review pending members
+Person(actor, "Moderator", "Review pending members")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "PendingMembersComponent / PendingMemberComponent (planned)")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Review pending members")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Member / MemberStatus")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IModerationService / MODERATION_SERVICE (planned)", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

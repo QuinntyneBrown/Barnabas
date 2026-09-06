@@ -1,43 +1,60 @@
 @startuml
-!pragma layout smetana
-title Class structure — Decline a request
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
-class DeclineRequestCommand {
-  +Guid RequestId
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
 }
-class DeclineRequestCommandHandler {
-  +Handle(DeclineRequestCommand) : DeclineRequestResult
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
 }
-class DeclineRequestResult {
-  +Guid RequestId
-  +RequestStatus Status
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
 }
+title Class structure - Decline a request
 class ListingRequest {
   +Guid Id
   +Guid ListingId
   +Guid RequesterId
+  +string Message
   +RequestStatus Status
-  +Accept() : void
-  +Decline() : void
+  +byte[] RowVersion
+  +Accept(asOf: DateTimeOffset): void
+  +Decline(asOf: DateTimeOffset): void
+}
+class LoanRequestTerms {
+  +DateOnly PickupOn
+  +DateOnly ReturnBy
 }
 enum RequestStatus {
   Pending
   Accepted
   Declined
 }
-class RequestAlreadyDecidedException {
+class MessageThread {
   +Guid RequestId
-  +RequestStatus CurrentStatus
+  +Guid ListingId
+  +Guid OwnerId
+  +Guid RequesterId
+  +IsParty(memberId: Guid): bool
 }
-
-DeclineRequestCommandHandler ..> DeclineRequestCommand : handles
-DeclineRequestCommandHandler --> DeclineRequestResult : returns
-DeclineRequestCommandHandler --> ListingRequest : loads and mutates
 ListingRequest --> RequestStatus : holds
-ListingRequest ..> RequestAlreadyDecidedException : raises on a second decision
+ListingRequest "1" *-- "0..1" LoanRequestTerms : owns
+ListingRequest "1" <-- "0..1" MessageThread : arises from acceptance
+
+class DeclineRequestCommand {
+  +Guid RequestId
+}
+class DeclineRequestCommandHandler {
+  +Handle(command: DeclineRequestCommand): Task<DeclineRequestResult>
+}
+DeclineRequestCommandHandler ..> DeclineRequestCommand : handles
+DeclineRequestCommandHandler --> ListingRequest : decides
 @enduml

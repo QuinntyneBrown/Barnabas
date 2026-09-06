@@ -1,0 +1,46 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Serve collections under load
+class BoardCursor {
+  +DateTimeOffset PostedAt
+  +Guid ListingId
+  +Encode(): string
+  +Decode(cursor: string): BoardCursor
+}
+class GetBoardQuery {
+  +int Limit
+  +string? Cursor
+}
+class BoardPage {
+  +IReadOnlyList<BoardListingDto> Listings
+  +string? NextCursor
+}
+class GetBoardQueryHandler {
+  +Handle(query: GetBoardQuery): Task<BoardPage>
+}
+class BoardStore {
+  +load(kind: ListingKind): Promise<void>
+}
+GetBoardQueryHandler ..> GetBoardQuery : handles
+GetBoardQueryHandler ..> BoardCursor : continuation predicate
+GetBoardQueryHandler ..> BoardPage : returns
+BoardStore ..> BoardPage : target retains NextCursor
+@enduml

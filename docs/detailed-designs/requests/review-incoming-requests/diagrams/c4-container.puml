@@ -1,16 +1,14 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Container>
 LAYOUT_WITH_LEGEND()
-title Containers — Review incoming requests
-
-Person(owner, "Listing owner", "Reads requests on their listings")
+title Container - Review incoming requests
+Person(actor, "Member", "Review incoming requests")
 System_Boundary(barnabas, "Barnabas") {
-  Container(spa, "Barnabas web", "Angular", "Member-facing user interface")
-  Container(api, "Barnabas API", "ASP.NET Core", "Application and domain logic")
-  ContainerDb(db, "Barnabas database", "SQL Server", "Listings, requests, and members")
+  Container(web, "barnabas web application", "Angular", "IncomingRequestsComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Review incoming requests")
+  ContainerDb(db, "Barnabas database", "SQL Server", "ListingRequest / Listing / Member")
 }
-Rel(owner, spa, "Opens the inbox in", "HTTPS")
-Rel(spa, api, "Calls", "JSON/HTTPS")
-Rel(api, db, "Reads", "EF Core")
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IRequestService / REQUEST_SERVICE", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
 @enduml

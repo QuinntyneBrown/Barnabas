@@ -1,0 +1,42 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Secure transport and tokens
+class JwtOptions {
+  +TimeSpan AccessTokenLifetime
+  +string Issuer
+  +string Audience
+}
+class JwtIssuer {
+  +Issue(member: Member, session: Session): AccessToken
+}
+class RefreshToken {
+  +Guid SessionId
+  +Guid? ReplacedByTokenId
+  +IsActive(asOf: DateTimeOffset): bool
+}
+class Session {
+  +Guid Id
+  +IsLive(asOf: DateTimeOffset): bool
+}
+JwtIssuer --> JwtOptions : reads validated configuration
+JwtIssuer ..> Session : signs sid
+RefreshToken "*" --> "1" Session : binds to
+@enduml

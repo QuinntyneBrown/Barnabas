@@ -1,56 +1,45 @@
 @startuml
-!pragma layout smetana
-title Class structure — End a session
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - End a session
 class Session {
   +Guid Id
-  +Guid MemberId
-  +Guid CongregationId
-  +DateTimeOffset OpenedOn
-  +DateTimeOffset? RevokedOn
-  +IsLive(DateTimeOffset) : bool
-  +Revoke(DateTimeOffset) : void
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? RevokedAt
+  +IsLive(asOf: DateTimeOffset): bool
+  +Revoke(asOf: DateTimeOffset): void
 }
 class RefreshToken {
-  +Guid Id
   +Guid SessionId
   +string TokenHash
-  +DateTimeOffset ExpiresOn
-  +DateTimeOffset? RevokedOn
-  +Guid? ReplacedById
-  +IsActive(DateTimeOffset) : bool
-  +Rotate(DateTimeOffset) : RefreshToken
-  +Revoke(DateTimeOffset) : void
+  +Guid? ReplacedByTokenId
+  +IsActive(asOf: DateTimeOffset): bool
+  +Rotate(id: Guid, asOf: DateTimeOffset): void
 }
-class RefreshSessionCommand {
-  +string RefreshToken
+class SignOutCommandHandler {
+  +Handle(command: SignOutCommand): Task
 }
-class SignOutCommand {
+class RefreshSessionCommandHandler {
+  +Handle(command: RefreshSessionCommand): Task<SessionResult>
 }
-class SessionResult {
-  +Guid SessionId
-  +string AccessToken
-  +string RefreshToken
-  +DateTimeOffset ExpiresOn
-}
-class JwtIssuer {
-  +Issue(Member, Session) : SessionResult
-}
-class Member {
-  +Guid Id
-  +Guid CongregationId
-}
-
-Session --> Member : belongs to
-Session *-- RefreshToken : is held by exactly one live
-RefreshSessionCommand ..> RefreshToken : rotates atomically
-SignOutCommand ..> Session : revokes
-RefreshToken --> RefreshToken : replaced by
-JwtIssuer --> SessionResult : returns
-JwtIssuer ..> Session : stamps the sid claim from
+Session "1" <-- "*" RefreshToken : binds to
+SignOutCommandHandler ..> Session : revokes through store
+RefreshSessionCommandHandler ..> RefreshToken : rotates through store
 @enduml

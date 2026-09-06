@@ -1,0 +1,49 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Edit own profile
+class Member {
+  +Guid Id
+  +Guid CongregationId
+  +string DisplayName
+  +string Neighbourhood
+  +MemberStatus Status
+}
+class MemberProfileDto <<planned>> {
+  +string DisplayName
+  +string Neighbourhood
+  +string Description
+  +IReadOnlyList<string> HelpTags
+}
+interface IMemberService <<planned>> {
+  +own(): Promise<MemberProfileDto>
+  +get(memberId: string): Promise<MemberProfileDto>
+}
+IMemberService ..> MemberProfileDto : returns
+MemberProfileDto ..> Member : projects; description and tags are planned fields
+
+class EditOwnProfileCommand <<planned>> {
+  +string DisplayName
+  +string Neighbourhood
+  +string Description
+  +IReadOnlyList<string> HelpTags
+}
+EditOwnProfileCommand ..> Member : updates authenticated member
+@enduml

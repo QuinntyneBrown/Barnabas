@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour - Limit abuse: failed invites
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "SignInComponent / JoinInviteComponent / feature pages" as page
+  participant "Typed service contracts / error interceptor" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "Request admission middleware (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "IRequestAdmissionService (planned)" as handler
+  participant "RateLimitBucket / AdmissionDecision (planned)" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : POST /invites/redeem
+api -> handler : Check source failed-attempt bucket
+handler -> db : Read shared admission state
+db --> handler : Current count
+alt Failed threshold exceeded
+  handler --> api : Reject
+  api --> client : 429 with Retry-After [L2-099 AC2]
+else Allowed attempt
+  handler -> entity : Redeem code
+  entity --> handler : Unknown or unusable code
+  handler -> db : Atomically record failed attempt
+  db --> handler : Updated bucket
+  handler --> api : Original 404 or 410
+  api --> client : Non-disclosing error
+end
+@enduml

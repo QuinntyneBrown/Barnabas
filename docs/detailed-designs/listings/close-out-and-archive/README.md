@@ -2,95 +2,63 @@
 
 ## Overview
 
-A listing does not stay on the board forever. It ends, and how it ended is worth recording.
+Barnabas is a private board where church congregation members offer goods or time through listings.
 
-**close out** — to record that a listing has served its purpose, in the wording belonging to
-its kind
+**Close out** — record the outcome of a listing in the vocabulary of its kind — removes that listing from the board. Sell becomes Sold, Give becomes Given away, Lend becomes Archived, and Help becomes Completed.
 
-The wording is not cosmetic. A Sell listing is *sold*; a Give listing is *given away*; a
-Lend listing comes back and is *archived*; a Help offer is *completed*. Using one neutral
-word for all four would lose the distinction the whole product rests on, and a member
-looking at last spring's listings should be able to see which things were sold and which
-were given.
-
-Archiving is the quieter alternative: a listing comes off the board without recording an
-outcome, because the member changed their mind or the thing is temporarily unavailable. It
-can be restored.
-
-Deletion is the only irreversible act in the product. It removes the listing, the requests
-made against it, and the threads those requests opened — leaving conversations about a
-listing that no longer exists would be worse than removing them. It is confirmed, and the
-confirmation says plainly that it cannot be undone.
+Archiving withdraws an active listing without recording a handoff. Restoration returns an archived listing to the board. Permanent deletion requires confirmation and cannot be undone. Lend close-out does not track a return or prove that an item was returned.
 
 ## Description
 
-Four commands over one entity, with the transitions on the entity rather than in the
-handlers.
+**Implementation boundary: Existing close-out; planned archive, restore, and deletion.**
 
-- **`MyListingsComponent`** and **`ArchivedListingsComponent`** — the two Angular screens,
-  paired by a chip row.
-- **`ConfirmCloseOutDialog`** and **`ConfirmDeleteDialog`** — native `dialog` elements, so
-  they stay closed and harmless without scripting.
-- **`CloseOutListingCommand`** and its handler — record the outcome. The command carries no
-  status: the entity derives it from the kind, so a client cannot mark a Give listing sold.
-- **`ArchiveListingCommand`**, **`RestoreListingCommand`** — move a listing off and back on
-  the board without an outcome.
-- **`DeleteListingCommand`** and its handler — remove the listing, its requests, and its
-  threads in one unit of work.
-- **`Listing.CloseOut`**, **`Archive`**, **`Restore`** — the transitions. `CloseOut` holds
-  the kind-to-status mapping: Sell to `Sold`, Give to `GivenAway`, Lend to `Archived`, Help
-  to `Completed`.
-- **`ListingNotActiveException`** — raised when a transition is applied to a listing that
-  has already had one, and mapped to 409.
+`CloseOutListingCommandHandler` and `Listing.CloseOut(asOf)` exist. `POST /listings/{listingId}/close-out` carries no caller-selected status. The domain maps the stored kind to `Sold`, `GivenAway`, `Archived`, or `Completed`. `MyListingsStore.closeOut` refreshes the active list after success. `ConfirmDialogComponent` provides the confirmation primitive, with labels supplied by the page.
 
-The kind-to-outcome mapping lives on the entity because it is a domain rule rather than a
-presentation choice. The screen labels its button from the same kind — *Mark as sold*, *Mark
-as taken*, *Mark as booked* — but the two derive from the rule independently rather than the
-server trusting the client's word for it.
+Planned `ArchiveListingCommand`, `RestoreListingCommand`, and `DeleteListingCommand` use `POST /listings/{id}/archive`, `POST /listings/{id}/restore`, and `DELETE /listings/{id}`. Each declares `IRequireOwnership<Listing>` and loads within the congregation. Archive requires Active; restore requires Archived. State conflicts return 409. A planned listing row version serialises competing edits and transitions. The archived page loads the existing inclusive query and selects archived rows; a planned explicit status filter avoids loading all historical rows.
 
-All four commands implement `IRequireOwnership`, so only the member who posted a listing can
-end it.
+The target deletion handler explicitly removes the listing, its photos, requests, threads, messages, read marks, and subject notifications in one unit of work. This retains the prior design's cascade decision without claiming it is implemented or mandated by `L2-040`. The current schema only cascades messages and read marks from a thread. `L2-064` and `L2-074` make retained conversations and notifications without subjects unsuitable. Confirmation explains the affected conversations before sending; cancellation leaves all records unchanged. Physical image deletion follows the photo-storage contract. A repeat read returns 404. Close-out and ordinary archive retain requests and conversations; acceptance never closes a listing automatically.
+
+**Source anchors.** [CloseOutListingCommandHandler.cs](../../../../backend/src/Barnabas.Application/Listings/CloseOutListing/CloseOutListingCommandHandler.cs), [Listing.cs](../../../../backend/src/Barnabas.Domain/Listings/Listing.cs), [MessageThreadConfiguration.cs](../../../../backend/src/Barnabas.Infrastructure/Persistence/Configurations/MessageThreadConfiguration.cs).
+
+**Acceptance verification.** [L2-037](../../../specs/L2.md#l2-037-close-out-a-listing-in-the-vocabulary-of-its-kind): API AC 1, 2, 3, 4; E2E AC 5. [L2-038](../../../specs/L2.md#l2-038-archive-a-listing): API AC 1; E2E AC 2. [L2-039](../../../specs/L2.md#l2-039-restore-or-repost-an-archived-listing): API AC 1; E2E AC 2. [L2-040](../../../specs/L2.md#l2-040-permanently-delete-a-listing): API AC 1; E2E AC 2, 3. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-037` | `L1-006` | 1 | Closing out shall use the wording and resulting status belonging to the listing's kind: Sell closes as sold, Give as given away, Lend as archived, Help as completed. |
-| `L2-038` | `L1-006` | &mdash; | A member shall be able to archive an active listing without closing it out, removing it from the board while keeping it recoverable. |
-| `L2-039` | `L1-006` | &mdash; | A member shall be able to return an archived listing to the board. |
-| `L2-040` | `L1-006` | &mdash; | A member shall be able to delete a listing permanently. Deletion shall require confirmation and shall be irreversible. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-037` | `L1-006` | Closing out shall use the wording and resulting status belonging to the listing's kind: Sell closes as sold, Give as given away, Lend as archived, Help as completed. |
+| `L2-038` | `L1-006` | A member shall be able to archive an active listing without closing it out, removing it from the board while keeping it recoverable. |
+| `L2-039` | `L1-006` | A member shall be able to return an archived listing to the board. |
+| `L2-040` | `L1-006` | A member shall be able to delete a listing permanently. Deletion shall require confirmation and shall be irreversible. |
 
 ## Diagrams
 
-### Components
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-Four handlers over one entity. Three ask the entity to transition; the fourth removes it and
-what depends on it.
+![C4 context view for close out and archive](diagrams/c4-context.png)
 
-![C4 component view for closing out](diagrams/c4-component.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Class structure
+![C4 container view for close out and archive](diagrams/c4-container.png)
 
-`Listing.CloseOut` takes no status argument. It reads the kind and chooses the outcome
-itself, so the mapping cannot be circumvented by a client.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![Class diagram for closing out](diagrams/class-structure.png)
+![C4 component view for close out and archive](diagrams/c4-component.png)
 
-### Behaviour — closing out in the vocabulary of the kind
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-The screen labels the action from the kind and the entity derives the resulting status from
-the same kind. `L2-037` requires the four kinds end in four different words.
+![Class structure for close out and archive](diagrams/class-structure.png)
 
-![Sequence diagram for closing out a listing](diagrams/sequence-close-out.png)
+The entity derives the outcome from the stored kind. The owner cannot supply a status belonging to another kind.
 
-### Behaviour — deleting permanently
+![Sequence for close out](diagrams/sequence-close-out.png)
 
-Deletion takes the requests and threads with it, in one unit of work. Leaving a thread about
-a listing that no longer exists would be a worse outcome than removing the conversation.
+Archive and restore are planned owner transitions. A concurrent or invalid transition returns 409.
 
-![Sequence diagram for deleting a listing](diagrams/sequence-delete.png)
+![Sequence for archive and restore](diagrams/sequence-archive-and-restore.png)
+
+The planned deletion explicitly removes dependent conversations and notifications. Cancellation never reaches the API.
+
+![Sequence for delete](diagrams/sequence-delete.png)

@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour - Serve collections under load: load isolation
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "BoardComponent / collection pages" as page
+  participant "IListingService / planned collection contracts" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "BoardController / collection controllers" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetBoardQueryHandler / planned collection query handlers" as handler
+  participant "BoardCursor / bounded collection DTOs" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Browse under 50-congregation workload [L2-107]
+page -> client : Request bounded page
+client -> api : GET /board
+api -> handler : Acquire congregation allowance and global capacity (planned)
+alt Congregation allowance exhausted
+  handler --> api : Rate limited
+  api --> client : 429 with Retry-After
+else Admitted
+  handler -> db : Bounded scoped projection
+  db --> handler : Result
+  handler --> api : Page; release capacity
+  api --> client : 200; latency measurement [L2-103]
+  client --> page : Render reserved layout; load route code within budget [L2-104]
+end
+note over api, db : Load profile and isolation tolerance remain TO SUPPLY
+@enduml

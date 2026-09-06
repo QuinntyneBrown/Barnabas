@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Request to borrow a Lend listing
+title UML sequence behaviour - Make a request: borrow
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,47 +14,56 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Requester" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "RequestLendComponent" as page
-  participant "RequestsApi" as client
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "RequestLendComponent / planned per-kind request pages" as page
+  participant "IRequestService / REQUEST_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "RequestsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "RequestsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "MakeLoanRequestCommandHandler" as handler
-  participant "RequestEligibilityPolicy" as policy
-  participant "ListingRequest" as entity
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "MakeLoanRequestCommandHandler / planned kind handlers" as handler
+  participant "ListingRequest / RequestEligibilityPolicy" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Choose Request to borrow
-page -> page : Collect message, pickup date, return date, acknowledgement per L2-054
-actor -> page : Send request
-page -> client : Build typed request
-client -> controller : POST /listings/{listingId}/requests/loan
-controller -> controller : Authenticate and apply endpoint policy
-controller -> handler : Send MakeLoanRequestCommand
-handler -> db : Load listing within the caller's congregation
-db --> handler : Listing
-handler -> policy : Apply L2-062 eligibility checks
-policy --> handler : Eligible
-alt request is valid
-  handler -> entity : Create pending request with loan terms
-  entity --> handler : Pending request
-  handler -> db : Save changes in one unit of work
-  db --> handler : Commit result
-  handler --> controller : Typed result
-  controller --> client : 201 Created
-  client --> page : Feature result
-  page --> actor : Present L2-058 confirmation naming the owner
-else return date absent or acknowledgement withheld
-  handler --> controller : Validation failure
-  controller --> client : 400 ProblemDetails naming the field
-  client --> page : Field errors
-  page --> actor : Mark the invalid field and hold the screen
+actor -> page : Submit action
+page -> client : Send typed values
+client -> api : POST /listings/{id}/requests/loan
+api -> api : Validate JWT and live session
+api -> handler : Validate and authorise; send MakeLoanRequestCommand
+handler -> db : Load resource within congregation
+db --> handler : Resource or absent
+alt Resource absent or outside congregation
+  handler --> api : NotFoundException
+  api --> client : 404
+else Resource available
+  handler -> entity : MakeLoanRequest with PickupOn and ReturnBy [L2-054, L2-058]
+  alt Invalid current state
+    entity --> handler : Transition refused
+    handler --> api : Conflict
+    api --> client : 409; no committed change
+  else Transition allowed
+    entity --> handler : In-memory transition accepted
+    handler -> db : Insert Pending request; enforce filtered unique index; target active-state guard
+    alt Rowversion or expected uniqueness conflict
+      db --> handler : Reject write; roll back unit of work
+      handler --> api : Conflict
+      api --> client : 409; reload current state
+      client --> page : Explain conflict; preserve unsaved values
+    else Storage failure
+      db --> handler : Roll back
+      handler --> api : Safe server failure
+      api --> client : Failure; no committed change
+    else Commit succeeds
+      db --> handler : Commit
+      handler --> api : MadeRequestResult
+      api --> client : Success result
+      client --> page : Update signals
+      page --> actor : Confirm result
+    end
+  end
 end
 @enduml

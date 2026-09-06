@@ -1,56 +1,40 @@
 @startuml
-!pragma layout smetana
-title Class structure — Track my requests
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 12
 skinparam defaultFontName Arial
-hide empty members
-
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Track my requests
 class GetMyRequestsQuery {
   +RequestStatus? Status
 }
 class GetMyRequestsQueryHandler {
-  +Handle(GetMyRequestsQuery) : MyRequestDto[]
+  +Handle(query: GetMyRequestsQuery): Task<IReadOnlyList<MyRequestDto>>
 }
 class MyRequestDto {
   +Guid RequestId
   +Guid ListingId
-  +string ListingTitle
-  +ListingKind Kind
-  +string OwnerDisplayName
-  +string Neighbourhood
   +string Terms
   +RequestStatus Status
-  +DateTimeOffset CreatedOn
-  +Guid? ThreadId
 }
-class ListingRequest {
-  +Guid Id
-  +Guid ListingId
-  +Guid RequesterId
-  +RequestStatus Status
+class RequestStore {
+  +loadOutgoing(): Promise<void>
 }
-enum RequestStatus {
-  Pending
-  Accepted
-  Declined
-}
-class Listing {
-  +Guid Id
-  +Guid OwnerId
-  +ListingKind Kind
-  +string Title
-}
-class MessageThread {
-  +Guid Id
-  +Guid RequestId
-}
-
 GetMyRequestsQueryHandler ..> GetMyRequestsQuery : handles
-GetMyRequestsQueryHandler --> MyRequestDto : returns
-MyRequestDto ..> ListingRequest : projects
-MyRequestDto ..> Listing : projects
-MyRequestDto ..> MessageThread : carries the identifier of
-ListingRequest --> RequestStatus : holds
+GetMyRequestsQueryHandler ..> MyRequestDto : projects
+RequestStore ..> MyRequestDto : receives through IRequestService
 @enduml

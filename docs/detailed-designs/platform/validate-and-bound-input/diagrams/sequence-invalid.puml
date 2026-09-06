@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — A command failing its bounds
+title UML sequence behaviour - Validate and bound input: invalid
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,34 +15,27 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Member" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "PostListingComponent" as page
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "PostLendComponent / fieldErrors" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "ListingsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "RequestBodyLimitMiddleware / ForbiddenFieldInspector" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "ValidationBehaviour" as behaviour
-  participant "PostLendListingCommandValidator" as validator
-  participant "PostLendListingCommandHandler" as handler
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "ValidationBehaviour / PostLendListingCommandValidator" as handler
+  participant "PostLendListingCommand / Listing" as entity
 end box
-
-actor -> page : Submit a listing with a 200-character title
-page -> controller : POST /listings
-controller -> behaviour : Send PostLendListingCommand
-behaviour -> validator : Validate the command
-validator -> validator : Title exceeds 120 characters, per L2-031
-validator --> behaviour : One failure on Title
-alt the command is valid
-  behaviour -> handler : Invoke the handler
-  handler --> behaviour : Result
-  behaviour --> controller : Result
-  controller --> page : 201 Created
-else the command is invalid
-  behaviour --> controller : ValidationProblemDetails naming Title
-  note over behaviour : L2-096 requires the field be named and\nthe submitted value not echoed back.
-  controller --> page : 400 Bad Request
-  page -> page : Mark Title and move focus to it
-  page --> actor : Show the error against the field
-end
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Submit field outside bounds
+page -> client : Typed request
+client -> api : JSON body
+api -> api : Enforce body bytes and JSON types [L2-096]
+api -> handler : ValidationBehaviour runs IValidator
+handler --> api : ValidationException; field name only
+api --> client : 400 ValidationProblemDetails; no value echo
+client --> page : Mark fields and focus first invalid control
+note over db : Handler never writes
 @enduml

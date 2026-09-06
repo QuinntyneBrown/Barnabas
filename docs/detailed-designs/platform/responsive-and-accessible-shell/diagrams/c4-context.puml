@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Use the responsive and accessible shell
+Person(actor, "Member", "Use the responsive and accessible shell")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Use the responsive and accessible shell", "HTTPS")
+@enduml

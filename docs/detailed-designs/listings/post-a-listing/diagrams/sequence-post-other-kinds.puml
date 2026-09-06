@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour - Post a listing: post other kinds
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ChooseKindComponent / per-kind listing pages" as page
+  participant "IListingService / LISTING_SERVICE" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ListingsController" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "PostLendListingCommandHandler / planned kind handlers" as handler
+  participant "Listing / LoanTerms / planned AvailabilityWindow" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Choose kind [L2-026]
+alt Give
+  page -> client : postGive(common fields); no price [L2-028]
+  client -> api : POST /listings/give
+else Sell
+  page -> client : postSell(common fields, condition, CAD price) [L2-029]
+  client -> api : POST /listings/sell
+else Help
+  page -> client : postHelp(common fields, windows); no photo or price [L2-030]
+  client -> api : POST /listings/help
+end
+api -> handler : Matching command and validator (planned)
+alt Missing required term or forbidden field
+  handler --> api : Field-named 400; no persistence
+  api --> client : Validation errors
+  client --> page : Retain fields and focus first error
+else Valid
+  handler -> entity : Create matching kind; Active status
+  handler -> db : Save one listing
+  db --> handler : Commit
+  handler --> api : PostedListingResult
+  api --> client : 201
+  client --> page : Confirm and offer onward routes [L2-033]
+end
+@enduml

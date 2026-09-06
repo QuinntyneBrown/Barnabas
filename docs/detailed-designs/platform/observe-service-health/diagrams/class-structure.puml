@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure - Observe service health
+class DatabaseHealthCheck <<planned>> {
+  +CheckHealthAsync(context, cancellationToken): Task<HealthCheckResult>
+}
+class CorrelationMiddleware <<planned>> {
+  +InvokeAsync(context: HttpContext): Task
+}
+class RequestMetricsMiddleware <<planned>> {
+  +InvokeAsync(context: HttpContext): Task
+}
+class ProblemDetailsExceptionHandler {
+  +TryHandleAsync(context, exception, cancellationToken): ValueTask<bool>
+}
+interface ILogger
+CorrelationMiddleware ..> ILogger : request scope
+ProblemDetailsExceptionHandler --> ILogger : safe fields only
+RequestMetricsMiddleware ..> CorrelationMiddleware : shares request context
+DatabaseHealthCheck ..> HealthCheckResult : returns safe dependency status
+@enduml

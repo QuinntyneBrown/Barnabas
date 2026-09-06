@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour - Display member text safely: render text
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "Board, profile, thread, and moderation pages" as page
+  participant "Typed feature service contracts" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "JSON response pipeline / feature controllers" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Feature queries and commands" as handler
+  participant "Member-supplied string values" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Submit script-shaped listing description
+page -> client : postLend(values)
+client -> api : JSON request
+api -> handler : Validated command; text remains data
+handler -> db : Parameterised persistence [L2-098]
+db --> handler : Stored original string
+handler --> api : Typed DTO
+api --> client : Safely encoded JSON transport [L2-097]
+client --> page : Decoded original string
+page -> page : Interpolate as text; no innerHTML
+page --> actor : Literal text; no script executes
+note over page : Frontend document host supplies CSP forbidding inline script
+@enduml

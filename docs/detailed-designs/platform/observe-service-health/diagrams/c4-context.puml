@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Observe service health
+Person(operator, "Operator", "Checks service readiness and diagnoses failures")
+System(barnabas, "Barnabas", "Private congregation board")
+System_Ext(collector, "Telemetry collector (planned)", "Configured restricted logs and metrics destination")
+Rel(operator, barnabas, "Probes health", "HTTPS")
+Rel(collector, barnabas, "Scrapes protected operational metrics", "HTTPS")
+Rel(barnabas, collector, "Exports redacted operational events")
+@enduml

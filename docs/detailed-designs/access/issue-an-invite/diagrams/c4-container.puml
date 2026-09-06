@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Issue an invite
+Person(actor, "Moderator", "Issue an invite")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "InviteCodeComponent (planned)")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Issue an invite")
+  ContainerDb(db, "Barnabas database", "SQL Server", "InviteCode")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IInvitationService / INVITATION_SERVICE (planned)", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

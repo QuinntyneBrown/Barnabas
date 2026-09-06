@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — A read reaching for another congregation's resource
+title UML sequence behaviour - Scope queries to a congregation: cross congregation
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,28 +14,27 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Member of St. Aidan's" as actor
-box "Backend — Barnabas API" #D1FADF
-  participant "ListingsController" as controller
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "BoardComponent / ListingDetailComponent" as page
+  participant "IListingService / LISTING_SERVICE" as client
 end box
-box "Backend — Application and Domain" #ECFDF3
-  participant "GetListingQueryHandler" as handler
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "BoardController / ListingsController / JWT pipeline" as api
 end box
-box "Backend — Infrastructure" #FFF4E5
-  participant "BarnabasDbContext" as db
-  database "Barnabas database" as store
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetBoardQueryHandler / scoped command handlers" as handler
+  participant "Listing / ITenantOwned" as entity
 end box
-
-actor -> controller : GET /listings/{id} for a listing owned by St. Mark's
-controller -> handler : Send GetListingQuery
-handler -> db : Find the listing by identifier
-db -> store : SELECT ... WHERE Id = @id AND CongregationId = @current
-store --> db : No rows
-db --> handler : null
-handler --> controller : Not found
-controller --> actor : 404 Not Found
-note over controller : L2-089 requires 404 rather than 403.\nA 403 would confirm the resource exists.
-actor -> controller : GET /listings/{id} for an identifier that exists nowhere
-controller --> actor : 404 Not Found
-note over actor : The two responses are indistinguishable,\nso existence cannot be probed.
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : Read or modify foreign resource
+api -> api : Validate signature and live session
+api -> handler : Dispatch with congregation A context
+handler -> db : Query id AND CongregationId = A [L2-089, L2-091]
+db --> handler : No row
+handler --> api : NotFoundException
+api --> client : 404 identical to absent identifier
+note over db : No write; moderator role grants no cross-congregation access [L2-092]
 @enduml

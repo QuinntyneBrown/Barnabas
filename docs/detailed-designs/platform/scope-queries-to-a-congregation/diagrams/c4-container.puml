@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Scope queries to a congregation
+Person(actor, "Member", "Scope queries to a congregation")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "BoardComponent / ListingDetailComponent")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Scope queries to a congregation")
+  ContainerDb(db, "Barnabas database", "SQL Server", "Listing / ITenantOwned")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through IListingService / LISTING_SERVICE", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

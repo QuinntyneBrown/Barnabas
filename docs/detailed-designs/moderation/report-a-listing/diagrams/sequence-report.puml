@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour - Report a listing: report
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ListingDetailComponent / ReportListingComponent / ReportSentComponent (planned)" as page
+  participant "IReportService / REPORT_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ReportsController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "ReportListingCommandHandler (planned)" as handler
+  participant "ListingReport / ListingModeration" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Report with reason and optional note
+page -> client : report(listingId, values)
+client -> api : POST /listings/{id}/reports
+api -> handler : Validate ReportListingCommand
+handler -> db : Load listing within congregation
+db --> handler : Listing or absent
+handler -> entity : Stage report and set Flagged [L2-080]
+handler -> db : Save under unique listing/reporter constraint
+alt Duplicate or concurrent repeat
+  db --> handler : Unique violation; roll back
+  handler --> api : 409
+else Saved
+  db --> handler : Commit
+  handler --> api : Receipt without reporter disclosure [L2-081]
+  api --> client : 201
+  client --> page : Confirmation and reporter-privacy statement
+end
+@enduml

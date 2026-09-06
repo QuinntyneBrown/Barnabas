@@ -1,29 +1,20 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Component>
 LAYOUT_WITH_LEGEND()
-title Components — Sign in with a link
-
+title Component - Sign in with a link
+Container(web, "SignInComponent / SignInLandingComponent", "Angular barnabas application", "Screen composition; signal state behind service contracts")
 Container_Boundary(api, "Barnabas API") {
-  Component(ctrl, "SessionsController", "ASP.NET Core controller", "Exposes the two anonymous sign-in endpoints")
-  Component(request, "RequestSignInLinkCommandHandler", "MediatR handler", "Issues a single-use token and queues the email")
-  Component(exchange, "ExchangeSignInTokenCommandHandler", "MediatR handler", "Consumes the token and issues a session")
-  Component(token, "SignInToken", "Domain entity", "Owns expiry and single use")
-  Component(session, "Session", "Domain entity", "The sign-in both tokens bind to")
-  Component(store, "IAuthenticationStore", "Infrastructure abstraction", "Unfiltered lookup by email address and token hash, the one sanctioned bypass of the congregation filter")
-  Component(issuer, "JwtIssuer", "Infrastructure service", "Signs an access token carrying member, congregation, role, and session")
-  Component(sender, "IEmailSender", "Infrastructure abstraction", "Delivers the link")
-  ComponentDb(db, "Barnabas database", "SQL Server", "Members, token hashes, and sessions")
+  Component(ctrl, "SessionsController", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "RequestSignInLinkCommandHandler / ExchangeSignInTokenCommandHandler", "Application", "Sign in with a link")
+  Component(entity, "SignInToken / Session", "Domain", "Feature state and rules")
+  Component(store, "AuthenticationStore (IAuthenticationStore)", "Infrastructure implementation", "SQL Server persistence")
 }
-Rel(ctrl, request, "Sends RequestSignInLinkCommand")
-Rel(ctrl, exchange, "Sends ExchangeSignInTokenCommand")
-Rel(request, store, "Finds the member by email address through")
-Rel(request, token, "Creates")
-Rel(request, sender, "Queues the link through")
-Rel(exchange, store, "Finds the token by hash through")
-Rel(exchange, token, "Consumes atomically")
-Rel(exchange, session, "Opens")
-Rel(exchange, issuer, "Issues tokens through")
-Rel(store, db, "Reads without a congregation filter", "EF Core")
-Rel(session, db, "Persisted in")
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through ISessionService / SESSION_SERVICE", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
+System_Ext(external, "Email delivery provider", "Planned adapter behind IEmailSender")
+Rel(handler, external, "Uses configured adapter")
 @enduml

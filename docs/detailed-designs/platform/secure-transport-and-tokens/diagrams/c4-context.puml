@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Secure transport and tokens
+Person(actor, "Member", "Secure transport and tokens")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Secure transport and tokens", "HTTPS")
+@enduml

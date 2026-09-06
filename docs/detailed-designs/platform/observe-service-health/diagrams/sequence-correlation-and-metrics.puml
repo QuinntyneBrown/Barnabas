@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour - Observe service health: correlation and metrics
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Operator" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "Operator probe client / affected member page" as page
+  participant "Operational HTTP client / feature service contract" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "Health endpoint / CorrelationMiddleware / RequestMetricsMiddleware (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Health checks and request instrumentation (planned)" as handler
+  participant "Health and telemetry records; no domain dependency" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+client -> api : Request with valid X-Correlation-ID
+api -> api : CorrelationMiddleware reuses identifier [L2-117]
+api -> handler : Execute feature within logging scope
+handler -> db : Scoped operation
+alt Success
+  db --> handler : Result
+  handler --> api : Feature result
+else Handled or unexpected failure
+  db --> handler : Failure
+  handler --> api : Safe error path
+  api -> api : Log correlation, route template, congregation; no submitted values [L2-119]
+end
+api -> api : Count request/error; observe latency by endpoint [L2-118]
+api --> client : Result or safe ProblemDetails; no internal identifiers
+actor -> api : Protected metric scrape
+api --> actor : Endpoint counts, rejection counts, latency distributions
+@enduml

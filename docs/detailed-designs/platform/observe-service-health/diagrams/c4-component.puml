@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Component - Observe service health
+Container_Boundary(api, "Barnabas API") {
+  Component(health, "Health endpoint (target extension)", "API hosting", "Returns safe dependency status")
+  Component(check, "DatabaseHealthCheck (planned)", "Infrastructure", "Bounded SQL probe")
+  Component(correlation, "CorrelationMiddleware (planned)", "API pipeline", "Validates and scopes correlation")
+  Component(metrics, "RequestMetricsMiddleware (planned)", "API pipeline", "Counts every result by route template")
+  Component(errors, "ProblemDetailsExceptionHandler", "API pipeline", "Safe errors; target redacted context")
+}
+ContainerDb(db, "Barnabas database", "SQL Server", "Readiness dependency")
+System_Ext(collector, "Telemetry collector (planned)", "Configured operational sink")
+Rel(health, check, "Runs via health-check service")
+Rel(check, db, "Probes with cancellation")
+Rel(correlation, errors, "Supplies request logging scope")
+Rel(metrics, collector, "Exposes bounded endpoint metrics")
+Rel(errors, collector, "Exports redacted logs")
+@enduml

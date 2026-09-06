@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour - Edit own profile: load profile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ProfileSettingsComponent / MemberProfileFormComponent (planned)" as page
+  participant "IMemberService / MEMBER_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "MembersController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "GetOwnProfileQueryHandler / EditOwnProfileCommandHandler (planned)" as handler
+  participant "Member / congregation choices" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Open screen
+page -> client : Load; set loading signal
+client -> api : GET /members/me
+api -> api : Validate JWT and live session
+api -> handler : Send GetOwnProfileQuery
+handler -> db : Current member and own congregation neighbourhood/help-tag choices [L2-020, L2-022]
+db --> handler : Scoped rows
+handler --> api : OwnProfileDto
+api --> client : 200 / typed result
+client --> page : Set result and clear loading
+alt Empty collection
+  page --> actor : Explain empty state
+else Rows available
+  page --> actor : Present rows and destinations
+end
+opt Transport or server failure
+  client --> page : Failure; retain retry action
+  page --> actor : Explain failure; retry reloads the query
+end
+@enduml

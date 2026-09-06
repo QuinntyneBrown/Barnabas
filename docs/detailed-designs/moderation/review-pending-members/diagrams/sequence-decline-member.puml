@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour - Review pending members: decline member
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Moderator" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "PendingMembersComponent / PendingMemberComponent (planned)" as page
+  participant "IModerationService / MODERATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "ModerationController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "Pending-member query and decision handlers (planned)" as handler
+  participant "Member / MemberStatus" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Choose decline applicant
+page -> page : ConfirmDialogComponent [L2-087]
+alt Cancel
+  page --> actor : Member remains pending
+else Confirm
+  page -> client : declineMember(id)
+  client -> api : POST /moderation/members/{id}/decline
+  api -> handler : Scoped Moderator policy; DeclineMemberCommand
+  handler -> entity : AwaitingApproval to Declined
+  handler -> db : Save member rowversion
+  db --> handler : Commit or stale 409
+  handler --> api : Decision
+  api --> client : 200
+  client --> page : Refresh pending queue
+end
+note over api : Applicant GET /board returns 403 while Declined [L2-087]
+@enduml

@@ -1,15 +1,8 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Context>
 LAYOUT_WITH_LEGEND()
-title System Context — Make a request
-
-Person(requester, "Requester", "Member asking for a listing")
-Person(owner, "Listing owner", "Member who posted the listing")
-System(barnabas, "Barnabas", "Congregation lending and helping board")
-System_Ext(email, "Email provider", "Delivers notifications")
-
-Rel(requester, barnabas, "Requests a listing using", "HTTPS")
-Rel(barnabas, email, "Notifies the owner via", "SMTP")
-Rel(owner, barnabas, "Reads incoming requests using", "HTTPS")
+title Context - Make a request
+Person(actor, "Member", "Make a request")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Make a request", "HTTPS")
 @enduml

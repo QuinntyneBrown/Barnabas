@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Accept a request, and accept racing decline
+title UML sequence behaviour - Accept a request: accept
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,52 +14,56 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Listing owner" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "IncomingRequestsComponent" as page
-  participant "RequestsApi" as client
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "IncomingRequestsComponent / RequestAcceptedComponent" as page
+  participant "IRequestService / REQUEST_SERVICE" as client
 end box
-box "Backend — Barnabas API" #D1FADF
-  participant "RequestsController" as controller
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "RequestsController" as api
 end box
-box "Backend — Application and Domain" #ECFDF3
+box "Backend - Barnabas.Application and Domain" #ECFDF3
   participant "AcceptRequestCommandHandler" as handler
-  participant "ListingRequest" as entity
-  participant "MessageThread" as thread
+  participant "ListingRequest / MessageThread" as entity
 end box
-box "Backend — Infrastructure" #FFF4E5
-  database "Barnabas database" as db
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
 end box
-
-actor -> page : Accept the request
-page -> client : Build typed request
-client -> controller : POST /requests/{requestId}/accept
-controller -> controller : Authenticate and apply endpoint policy
-controller -> handler : Send AcceptRequestCommand
-handler -> db : Load the request and its listing, with its row version
-db --> handler : Request and listing
-alt request is pending
-  handler -> entity : Apply the L2-060 acceptance transition
-  entity --> handler : Status set to Accepted
-  handler -> thread : Open, naming the request
-  thread --> handler : Thread
-  handler -> db : Save both in one unit of work, checking the row version
-  alt the row version still matches
-    db --> handler : Commit result
-    handler --> controller : Request and thread identifiers
-    controller --> client : 200 OK
-    client --> page : Feature result
-    page --> actor : Confirm the acceptance and offer the message thread
-  else another decision committed first
-    db --> handler : Concurrency conflict, or a duplicate on the thread's RequestId
-    handler --> controller : Conflict
-    controller --> client : 409 Conflict
-    page --> actor : Report that the request was already decided
-    note over db : L2-060 requires exactly one transition to\nsurvive an accept racing a decline, and at most\none thread for the request. The row version settles\nthe first, the unique RequestId the second.
+actor -> page : Submit action
+page -> client : Send typed values
+client -> api : POST /requests/{id}/accept
+api -> api : Validate JWT and live session
+api -> handler : Validate and authorise; send AcceptRequestCommand
+handler -> db : Load resource within congregation
+db --> handler : Resource or absent
+alt Resource absent or outside congregation
+  handler --> api : NotFoundException
+  api --> client : 404
+else Resource available
+  handler -> entity : Accept(now) [L2-060]
+  alt Invalid current state
+    entity --> handler : Transition refused
+    handler --> api : Conflict
+    api --> client : 409; no committed change
+  else Transition allowed
+    entity --> handler : In-memory transition accepted
+    handler -> db : Save decision with rowversion and unique MessageThread.RequestId
+    alt Rowversion or expected uniqueness conflict
+      db --> handler : Reject write; roll back unit of work
+      handler --> api : Conflict
+      api --> client : 409; reload current state
+      client --> page : Explain conflict; preserve unsaved values
+    else Storage failure
+      db --> handler : Roll back
+      handler --> api : Safe server failure
+      api --> client : Failure; no committed change
+    else Commit succeeds
+      db --> handler : Commit
+      handler --> api : AcceptRequestResult
+      api --> client : Success result
+      client --> page : Update signals
+      page --> actor : Confirm result
+    end
   end
-else request already decided
-  entity --> handler : RequestAlreadyDecidedException
-  controller --> client : 409 Conflict
-  page --> actor : Report the request was already decided
 end
 @enduml

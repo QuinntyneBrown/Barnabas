@@ -2,92 +2,65 @@
 
 ## Overview
 
-Once a request is accepted, the two members have something to arrange: when the ladder is
-collected, where the car will be, whether an Allen key is needed. This feature is where that
-happens.
+Barnabas is a private board where church congregation members offer goods or time through listings.
 
-**party** — one of the two members a thread is between, being the listing's owner and the
-member whose request was accepted
+A **party** — listing owner or requester named by an accepted request's message thread — can read and append messages in that thread. Messages arrange an in-person handoff within the congregation.
 
-A thread is read and appended to by its two parties and by nobody else. A member who is not
-a party receives 404 rather than 403, so a thread's existence is not disclosed to someone
-outside it — the same reasoning that governs cross-congregation access.
-
-Messages are the members' own words, and are presented as such: set in the serif face the
-interface reserves for things members wrote, rather than the face the board speaks in.
-
-Sending a message is confirmed by the message appearing in the thread. There is no toast and
-no banner, because nothing happened beyond the thing the member can see.
+Opening shows the messages in order with their senders and marks the thread read for that reader. The listing and other member's profile remain reachable. The product has no direct-message entry point independent of an accepted request.
 
 ## Description
 
-One query and one command, both gated on party membership.
+**Implementation boundary: Existing read and send; planned race-safe read positions and bounded messages.**
 
-- **`ThreadComponent`** — the Angular screen: the listing context card, the request status,
-  the messages, and the composer. Template, styles, and class in separate files; the message
-  list is held in a signal.
-- **`IThreadsApi`** and **`ThreadsApi`** — the interface the component depends on and its
-  typed client.
-- **`ThreadsController`** — exposes `GET /threads/{id}` and `POST /threads/{id}/messages`.
-- **`GetThreadQuery`** and its handler — load the thread, confirm the caller is a party,
-  move that member's read mark, and return the messages in ascending time order.
-- **`SendMessageCommand`** and its handler — confirm party membership and append.
-- **`MessageThread.IsParty`** and **`Append`** — the entity answers who may see it and owns
-  the appending, so both handlers ask rather than each deciding.
-- **`Message`** — one message, its sender, and when it was sent.
-- **`ThreadReadMark`** — per-member record of how far a member has read. Unread is a
-  property of the reader, so opening a thread marks it read for that member alone.
-- **`ThreadDetailDto`** — read model carrying the messages, the listing, the other member,
-  and the status of the request the thread came from.
+`ThreadComponent` composes the routed thread screen. `ThreadStore.openThread` and `send` consume `IThreadService` through `THREAD_SERVICE`. `ThreadsController` dispatches `GetThreadQuery` from `GET /threads/{threadId}` and `SendMessageCommand` from `POST /threads/{threadId}/messages`.
 
-Party membership is checked in the handler rather than declared through
-`IRequireOwnership`, because a thread has two rightful actors rather than one owner. The
-ownership behaviour answers "did this member create it"; the question here is "is this
-member one of the two", which the entity answers.
+`GetThreadQueryHandler` loads the scoped thread, checks `IsParty`, calls `MarkRead`, and returns `ThreadDetailDto`. `SendMessageCommandHandler` calls `MessageThread.Append`. `Message` holds sender, body, and time. `SendMessageCommandValidator` rejects empty messages and bodies longer than 4000 characters with a field-named 400. `NotAPartyException` maps to 404. A message or read mark is never created for a third member.
 
-Message bounds are enforced by the validation behaviour described in
-`platform/validate-and-bound-input`. This feature declares the bounds; it does not run them.
+`ThreadReadMark` is an owned, per-member record. Existing reads mark the wall-clock opening time after loading messages. The target marks only the latest other-party message actually returned, so a concurrent unseen message remains unread. A SQL upsert or checked update makes the read position monotonic when two tabs open together. Message order uses `SentAt` with an identifier tie-breaker; the current handler orders only by time. The collection design adds bounded message pages without marking undisplayed newer pages as read.
+
+After a successful send, `ThreadStore` appends the returned message to its signal. A failed send retains the draft and explains the failure; an ambiguous lost response prompts a reload before resending. No automatic POST retry duplicates messages. The target extracts message rows and composer regions into `domain`; pages supply listing and profile destinations. `IThreadService` has no create-thread method, and an unsupported thread-creation request returns 404. New-message notifications are added transactionally by their owning design.
+
+**Source anchors.** [GetThreadQueryHandler.cs](../../../../backend/src/Barnabas.Application/Messaging/GetThread/GetThreadQueryHandler.cs), [MessageThread.cs](../../../../backend/src/Barnabas.Domain/Messaging/MessageThread.cs), [thread.store.ts](../../../../frontend/projects/domain/src/lib/messaging/thread.store.ts).
+
+**Acceptance verification.** [L2-066](../../../specs/L2.md#l2-066-read-a-thread): API AC 1, 2, 3. [L2-067](../../../specs/L2.md#l2-067-send-a-message-in-a-thread): API AC 1, 2, 3; E2E AC 4. [L2-068](../../../specs/L2.md#l2-068-reach-the-listing-from-a-thread): E2E AC 1, 2. [L2-069](../../../specs/L2.md#l2-069-do-not-offer-free-form-messaging): API AC 1; E2E AC 2. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-066` | `L1-010` | 1 | Opening a thread shall show its messages in order, attribute each to its sender, and mark the thread read. |
-| `L2-067` | `L1-010` | 1 | A party to a thread shall be able to append a message. An empty or over-long message shall be rejected and nothing appended. |
-| `L2-068` | `L1-010` | &mdash; | A thread shall lead to the listing it concerns and to the other member's profile. |
-| `L2-069` | `L1-010` | &mdash; | There shall be no route by which one member starts a conversation with another without an accepted request on a listing. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-066` | `L1-010` | Opening a thread shall show its messages in order, attribute each to its sender, and mark the thread read. |
+| `L2-067` | `L1-010` | A party to a thread shall be able to append a message. An empty or over-long message shall be rejected and nothing appended. |
+| `L2-068` | `L1-010` | A thread shall lead to the listing it concerns and to the other member's profile. |
+| `L2-069` | `L1-010` | There shall be no route by which one member starts a conversation with another without an accepted request on a listing. |
 
 ## Diagrams
 
-### Components
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-Both the read and the write ask the entity whether the caller is a party. Neither handler
-decides for itself.
+![C4 context view for read and reply](diagrams/c4-context.png)
 
-![C4 component view for reading and replying](diagrams/c4-component.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Class structure
+![C4 container view for read and reply](diagrams/c4-container.png)
 
-`ThreadReadMark` is per member, which is what lets two parties disagree about whether a
-thread is unread.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![Class diagram for reading and replying](diagrams/class-structure.png)
+![C4 component view for read and reply](diagrams/c4-component.png)
 
-### Behaviour — opening a thread
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-The read mark moves for the opening member only, per `L2-066`. A member who is not a party
-receives 404, so the thread's existence stays private to its two parties.
+![Class structure for read and reply](diagrams/class-structure.png)
 
-![Sequence diagram for opening a thread](diagrams/sequence-read.png)
+The target read position advances only over messages returned to this reader. Other members retain independent unread state.
 
-### Behaviour — sending a message
+![Sequence for read](diagrams/sequence-read.png)
 
-Bounds are enforced before the handler, and the message appearing in the thread is the whole
-of the confirmation `L2-067` needs.
+The domain checks party membership and the validator bounds the body. Only a committed message appears as sent.
 
-![Sequence diagram for sending a message](diagrams/sequence-send.png)
+![Sequence for send](diagrams/sequence-send.png)
+
+No service contract or route creates a thread without acceptance. A direct attempted creation returns 404.
+
+![Sequence for no free form thread](diagrams/sequence-no-free-form-thread.png)

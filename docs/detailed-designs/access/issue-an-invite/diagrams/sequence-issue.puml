@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour - Issue an invite: issue
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Moderator" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "InviteCodeComponent (planned)" as page
+  participant "IInvitationService / INVITATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "InvitesController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "IssueInviteCodeCommandHandler / RevokeInviteCodeCommandHandler (planned)" as handler
+  participant "InviteCode" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Issue invite
+page -> client : issue()
+client -> api : POST /invites
+api -> handler : Moderator policy; IssueInviteCodeCommand [L2-005]
+handler -> entity : Generate unambiguous code and expiry
+handler -> db : Insert hash with verified CongregationId; unique constraint
+alt Generated code collides
+  db --> handler : Unique conflict
+  handler -> handler : Regenerate within bounded policy
+else Unique code
+  db --> handler : Commit
+  handler --> api : Code and expiry
+  api --> client : 201
+  client --> page : Display issued code
+end
+@enduml

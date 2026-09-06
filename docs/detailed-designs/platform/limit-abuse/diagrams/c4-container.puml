@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Container - Limit abuse
+Person(actor, "Member", "Limit abuse")
+System_Boundary(barnabas, "Barnabas") {
+  Container(web, "barnabas web application", "Angular", "SignInComponent / JoinInviteComponent / feature pages")
+  Container(api, "Barnabas API", "ASP.NET Core / MediatR 12.5.0", "Limit abuse")
+  ContainerDb(db, "Barnabas database", "SQL Server", "RateLimitBucket / AdmissionDecision (planned)")
+}
+Rel(actor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls through Typed service contracts / error interceptor", "JSON / HTTPS")
+Rel(api, db, "Reads and commits scoped state", "EF Core / parameterised SQL")
+@enduml

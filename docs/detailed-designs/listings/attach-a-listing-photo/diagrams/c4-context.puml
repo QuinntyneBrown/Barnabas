@@ -1,0 +1,8 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title Context - Attach a listing photo
+Person(actor, "Member", "Attach a listing photo")
+System(barnabas, "Barnabas", "Private congregation board; introductions and in-person handoffs")
+Rel(actor, barnabas, "Attach a listing photo", "HTTPS")
+@enduml

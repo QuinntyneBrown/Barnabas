@@ -2,84 +2,58 @@
 
 ## Overview
 
-A member who has posted something needs to see it, change it, and find out who has asked for
-it. This feature is that view: the listings a member owns, and the edit that changes one.
+Barnabas is a private board where church congregation members offer goods or time through listings.
 
-**open request count** — how many members are currently waiting on a decision about a
-listing
+A member manages the listings they created from an ownership view. An **open request count** — number of pending asks against one listing — identifies decisions awaiting that owner.
 
-The count is the useful part of the screen. A listing with three people waiting is a listing
-that needs attention, and the count leads to the requests themselves rather than merely
-reporting a number. An earlier iteration showed it as plain text, so a member could see that
-three people had asked and had no route to what they had said.
-
-Editing changes a listing's description of itself, not what it is. The kind is fixed at
-posting: a Lend listing carries a return date and a Sell listing carries a price, and those
-terms are not interchangeable, so changing the kind would leave a listing with terms it
-cannot hold.
-
-Only the member who posted a listing may change it. That rule is enforced before the handler
-runs, so it holds for every route into the endpoint.
+The member can reach those requests or edit listing details. Editing preserves kind, owner, and congregation. A moderator's separate removal capability does not grant general editing authority.
 
 ## Description
 
-One query, one command.
+**Implementation boundary: Existing own-list query; planned editing.**
 
-- **`MyListingsComponent`** — Angular screen listing the caller's own listings, with chips
-  moving between active and wrapped-up.
-- **`EditListingComponent`** — the edit form. It is distinct from the create form in its
-  heading and its action, which read as editing and saving rather than posting.
-- **`GetMyListingsQuery`** and its handler — read the caller's listings and count the open
-  requests against each in one query rather than one per row.
-- **`MyListingDto`** — read model carrying title, kind, status, price where the kind has
-  one, and the open request count.
-- **`EditListingCommand`** — carries the listing identifier and the editable fields. It
-  implements `IRequireOwnership`, which is what brings it under the ownership check.
-- **`EditListingCommandHandler`** — applies the change and commits. It performs no ownership
-  check of its own, because by the time it runs the check has passed.
-- **`Listing.Edit`** — applies the editable fields on the entity. Kind and owner are not
-  among its parameters, so neither can be changed by this route.
+`MyListingsComponent` reads `MyListingsStore`, which consumes `IListingService` through `LISTING_SERVICE`. `GET /listings/mine?includeClosed=true` is implemented by `GetMyListingsQueryHandler`. It scopes by owner and congregation, projects `MyListingDto`, and counts pending requests inside the query. The existing service exposes the active view; archived navigation is a planned extension.
 
-Ownership is declared by the command implementing `IRequireOwnership` rather than checked
-inside the handler. The mechanism is described in `platform/authorise-a-request`; what this
-feature contributes is the declaration that an edit demands ownership.
+`EditListingComponent`, `EditListingCommand`, `EditListingCommandHandler`, and `Listing.Edit` are planned. `PUT /listings/{listingId}` binds editable fields and dispatches through MediatR 12.5.0. The command implements `IRequireOwnership<Listing>`. A same-congregation non-owner receives 403; a missing or foreign listing receives 404. A supplied kind change returns 400 before any mutation. The form has an edit heading, populated fields, and a save action.
 
-The query counts requests in the same round trip as the listings. Counting per row would
-turn a four-listing screen into five queries, and a member with a busy board into many more.
+The target reuses each kind's creation bounds and preserves Help window references already used by requests. The policy for removing a referenced window remains `<TO SUPPLY>`. A row version protects concurrent edits and lifecycle transitions; a stale save returns 409 and retains the member's form for review. `MyListingRowComponent` is a planned `domain` region receiving route destinations from the page. Its open-request link leads to incoming requests filtered to that listing. Loading, retry, and empty states remain page state, with behaviour in services. Owner actions are absent from another member's detail view.
+
+**Source anchors.** [GetMyListingsQueryHandler.cs](../../../../backend/src/Barnabas.Application/Listings/GetMyListings/GetMyListingsQueryHandler.cs), [my-listings.store.ts](../../../../frontend/projects/domain/src/lib/listings/my-listings.store.ts).
+
+**Acceptance verification.** [L2-035](../../../specs/L2.md#l2-035-list-own-active-listings): API AC 1; E2E AC 2. [L2-036](../../../specs/L2.md#l2-036-edit-a-listing): API AC 1, 2; E2E AC 3. [L2-041](../../../specs/L2.md#l2-041-restrict-listing-modification-to-its-owner): API AC 1, 2; E2E AC 3. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-035` | `L1-006` | 1 | A member shall be able to see their own active listings, each showing its kind, status, and the number of open requests against it. |
-| `L2-036` | `L1-006` | &mdash; | A member shall be able to change the details of their own listing. The edit screen shall be distinct from the create screen in its heading and its action. |
-| `L2-041` | `L1-006` | 1 | A listing shall be modifiable only by the member who created it, or by a moderator acting under L2-084. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-035` | `L1-006` | A member shall be able to see their own active listings, each showing its kind, status, and the number of open requests against it. |
+| `L2-036` | `L1-006` | A member shall be able to change the details of their own listing. The edit screen shall be distinct from the create screen in its heading and its action. |
+| `L2-041` | `L1-006` | A listing shall be modifiable only by the member who created it, or by a moderator acting under L2-084. |
 
 ## Diagrams
 
-### Components
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-A read and a write over the same entity. The write passes through the authorisation
-behaviour; the read does not need to, because the query is already constrained to the
-caller.
+![C4 context view for manage my listings](diagrams/c4-context.png)
 
-![C4 component view for managing listings](diagrams/c4-component.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Class structure
+![C4 container view for manage my listings](diagrams/c4-container.png)
 
-`EditListingCommand` implements `IRequireOwnership`, which is the whole of its contribution
-to the ownership rule. `Listing.Edit` accepts no kind and no owner.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![Class diagram for managing listings](diagrams/class-structure.png)
+![C4 component view for manage my listings](diagrams/c4-component.png)
 
-### Behaviour — editing, and an edit by someone who does not own it
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-The count on each row leads to the requests, satisfying `L2-035`. The ownership branch shows
-`L2-041` enforced before the handler runs, so the listing is untouched on failure.
+![Class structure for manage my listings](diagrams/class-structure.png)
 
-![Sequence diagram for editing a listing](diagrams/sequence-edit.png)
+The owner predicate and pending-request count are evaluated in SQL Server before the response is projected.
+
+![Sequence for list own](diagrams/sequence-list-own.png)
+
+The planned edit rejects kind changes and stale saves. Successful editing changes the details while preserving ownership.
+
+![Sequence for edit](diagrams/sequence-edit.png)

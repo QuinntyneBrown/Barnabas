@@ -1,24 +1,18 @@
 @startuml
-!pragma layout smetana
 !include <C4/C4_Component>
 LAYOUT_WITH_LEGEND()
-title Components — Close out and archive
-
+title Component - Close out and archive
+Container(web, "MyListingsComponent / planned ArchivedListingsComponent", "Angular barnabas application", "Screen composition; signal state behind service contracts")
 Container_Boundary(api, "Barnabas API") {
-  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Exposes close-out, archive, restore, and delete")
-  Component(close, "CloseOutListingCommandHandler", "MediatR handler", "Records how the listing ended, in its kind's vocabulary")
-  Component(archive, "ArchiveListingCommandHandler", "MediatR handler", "Takes a listing off the board without an outcome")
-  Component(restore, "RestoreListingCommandHandler", "MediatR handler", "Returns an archived listing to the board")
-  Component(delete, "DeleteListingCommandHandler", "MediatR handler", "Removes a listing and its requests permanently")
-  Component(entity, "Listing", "Domain entity", "Owns the status transitions and the per-kind outcome")
-  ComponentDb(db, "Barnabas database", "SQL Server", "Listings, requests, and threads")
+  Component(ctrl, "ListingsController", "ASP.NET Core API", "Binding and dispatch; endpoint policies in the HTTP pipeline")
+  Component(handler, "CloseOutListingCommandHandler / planned lifecycle handlers", "Application", "Close out and archive")
+  Component(entity, "Listing / ListingStatus", "Domain", "Feature state and rules")
+  Component(store, "BarnabasDbContext (IBarnabasDbContext)", "Infrastructure implementation", "SQL Server persistence")
 }
-Rel(ctrl, close, "Sends CloseOutListingCommand")
-Rel(ctrl, archive, "Sends ArchiveListingCommand")
-Rel(ctrl, restore, "Sends RestoreListingCommand")
-Rel(ctrl, delete, "Sends DeleteListingCommand")
-Rel(close, entity, "Applies the outcome to")
-Rel(archive, entity, "Transitions")
-Rel(restore, entity, "Transitions")
-Rel(delete, db, "Removes from", "EF Core")
+ContainerDb(db, "Barnabas database", "SQL Server", "Feature records")
+Rel(web, ctrl, "Calls through IListingService / LISTING_SERVICE", "HTTPS")
+Rel(ctrl, handler, "Dispatches", "MediatR 12.5.0")
+Rel(handler, entity, "Reads or applies rules")
+Rel(handler, store, "Uses persistence abstraction")
+Rel(store, db, "Queries and saves", "EF Core / parameterised SQL")
 @enduml

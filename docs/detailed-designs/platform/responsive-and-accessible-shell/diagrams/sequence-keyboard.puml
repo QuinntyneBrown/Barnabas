@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Traversing a screen by keyboard
+title UML sequence behaviour - Use the responsive and accessible shell: keyboard
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,30 +14,30 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Member using a keyboard" as actor
-box "Frontend — Barnabas web" #E0F2FE
-  participant "SkipLinkComponent" as skip
-  participant "AppShellComponent" as shell
-  participant "Any routed screen" as screen
-  participant "ConfirmDialog" as dialog
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "AppShellComponent / PublicShellComponent" as page
+  participant "Viewport contract (planned) / browser events" as client
 end box
-
-actor -> skip : Press Tab on a freshly loaded screen
-skip --> actor : Skip to main content, revealed on focus
-alt member takes the skip link
-  actor -> skip : Press Enter
-  skip -> screen : Move focus to the main landmark
-else member continues tabbing
-  actor -> shell : Tab
-  shell --> actor : Header destinations, in reading order
-  actor -> screen : Tab
-  screen --> actor : Screen controls, in reading order
-end
-note over screen : L2-112 draws the focus ring from currentColor,\nso it is cream on an indigo field and indigo on\na cream one without a per-surface rule.
-actor -> screen : Activate a destructive action
-screen -> dialog : Open
-dialog -> dialog : Move focus inside and trap it, per L2-111
-actor -> dialog : Press Escape
-dialog -> screen : Close and restore focus to the opening control
-dialog --> actor : Focus is where it was left
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "No API call for layout or focus" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "No backend behaviour for layout or focus" as handler
+  participant "Navigation destinations / Band" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : First Tab [L2-111]
+page --> actor : Reveal skip link
+actor -> page : Activate skip link
+page -> page : Focus main landmark
+actor -> page : Traverse controls and open dialog
+page -> page : Trap focus; keep indicator visible on current surface [L2-112]
+page --> actor : Labels, heading, and accessible dialog name [L2-115]
+actor -> page : Escape
+page -> page : Close dialog; restore invoker focus
+page -> page : Verify text and boundary contrast [L2-113]
+note over api, db : No backend interaction for keyboard traversal
 @enduml

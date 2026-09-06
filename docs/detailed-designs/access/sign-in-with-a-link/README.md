@@ -2,128 +2,65 @@
 
 ## Overview
 
-Barnabas holds no passwords. A member signs in by asking for a link, which arrives at the
-email address the parish office has for them and can be followed once.
+Barnabas connects members of one church congregation through a private board. A **sign-in token** — single-use secret exchanged for a member session — proves possession of the registered mailbox. The member requests a link, follows it, and receives access to the congregation identified by the member record.
 
-**sign-in token** — a single-use secret, valid for a short interval, that a member exchanges
-for a session
-
-The choice is made for the congregation rather than for the engineering. The membership
-runs to eighty, and the help tags members themselves offer include tech support for phones,
-email, and printers. A password is one more thing to lose, and a reset flow is one more
-place to lose it. Possession of the mailbox is sufficient identity for an invite-only parish
-board that holds no payment details.
-
-Removing passwords also removes what would otherwise need protecting: there is no hash to
-store, no strength rule to enforce, no reset token to expire, and no credential to breach.
-What replaces it is narrower — a token that expires quickly and works once.
-
-The endpoint that issues links responds identically whether or not the address belongs to a
-member, so it cannot be used to discover who is in the congregation.
+The link expires after 15 minutes. Reuse and expiry produce the same recovery route. The address submission response does not identify registered members. No password is collected or stored.
 
 ## Description
 
-Two anonymous endpoints, one entity, and one signing service.
+**Implementation boundary: Existing core; planned delivery, timing, limiting, and atomic completion.**
 
-- **`SignInComponent`** and **`SignInLandingComponent`** — Angular screens. The first
-  collects an address; the second is what the emailed link opens.
-- **`SessionsController`** — exposes `POST /sessions/link` and `POST /sessions`. Both are
-  among the few endpoints exempt from authentication.
-- **`RequestSignInLinkCommand`** and its handler — find the member, issue a token, store its
-  hash, and queue the email. When no member matches, the handler performs equivalent work
-  and returns the same response.
-- **`SignInToken`** — domain entity owning expiry and single use. `IsRedeemable` and
-  `Consume` hold both rules, so neither handler restates them.
-- **`ExchangeSignInTokenCommand`** and its handler — find the token by hash, consume it,
-  open a `Session`, and issue the pair of tokens bound to it.
-- **`Session`** — the sign-in itself, described in `access/end-a-session`. It is created
-  here, and it is what makes the issued tokens revocable.
-- **`IAuthenticationStore`** — the narrow, unfiltered lookup by email address and token
-  hash. Sign-in is anonymous, so there is no congregation to filter by yet; this store is
-  the one sanctioned way to read before one is known, and it is described in
-  `platform/scope-queries-to-a-congregation`.
-- **`JwtIssuer`** — signs an access token carrying the member, the congregation, the role,
-  and the session. Those claims are what `platform/scope-queries-to-a-congregation` and
-  `platform/authorise-a-request` read; this feature is where they originate.
-- **`IEmailSender`** — the abstraction the handler depends on, so delivery is swappable and
-  tests need no mail server.
+`SignInComponent`, `CheckYourEmailComponent`, `SignInLandingComponent`, and `LinkExpiredComponent` are routed screens in `barnabas`. `SessionStore` holds the access token in a signal and consumes `ISessionService` through `SESSION_SERVICE`. `SessionService` implements that contract in `api`; `app.config.ts` binds it at the host.
 
-Only the token's hash is stored. A database disclosure therefore yields nothing usable, and
-the token itself exists only in the email and the URL the member follows.
+`SessionsController` binds `POST /sessions/link` and `POST /sessions`. `RequestSignInLinkCommandHandler` calls `IAuthenticationStore.FindApprovedMemberByEmailAsync`, creates a random secret through `ISecretService`, persists its hash, and calls `IEmailSender`. The current adapter is `InMemoryEmailSender`. A production delivery adapter and provider remain `<TO SUPPLY>`.
 
-**Consumption is one conditional update, not a check followed by a save.** `L2-016` requires
-exactly one session from a concurrent exchange, and a read-then-write cannot promise that:
-two callers can both read an unconsumed token and both proceed. The handler instead updates
-the row on the condition that it is still unconsumed, and the number of rows affected decides
-the winner. The loser receives 410, the same answer a genuinely reused link gets.
+`ExchangeSignInTokenCommandHandler` calls `TryConsumeSignInTokenAsync`. `AuthenticationStore` performs a parameterised conditional update of an unconsumed row. Exactly one concurrent exchange wins; missing, expired, or reused secrets return 410. Expiry is checked after consumption. The handler creates `Session` and `RefreshToken`, then `JwtIssuer` issues member, congregation, role, and `sid` claims from server records.
 
-The congregation is taken from the member record the store returned, never from anything the
-caller supplied.
+The existing flow commits consumption, session creation, and refresh creation separately. The target persistence operation encloses them in one SQL Server transaction; failure rolls back session creation and consumption together. No successful token response precedes commit. A lost response can require a fresh link, which the expired-link screen offers.
 
-Expiry is checked on the entity, and both expiry and reuse return 410 rather than 404 — the
-token was real, and saying so lets the screen offer to send another rather than implying the
-member mistyped something.
+`L2-013` timing equivalence and `L2-017` limiting remain planned. The target performs bounded asynchronous address processing and responds 202 before delivery, including the unknown-address case. The [abuse design](../../platform/limit-abuse/README.md) applies five requests per address per 15 minutes and a source limit. Delivery failure remains retryable without changing the public response. Pending-member sign-in extends the approved-only lookup as described in [joining](../join-a-congregation/README.md). Stored hashes reduce exposure of token secrets; they do not remove the sensitivity of member records.
+
+The planned target pairs durable address work with a bounded delivery worker and a retry/dead-letter state. A provider outage does not alter the member-enumeration response; operations exposes the queue failure without logging the address or link. Delivery retry reuses the queued token rather than issuing a new sign-in identity. Provider integration and retry bounds remain the explicit D-08 inputs.
+
+**Source anchors.** [ExchangeSignInTokenCommandHandler.cs](../../../../backend/src/Barnabas.Application/Access/ExchangeSignInToken/ExchangeSignInTokenCommandHandler.cs), [AuthenticationStore.cs](../../../../backend/src/Barnabas.Infrastructure/Persistence/AuthenticationStore.cs), [session.service.contract.ts](../../../../frontend/projects/api/src/lib/sessions/session.service.contract.ts).
+
+**Acceptance verification.** [L2-012](../../../specs/L2.md#l2-012-request-a-sign-in-link): API AC 1, 2, 4; E2E AC 3. [L2-013](../../../specs/L2.md#l2-013-do-not-disclose-whether-an-email-address-is-registered): API AC 1; E2E AC 2. [L2-014](../../../specs/L2.md#l2-014-exchange-a-sign-in-link-for-a-session): API AC 1, 2, 4, 5; E2E AC 3. [L2-015](../../../specs/L2.md#l2-015-expire-a-sign-in-link): API AC 1, 2; E2E AC 3. [L2-016](../../../specs/L2.md#l2-016-make-a-sign-in-link-single-use): API AC 1, 2. [L2-017](../../../specs/L2.md#l2-017-rate-limit-sign-in-link-requests): API AC 1, 2. The linked criteria retain their Given–When–Then wording. API acceptance uses SQL Server; E2E acceptance uses one page object per screen. New behaviour begins with its failing criterion. Design coverage does not assert an acceptance test pass.
 
 ## Requirements
 
-The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines a level-1 (L1) requirement, cited by identifier. The
-**Slice** column marks the requirements implemented by feature slice 1; the
-remainder are designed here and implemented in a later slice.
+The requirement text and identifiers are reproduced from [L2](../../../specs/L2.md). Each row names its [L1 parent](../../../specs/L1.md).
 
-| L2 ID | Refines (L1) | Slice | Requirement |
-|-------|--------------|-------|-------------|
-| `L2-012` | `L1-003` | 1 | A member shall be able to request a single-use sign-in link sent to their registered email address. The system shall never store a password. |
-| `L2-013` | `L1-003` | &mdash; | The sign-in response shall be identical whether or not the address belongs to a member, so the endpoint cannot be used to enumerate members. |
-| `L2-014` | `L1-003` | 1 | Following a valid sign-in link shall issue a JWT bound to the member and their congregation. |
-| `L2-015` | `L1-003` | 1 | A sign-in token shall expire no more than 15 minutes after issue. |
-| `L2-016` | `L1-003` | 1 | A sign-in token shall be consumed on first exchange. |
-| `L2-017` | `L1-003` | &mdash; | Requests for sign-in links shall be limited per address and per source to prevent mailbox flooding. |
+| L2 ID | Refines (L1) | Requirement |
+|-------|--------------|-------------|
+| `L2-012` | `L1-003` | A member shall be able to request a single-use sign-in link sent to their registered email address. The system shall never store a password. |
+| `L2-013` | `L1-003` | The sign-in response shall be identical whether or not the address belongs to a member, so the endpoint cannot be used to enumerate members. |
+| `L2-014` | `L1-003` | Following a valid sign-in link shall issue a JWT bound to the member and their congregation. |
+| `L2-015` | `L1-003` | A sign-in token shall expire no more than 15 minutes after issue. |
+| `L2-016` | `L1-003` | A sign-in token shall be consumed on first exchange. |
+| `L2-017` | `L1-003` | Requests for sign-in links shall be limited per address and per source to prevent mailbox flooding. |
 
 ## Diagrams
 
-### System context
+The context identifies the actor and the Barnabas capability. Congregation boundaries also apply to linked resources.
 
-Signing in is the one flow that leaves the system and comes back: Barnabas sends a link
-through an external email provider, and the member returns by following it.
+![C4 context view for sign in with a link](diagrams/c4-context.png)
 
-![C4 system context for signing in](diagrams/c4-context.png)
+The container view places the Angular client, .NET API, and SQL Server persistence around this capability.
 
-### Containers
+![C4 container view for sign in with a link](diagrams/c4-container.png)
 
-The web client collects an address; the API issues the token, stores only its hash, and
-hands the link to the email provider.
+The component view separates screen composition, API dispatch, application behaviour, domain rules, and persistence.
 
-![C4 container view for signing in](diagrams/c4-container.png)
+![C4 component view for sign in with a link](diagrams/c4-component.png)
 
-### Components
+The class view shows the feature types, their data, and typed dependencies. Planned additions are identified in the description.
 
-Two handlers either side of one entity, both reaching the database through
-`IAuthenticationStore` because no congregation is in context yet. The exchange additionally
-opens the `Session` the issued tokens bind to.
+![Class structure for sign in with a link](diagrams/class-structure.png)
 
-![C4 component view for signing in](diagrams/c4-component.png)
+The target link request returns the same 202 before address processing and delivery. Rate limiting rejects the sixth address request within 15 minutes.
 
-### Class structure
+![Sequence for request link](diagrams/sequence-request-link.png)
 
-The token references the member it identifies and raises on reuse. `Session` is what
-`JwtIssuer` stamps into the `sid` claim, and what makes the issued tokens revocable later.
+The target exchange consumes the link and persists the session in one transaction. The SQL affected-row count settles concurrent use.
 
-![Class diagram for signing in](diagrams/class-structure.png)
-
-### Behaviour — asking for a sign-in link
-
-The two branches converge deliberately. `L2-013` requires the response and its timing be
-identical whether or not the address belongs to a member, so the endpoint cannot be used to
-enumerate the congregation.
-
-![Sequence diagram for requesting a link](diagrams/sequence-request-link.png)
-
-### Behaviour — exchanging a link for a session
-
-Expiry is a question the entity answers; single use is a question only the database can
-answer, so consumption is a conditional update whose row count decides the winner. That is
-what `L2-016` needs from a concurrent exchange, and a check followed by a save could not
-provide it. Both failures return 410, which lets the screen offer to send another link.
-
-![Sequence diagram for exchanging a link](diagrams/sequence-exchange.png)
+![Sequence for exchange](diagrams/sequence-exchange.png)

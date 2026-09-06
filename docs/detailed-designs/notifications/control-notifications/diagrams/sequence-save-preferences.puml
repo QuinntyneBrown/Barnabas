@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour - Control notifications: save preferences
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend - barnabas application and libraries" #E0F2FE
+  participant "ProfileSettingsComponent / NotificationPreferenceComponent (planned)" as page
+  participant "INotificationService / NOTIFICATION_SERVICE (planned)" as client
+end box
+box "Backend - Barnabas.Api HTTP pipeline" #D1FADF
+  participant "NotificationsController (planned)" as api
+end box
+box "Backend - Barnabas.Application and Domain" #ECFDF3
+  participant "SetNotificationPreferencesCommandHandler / NotificationWriter (planned)" as handler
+  participant "NotificationPreference" as entity
+end box
+box "Backend - Barnabas.Infrastructure" #FFF4E5
+  database "SQL Server / scoped persistence" as db
+end box
+actor -> page : Disable new-message notifications and save
+page -> client : savePreferences(values)
+client -> api : PUT /notifications/preferences
+api -> handler : SetNotificationPreferencesCommand
+handler -> db : Atomic member preference update [L2-075]
+db --> handler : Commit
+handler --> api : Saved preferences
+api --> client : 200
+client --> page : Confirm saved
+handler -> db : Later message event reads preference
+db --> handler : NewMessage disabled
+handler -> entity : No NewMessage notification
+handler -> db : Later request event reads separate preference
+db --> handler : NewRequest enabled
+handler -> entity : Create request notification
+@enduml
