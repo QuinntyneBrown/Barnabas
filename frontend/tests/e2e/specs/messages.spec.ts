@@ -7,9 +7,10 @@ import { Members, SeededListings } from '../support/members';
 import { expect, test } from '../support/barnabas';
 
 // Acceptance Test
-// Traces to: L2-065, L2-067
-// Description: A member finds the thread an accepted request opened, sees it marked unread, and
-// says something in it that appears attributed to them.
+// Traces to: L2-065, L2-067, L2-068
+// Description: A member finds the thread an accepted request opened, sees it marked unread, says
+// something in it that appears attributed to them, and can reach from it both the listing it is
+// about and the member they are talking to.
 
 /** Gets Marion and Priya as far as an open thread, which is the only way one comes into being. */
 async function openTheThread(page: import('@playwright/test').Page, signInAs: (email: string) => Promise<void>) {
@@ -149,4 +150,40 @@ test('a member who is not a party cannot open the thread', async ({ page, signIn
   await page.goto(threadUrl);
 
   await expect(page.getByRole('heading', { name: 'That conversation is not here' })).toBeVisible();
+});
+
+// L2-068 AC1: Given a thread, when it is displayed, then the listing it concerns is shown and
+// opens that listing.
+// L2-068 AC2: Given a thread, when it is displayed, then the other member's name opens their
+// profile.
+test('a thread leads back to the listing and to the other member', async ({ page, signInAs }) => {
+  // Two members, a request and an acceptance before it can assert anything.
+  test.slow();
+
+  await openTheThread(page, signInAs);
+
+  const threads = new ThreadsPage(page);
+  const thread = new ThreadPage(page);
+
+  // Read from the requester's side, so the other member is the owner - whose profile is the one
+  // AC2 is about. The helper leaves the browser signed in as the owner, who would see themselves.
+  await signInAs(Members.priya.emailAddress);
+
+  await threads.goto();
+  await threads.open(Members.marion.displayName);
+
+  // The listing it is about, named and reachable. A thread that did not lead back to it leaves a
+  // member scrolling their own words to remember what they asked for.
+  await expect(thread.listing).toContainText(SeededListings.ladder);
+
+  await thread.listing.click();
+
+  await expect(new ListingDetailPage(page).title).toHaveText(SeededListings.ladder);
+
+  // And the other party, whose name opens their profile rather than only labelling the thread.
+  await page.goBack();
+
+  await thread.otherMember(Members.marion.displayName).click();
+
+  await expect(page.getByRole('heading', { name: Members.marion.displayName })).toBeVisible();
 });

@@ -66,6 +66,11 @@ export class PostGiveComponent {
       }
     });
   }
+  /** Whichever they picked, or the first their congregation offers if the form has not settled. */
+  private chosenNeighbourhood(): string {
+    return this.neighbourhood() || this.neighbourhoods()[0] || '';
+  }
+
   async submit(): Promise<void> {
     if (this.posting()) {
       return;
@@ -75,11 +80,16 @@ export class PostGiveComponent {
     this.errors.set(FieldErrors.none());
 
     try {
+      // The neighbourhoods are the congregation's and arrive from the API, so a member who
+      // submitted before they landed would send an empty one and be refused a field they were
+      // never shown as blank. Waiting here is the only place that cannot race.
+      await this.congregations.ensureLoaded();
+
       const posted = await this.listings.postGive({
         title: this.title(),
         description: this.description(),
         category: this.category(),
-        neighbourhood: this.neighbourhood(),
+        neighbourhood: this.chosenNeighbourhood(),
       });
 
       // After the listing exists, and before the confirmation. A photo that failed to attach

@@ -119,6 +119,11 @@ test('the owner of a reported listing sees no sign that anybody reported it', as
 // L2-082 AC3: Given a moderator viewing the queue, when a flagged listing is shown, then its title
 // opens the listing and its poster's name opens their profile.
 test('the queue opens what it names', async ({ board, page, signInAs }) => {
+  // Two members, a report, and three screens before it can assert anything. It fits the default
+  // timeout alone and has exceeded it in a full run, which is a slow test rather than a failing
+  // one.
+  test.slow();
+
   await signInAs(Members.priya.emailAddress);
 
   await reportTheLadder(page, board);
@@ -183,6 +188,10 @@ test('removing a listing is confirmed first, and its owner is told', async ({
   page,
   signInAs,
 }) => {
+  // Two members, a report, a confirmation, the board and the notification list. Slow rather than
+  // failing.
+  test.slow();
+
   await signInAs(Members.priya.emailAddress);
 
   await reportTheLadder(page, board);
@@ -223,6 +232,9 @@ test('removing a listing is confirmed first, and its owner is told', async ({
 // L2-085 AC2 and L2-086 AC3: a moderator sees who is waiting and why, lets one in, and that member
 // reaches the board.
 test('a moderator lets somebody in and they reach the board', async ({ page, board, signInAs }) => {
+  // A code issued, redeemed, a profile filled in, an approval, and a third sign-in.
+  test.slow();
+
   await signInAs(Members.marion.emailAddress);
 
   await joinAsAsync(page, {
