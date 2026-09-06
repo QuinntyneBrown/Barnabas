@@ -58,8 +58,74 @@ say what it cost rather than quietly narrowing scope.
 - Bind a token to an implementation at the host and nowhere else: the application
   binds the real one, a test host binds the mock. Nothing beneath the host names
   both, which is what makes the seam a real one.
-- Organize the workspace into `api`, `components`, and `domain` libraries.
-- Keep components presentational. Behavior belongs in services, state in signals.
+- Organize the workspace into `api`, `components`, and `domain` libraries, consumed
+  by the `barnabas` application.
+- State lives in signals, behaviour lives in services. A component class wires the
+  two to a template and does nothing else.
+
+### Component placement — settle this before creating the folder
+
+Where a component lives is not a matter of taste. Ask these in order and stop at
+the first `yes`.
+
+1. **Is it reached by a route, does it navigate, or does it compose a whole
+   screen?** → `barnabas`
+2. **Does it inject a token from `@barnabas/api`, or name a type from it?** → `domain`
+3. **Neither.** → `components`
+
+Dependencies run one way and never back:
+
+```text
+components  ->  (nothing)
+domain      ->  components, api
+barnabas    ->  domain, components, api
+```
+
+An import pointing the other way is a defect, not a shortcut.
+
+Navigation is the reason the first question asks about it as well as about
+routes. A navigation bar, a chip row, a back link — none is a screen, and none
+touches the API, so the last two questions would send it to `components`, which
+may not name the router at all. Anything that navigates is page chrome, and page
+chrome belongs with the pages.
+
+#### `components` — dumb, congregation-agnostic, publishable
+
+The plain vocabulary of an interface: dialogs, icons, the skip link, form fields,
+empty states.
+
+- It imports Angular and nothing else of ours. No `@barnabas/api`, no
+  `@barnabas/domain`, no router, no `HttpClient`, no notion of a listing or a
+  congregation.
+- Treat it as a package that ships to npm and drops into an unrelated product.
+  That constraint is the whole point of the library; honour it while the package
+  is still private.
+- Data in through `input()`, events out through `output()`. It never fetches,
+  never persists, never navigates, and injects no service of ours.
+- A component belongs here only if it can be rendered from a literal object. If it
+  needs Barnabas to make sense, it is in the wrong library.
+
+#### `domain` — congregation-aware regions, and the state behind them
+
+The stores, the guards, and the components that speak the product's own
+vocabulary. Not publishable.
+
+- A component here may `inject()` a token from `@barnabas/api`, hold signal state,
+  and map what comes back into what a template needs.
+- It composes `components` for presentation and passes plain values down. It does
+  not restyle its children.
+- It is a self-contained region of a screen — a placard, a request row — never a
+  screen. No routing, no page chrome.
+- Stores and guards stay flat under `domain/src/lib/<area>/`; each component gets
+  its own folder, class and template and styles in separate files as everywhere.
+
+#### `barnabas` — pages, shell, routing, composition
+
+Page components, the two shells, routes, providers, and the state a route owns.
+
+- A page arranges `domain` regions and `components` primitives. A widget built
+  inline in a page is one that was placed wrong.
+- Binding every service token to its implementation happens here, and only here.
 
 ## Domain Language
 
@@ -105,9 +171,9 @@ Barnabas/
 ├── frontend/                         Angular multi-project workspace
 │   ├── projects/
 │   │   ├── api/                      contracts, DTOs, typed clients, interceptors
-│   │   ├── domain/                   models, stores, services, guards
-│   │   ├── components/               the shell and the routed screens
-│   │   └── barnabas/                 the application that consumes the three
+│   │   ├── components/               dumb, publishable primitives
+│   │   ├── domain/                   stores, guards, screen regions
+│   │   └── barnabas/                 pages, shell, routes, providers
 │   └── tests/
 │       └── e2e/
 │           ├── page-objects/
