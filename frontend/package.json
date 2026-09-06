@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "build": "ng build barnabas",
+    "watch": "ng build barnabas --watch --configuration development",
     "test": "playwright test",
     "e2e": "playwright test"
   },

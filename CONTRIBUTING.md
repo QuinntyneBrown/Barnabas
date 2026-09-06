@@ -114,7 +114,7 @@ anything that could affect them:
 
 ```bash
 cd backend  && dotnet run --project tools/Barnabas.Budgets
-cd frontend && npx ng build && npx playwright test --config playwright.budgets.config.ts
+cd frontend && npm run build && npx playwright test --config playwright.budgets.config.ts
 ```
 
 ## What a reviewer will look for

@@ -240,7 +240,7 @@ cd backend && dotnet run --project tools/Barnabas.Budgets
 
 # Client: paint, layout stability, and transfer size, against a production build
 cd frontend
-npx ng build
+npm run build
 npx playwright test --config playwright.budgets.config.ts
 ```
 

@@ -17,7 +17,7 @@ import { expect, test } from '../support/barnabas';
 // so measuring it would fail a budget the deployment meets several times over. Run them
 // deliberately:
 //
-//     npx ng build
+//     npm run build
 //     npx playwright test --config playwright.budgets.config.ts
 //
 // Every one reports the number it measured, so a run that passes still says by how much.
@@ -133,7 +133,7 @@ test.describe('@budget page weight and paint', () => {
     // comfortably; gzipping the artefact measures the bytes a phone on a train actually waits for.
     const chunks = await javascriptChunksAsync();
 
-    expect(chunks.length, 'no built javascript was found - run `ng build` first').toBeGreaterThan(0);
+    expect(chunks.length, 'no built javascript was found - run `npm run build` first').toBeGreaterThan(0);
 
     const compressed = chunks.reduce((total, chunk) => total + chunk.gzipped, 0);
 

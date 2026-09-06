@@ -113,7 +113,7 @@ jobs:
         working-directory: frontend
 
       - name: Build the client
-        run: npx ng build
+        run: npm run build
         working-directory: frontend
 
       - name: Install browsers

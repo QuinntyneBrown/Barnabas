@@ -32,7 +32,7 @@ frontend  playwright     ___ passed, 0 failed, 0 skipped
 If you touched anything that could affect them, the budgets too:
 
   backend   dotnet run --project tools/Barnabas.Budgets
-  frontend  npx ng build && npx playwright test --config playwright.budgets.config.ts
+  frontend  npm run build && npx playwright test --config playwright.budgets.config.ts
 -->
 
 ## Checklist

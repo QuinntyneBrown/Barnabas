@@ -14,7 +14,7 @@ import { defineConfig, devices } from '@playwright/test';
  * developer machine because a build was running in another window or a laptop was on battery,
  * and a suite that goes red for those reasons teaches people to ignore it.
  *
- *     npx ng build
+ *     npm run build
  *     npx playwright test --config playwright.budgets.config.ts
  *
  * The build is not optional: this serves `dist/barnabas/browser`, so a stale one measures a stale
