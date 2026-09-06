@@ -74,6 +74,7 @@ public sealed class CongregationSeeder
                 "Two batteries and a charger. Barely used since the deck went in.",
                 "Tools",
                 SeedData.Marion.Neighbourhood,
+                "Good",
                 45.00m,
                 now.AddDays(-2)),
             Listing.PostLend(

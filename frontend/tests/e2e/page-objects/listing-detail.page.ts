@@ -29,7 +29,38 @@ export class ListingDetailPage {
     return this.page.locator('.detail__price');
   }
 
+  /**
+   * The close-out action, whatever this kind calls it.
+   *
+   * Named by pattern rather than by one label, because the wording is the requirement: an owner
+   * marks a sale *sold* and a gift *given away*. A locator fixed on "Mark as taken" could not
+   * see the other three.
+   */
+  get closeOut(): Locator {
+    return this.page.getByRole('button', { name: /^Mark as / });
+  }
+
+  /** The sentence that says money changes hands between the members, not here. */
+  get paymentNote(): Locator {
+    return this.page.getByText(/arranged directly between members/i);
+  }
+
+  /** The windows a Help offer declares. */
+  get availability(): Locator {
+    return this.page.getByRole('term', { name: /is free/ });
+  }
+
+  /**
+   * The call to action, whatever this kind calls it.
+   *
+   * "Request to borrow" on a loan, "Request to buy" on a sale. Matched by pattern for the same
+   * reason the close-out action is: the wording is the requirement, not an incidental label.
+   */
+  get askAction(): Locator {
+    return this.page.getByRole('link', { name: /^Request/ });
+  }
+
   async ask(): Promise<void> {
-    await this.requestToBorrow.click();
+    await this.askAction.click();
   }
 }

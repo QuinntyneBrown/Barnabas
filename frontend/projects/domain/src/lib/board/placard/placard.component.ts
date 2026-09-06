@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { BoardListing } from '@barnabas/api';
 
+import { wordsFor } from '../../listings/listing-words';
+
 /**
  * One listing as a solid field of colour, butted against its neighbours into the mosaic.
  *
@@ -19,6 +21,15 @@ export class PlacardComponent {
   readonly listing = input.required<BoardListing>();
 
   readonly fieldClass = computed(() => `placard placard--${this.listing().kind.toLowerCase()}`);
+
+  /**
+   * The kind in the board's own words - "Giving away", not "Give".
+   *
+   * L2-028 asks that a gift be identified as being given away rather than sold, and the bare
+   * enum name does not do that: "Give" beside a placard with no price leaves the reader to
+   * infer it. The same vocabulary labels the filter chips, so the two cannot drift.
+   */
+  readonly kindLabel = computed(() => wordsFor(this.listing().kind).board);
 
   /** Help offers time rather than a thing, so it carries words where the others carry a drawing. */
   readonly isHelp = computed(() => this.listing().kind === 'Help');

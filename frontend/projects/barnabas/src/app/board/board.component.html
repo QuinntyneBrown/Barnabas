@@ -19,12 +19,47 @@
 </div>
 
 <div class="container section">
+  <!--
+    The active filter is evident from aria-pressed as well as from the styling, so it is
+    apparent to a member who cannot see which chip is darker. "Everything" is how it is
+    cleared - a separate "clear" control would be a second way to say the same thing.
+  -->
+  <nav class="chip-row" aria-label="Filter the board by kind">
+    <button
+      class="chip"
+      type="button"
+      [attr.aria-pressed]="showingEverything()"
+      (click)="show(null)"
+    >
+      Everything
+    </button>
+    @for (filter of filters; track filter.kind) {
+      <button
+        class="chip chip--{{ filter.kind.toLowerCase() }}"
+        type="button"
+        [attr.aria-pressed]="kind() === filter.kind"
+        (click)="show(filter.kind)"
+      >
+        {{ filter.label }} <span class="chip__count">{{ countOf(filter.kind) }}</span>
+      </button>
+    }
+  </nav>
+
   @if (failed()) {
     <div class="state stack-4">
       <h2>The board did not load</h2>
       <p>Something went wrong between here and St.&nbsp;Aidan's. Nothing you posted has been lost.</p>
       <div class="btn-group">
         <button class="btn btn-primary" type="button" (click)="retry()">Try again</button>
+      </div>
+    </div>
+  } @else if (isEmpty() && !showingEverything()) {
+    <div class="state stack-4">
+      <h2>Nothing of that kind just now</h2>
+      <p>The board has other things on it. Try everything, or post the first of this kind.</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" type="button" (click)="show(null)">Show everything</button>
+        <a class="btn btn-ghost" routerLink="/post">Post a listing</a>
       </div>
     </div>
   } @else if (isEmpty()) {

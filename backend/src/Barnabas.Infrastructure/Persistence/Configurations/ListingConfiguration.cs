@@ -19,10 +19,22 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.Category).IsRequired().HasMaxLength(100);
         builder.Property(l => l.Neighbourhood).IsRequired().HasMaxLength(200);
         builder.Property(l => l.Price).HasPrecision(18, 2);
+        builder.Property(l => l.Condition).HasMaxLength(Listing.ConditionMaxLength);
 
         // The terms a kind carries live with the listing rather than in a table of their own:
         // a loan's return date is not a thing that exists apart from the loan.
         builder.OwnsOne(l => l.LoanTerms, terms => terms.Property(t => t.ReturnBy).HasColumnName("ReturnBy"));
+
+        // A Help listing's windows are a table rather than a column, because a request names
+        // one by identifier and a delimited column has nothing to name.
+        builder.OwnsMany(l => l.AvailabilityWindows, windows =>
+        {
+            windows.ToTable("AvailabilityWindows");
+            windows.WithOwner().HasForeignKey("ListingId");
+            windows.HasKey(w => w.Id);
+            windows.Property(w => w.Id).ValueGeneratedNever();
+            windows.Property(w => w.Day).HasConversion<int>();
+        });
 
         // The board reads active listings of one congregation, newest first, and this is the
         // index that serves it.

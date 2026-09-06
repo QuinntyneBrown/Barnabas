@@ -28,6 +28,52 @@ export class BoardPage {
     return this.placard(title).locator('.placard__kind');
   }
 
+  /** The price on a placard, which only a Sell listing carries. */
+  priceOf(title: string): Locator {
+    return this.placard(title).locator('.placard__price');
+  }
+
+  /** Everything a placard says besides its title, so a spec can read the availability off it. */
+  metaOf(title: string): Locator {
+    return this.placard(title).locator('.placard__meta');
+  }
+
+  /** Any image on a placard, exposed so a spec can assert a Help placard carries none. */
+  imagesOn(title: string): Locator {
+    return this.placard(title).locator('img, .placard__art');
+  }
+
+  get filters(): Locator {
+    return this.page.getByRole('navigation', { name: 'Filter the board by kind' });
+  }
+
+  filter(label: string): Locator {
+    return this.filters.getByRole('button', { name: new RegExp(`^${label}`) });
+  }
+
+  /** The chip currently in force, which the board marks as pressed. */
+  get activeFilter(): Locator {
+    return this.filters.locator('button[aria-pressed="true"]');
+  }
+
+  async filterBy(label: string): Promise<void> {
+    await this.filter(label).click();
+  }
+
+  /**
+   * What a filtered board says when nothing of that kind is posted.
+   *
+   * Distinct from the empty board. A member who filtered to Help and found none has not
+   * discovered that the congregation has posted nothing; telling them so would be false.
+   */
+  get nothingOfThatKind(): Locator {
+    return this.page.getByRole('heading', { name: 'Nothing of that kind just now' });
+  }
+
+  get emptyBoard(): Locator {
+    return this.page.getByRole('heading', { name: 'The board is empty' });
+  }
+
   get postAListing(): Locator {
     return this.page.getByRole('link', { name: 'Post a listing' });
   }

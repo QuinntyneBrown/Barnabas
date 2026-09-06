@@ -70,7 +70,7 @@ public sealed class GetMyRequestsQueryHandler : IRequestHandler<GetMyRequestsQue
             row.Listing.Kind,
             row.Owner.DisplayName,
             row.Listing.Neighbourhood,
-            LoanTermsText.For(row.Request.LoanTerms),
+            RequestTermsText.For(row.Request, row.Listing),
             row.Request.Status,
             row.Request.MadeAt,
             row.ThreadId))];

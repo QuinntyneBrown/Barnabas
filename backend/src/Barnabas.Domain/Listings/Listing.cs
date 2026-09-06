@@ -9,6 +9,9 @@ public sealed class Listing : ITenantOwned, IOwnedResource
 {
     public const int TitleMaxLength = 120;
     public const int DescriptionMaxLength = 4000;
+    public const int ConditionMaxLength = 100;
+
+    private readonly List<AvailabilityWindow> _availabilityWindows = [];
 
     private Listing()
     {
@@ -66,6 +69,23 @@ public sealed class Listing : ITenantOwned, IOwnedResource
     /// <summary>Present on a Sell listing and on no other kind. A stated asking figure only.</summary>
     public decimal? Price { get; private set; }
 
+    /// <summary>Present on a Sell listing and on no other kind. What state the thing is in.</summary>
+    public string? Condition { get; private set; }
+
+    /// <summary>
+    /// Present on a Help listing and on no other kind. The periods the owner is free.
+    /// </summary>
+    /// <remarks>
+    /// A Help listing declares at least one; the factory refuses to make one without. A request
+    /// chooses among these by identifier, and <see cref="DeclaresWindow"/> is what lets a
+    /// handler refuse a window this listing never offered.
+    /// </remarks>
+    public IReadOnlyList<AvailabilityWindow> AvailabilityWindows => _availabilityWindows;
+
+    /// <summary>Whether this listing declared the window with the given identifier.</summary>
+    public bool DeclaresWindow(Guid availabilityWindowId) =>
+        _availabilityWindows.Exists(window => window.Id == availabilityWindowId);
+
     public bool IsActive => Status == ListingStatus.Active;
 
     public bool IsOwnedBy(Guid memberId) => OwnerId == memberId;
@@ -122,21 +142,28 @@ public sealed class Listing : ITenantOwned, IOwnedResource
         string description,
         string category,
         string neighbourhood,
+        string condition,
         decimal price,
-        DateTimeOffset postedAt) =>
-        new(id, congregationId, ownerId, ListingKind.Sell, title, description, category, neighbourhood, postedAt)
+        DateTimeOffset postedAt)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(condition);
+        ArgumentOutOfRangeException.ThrowIfNegative(price);
+
+        return new Listing(
+            id, congregationId, ownerId, ListingKind.Sell, title, description, category, neighbourhood, postedAt)
         {
+            Condition = condition,
             Price = price,
         };
+    }
 
     /// <summary>
     /// Posts a Help listing. Help offers time rather than an object, so it carries no price
     /// and no photo.
     /// </summary>
     /// <remarks>
-    /// <c>L2-030</c> also requires one or more availability windows. That requirement is
-    /// deferred with the Help slice, and no behaviour in feature slice 1 reads a window, so
-    /// the value type is not introduced here rather than being introduced unused.
+    /// At least one window is required and the factory refuses without one, because an offer of
+    /// time nobody can name a moment for is not an offer. <c>L2-030</c>.
     /// </remarks>
     public static Listing PostHelp(
         Guid id,
@@ -146,8 +173,23 @@ public sealed class Listing : ITenantOwned, IOwnedResource
         string description,
         string category,
         string neighbourhood,
-        DateTimeOffset postedAt) =>
-        new(id, congregationId, ownerId, ListingKind.Help, title, description, category, neighbourhood, postedAt);
+        IReadOnlyCollection<AvailabilityWindow> windows,
+        DateTimeOffset postedAt)
+    {
+        ArgumentNullException.ThrowIfNull(windows);
+
+        if (windows.Count == 0)
+        {
+            throw new ArgumentException("A Help listing declares at least one window.", nameof(windows));
+        }
+
+        var listing = new Listing(
+            id, congregationId, ownerId, ListingKind.Help, title, description, category, neighbourhood, postedAt);
+
+        listing._availabilityWindows.AddRange(windows);
+
+        return listing;
+    }
 
     /// <summary>
     /// Records that the listing has served its purpose, in the wording belonging to its kind.

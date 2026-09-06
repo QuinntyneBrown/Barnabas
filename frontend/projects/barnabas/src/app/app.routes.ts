@@ -11,13 +11,19 @@ import { SignInLandingComponent } from './access/sign-in-landing.component';
 import { BoardComponent } from './board/board.component';
 
 import { ChooseKindComponent } from './listings/choose-kind.component';
+import { PostGiveComponent } from './listings/post-give.component';
+import { PostHelpComponent } from './listings/post-help.component';
+import { PostSellComponent } from './listings/post-sell.component';
 import { ListingDetailComponent } from './listings/listing-detail.component';
 import { ListingPostedComponent } from './listings/listing-posted.component';
 import { MyListingsComponent } from './listings/my-listings.component';
 import { PostLendComponent } from './listings/post-lend.component';
 
 import { RequestAcceptedComponent } from './requests/request-accepted.component';
+import { RequestGiveComponent } from './requests/request-give.component';
+import { RequestHelpComponent } from './requests/request-help.component';
 import { RequestLendComponent } from './requests/request-lend.component';
+import { RequestSellComponent } from './requests/request-sell.component';
 import { RequestSentComponent } from './requests/request-sent.component';
 
 import { IncomingRequestsComponent } from './inbox/incoming-requests.component';
@@ -72,6 +78,9 @@ export const routes: Routes = [
 
       { path: 'post', component: ChooseKindComponent, title: 'Post · Barnabas' },
       { path: 'post/lend', component: PostLendComponent, title: 'Post — Lend · Barnabas' },
+      { path: 'post/give', component: PostGiveComponent, title: 'Post — Give · Barnabas' },
+      { path: 'post/sell', component: PostSellComponent, title: 'Post — Sell · Barnabas' },
+      { path: 'post/help', component: PostHelpComponent, title: 'Post — Help · Barnabas' },
 
       // Before the detail route, so "mine" is not read as an identifier.
       { path: 'my-listings', component: MyListingsComponent, title: 'My listings · Barnabas' },
@@ -80,10 +89,28 @@ export const routes: Routes = [
         component: ListingPostedComponent,
         title: 'Listing posted · Barnabas',
       },
+      // A route per kind, for the same reason the API has an endpoint per kind: the four collect
+      // different terms, and the kind is part of the address rather than something the form has
+      // to work out after it loads.
       {
-        path: 'listings/:listingId/request',
+        path: 'listings/:listingId/request/lend',
         component: RequestLendComponent,
         title: 'Request to borrow · Barnabas',
+      },
+      {
+        path: 'listings/:listingId/request/give',
+        component: RequestGiveComponent,
+        title: 'Request this · Barnabas',
+      },
+      {
+        path: 'listings/:listingId/request/sell',
+        component: RequestSellComponent,
+        title: 'Request to buy · Barnabas',
+      },
+      {
+        path: 'listings/:listingId/request/help',
+        component: RequestHelpComponent,
+        title: 'Request this help · Barnabas',
       },
       { path: 'listings/:listingId', component: ListingDetailComponent, title: 'Listing · Barnabas' },
 

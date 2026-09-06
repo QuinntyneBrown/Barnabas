@@ -3,7 +3,10 @@ using Barnabas.Application.Requests.AcceptRequest;
 using Barnabas.Application.Requests.DeclineRequest;
 using Barnabas.Application.Requests.GetIncomingRequests;
 using Barnabas.Application.Requests.GetMyRequests;
+using Barnabas.Application.Requests.MakeGiftRequest;
+using Barnabas.Application.Requests.MakeHelpRequest;
 using Barnabas.Application.Requests.MakeLoanRequest;
+using Barnabas.Application.Requests.MakePurchaseRequest;
 using Barnabas.Domain.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +18,9 @@ namespace Barnabas.Api.Controllers;
 /// </summary>
 /// <remarks>
 /// Making a request is routed under the listing it concerns; deciding one is routed under the
-/// request. Only the loan endpoint exists in feature slice 1 - the other three kinds are each
-/// one more command, handler, and validator.
+/// request. One endpoint per kind, because the four collect different terms and refuse different
+/// fields - and because the endpoint is what ties a request to the kind of listing it is against,
+/// which is the check that stops a Sell listing acquiring a request carrying loan terms.
 /// </remarks>
 [ApiController]
 public sealed class RequestsController : ControllerBase
@@ -44,6 +48,63 @@ public sealed class RequestsController : ControllerBase
                 request.PickupOn,
                 request.ReturnBy,
                 request.LoanAcknowledged),
+            cancellationToken);
+
+        return Created($"/requests/{made.RequestId}", made);
+    }
+
+    [HttpPost("listings/{listingId:guid}/requests/gift")]
+    [ProducesResponseType<MadeRequestResult>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<MadeRequestResult>> MakeGiftRequest(
+        Guid listingId,
+        MakeGiftRequestRequest request,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var made = await _sender.Send(
+            new MakeGiftRequestCommand(listingId, request.Message, request.PickupAt),
+            cancellationToken);
+
+        return Created($"/requests/{made.RequestId}", made);
+    }
+
+    [HttpPost("listings/{listingId:guid}/requests/purchase")]
+    [ProducesResponseType<MadeRequestResult>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<MadeRequestResult>> MakePurchaseRequest(
+        Guid listingId,
+        MakePurchaseRequestRequest request,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var made = await _sender.Send(
+            new MakePurchaseRequestCommand(listingId, request.Message, request.PickupAt),
+            cancellationToken);
+
+        return Created($"/requests/{made.RequestId}", made);
+    }
+
+    [HttpPost("listings/{listingId:guid}/requests/help")]
+    [ProducesResponseType<MadeRequestResult>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<MadeRequestResult>> MakeHelpRequest(
+        Guid listingId,
+        MakeHelpRequestRequest request,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var made = await _sender.Send(
+            new MakeHelpRequestCommand(listingId, request.Message, request.AvailabilityWindowId),
             cancellationToken);
 
         return Created($"/requests/{made.RequestId}", made);

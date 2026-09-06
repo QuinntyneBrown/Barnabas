@@ -52,6 +52,12 @@ public sealed class ListingRequest : ITenantOwned
     /// <summary>Present on a request against a Lend listing and on no other kind.</summary>
     public LoanRequestTerms? LoanTerms { get; private set; }
 
+    /// <summary>Present on a request against a Give or Sell listing, and on no other kind.</summary>
+    public PickupRequestTerms? PickupTerms { get; private set; }
+
+    /// <summary>Present on a request against a Help listing and on no other kind.</summary>
+    public HelpRequestTerms? HelpTerms { get; private set; }
+
     /// <summary>
     /// Concurrency token, checked on save.
     /// </summary>
@@ -77,6 +83,64 @@ public sealed class ListingRequest : ITenantOwned
         new(id, congregationId, listingId, requesterId, message, madeAt)
         {
             LoanTerms = new LoanRequestTerms(pickupOn, returnBy),
+        };
+
+    /// <summary>
+    /// Asks for a Give listing. Ownership transfers, so there is a pickup and no return.
+    /// </summary>
+    public static ListingRequest MakeGiftRequest(
+        Guid id,
+        Guid congregationId,
+        Guid listingId,
+        Guid requesterId,
+        string message,
+        DateTimeOffset pickupAt,
+        DateTimeOffset madeAt) =>
+        new(id, congregationId, listingId, requesterId, message, madeAt)
+        {
+            PickupTerms = new PickupRequestTerms(pickupAt),
+        };
+
+    /// <summary>
+    /// Asks to buy a Sell listing.
+    /// </summary>
+    /// <remarks>
+    /// Identical in shape to a gift request, and deliberately so: the difference between them is
+    /// that a sale has a price on the listing, and that price is settled between the two members
+    /// rather than here. Nothing about money is recorded on the request.
+    /// </remarks>
+    public static ListingRequest MakePurchaseRequest(
+        Guid id,
+        Guid congregationId,
+        Guid listingId,
+        Guid requesterId,
+        string message,
+        DateTimeOffset pickupAt,
+        DateTimeOffset madeAt) =>
+        new(id, congregationId, listingId, requesterId, message, madeAt)
+        {
+            PickupTerms = new PickupRequestTerms(pickupAt),
+        };
+
+    /// <summary>
+    /// Asks for help in one of the windows the offer declared.
+    /// </summary>
+    /// <remarks>
+    /// The caller has already been checked against the listing's declared windows. This factory
+    /// does not repeat that check because it holds no listing to check against; the handler that
+    /// loaded the listing is the only place that can.
+    /// </remarks>
+    public static ListingRequest MakeHelpRequest(
+        Guid id,
+        Guid congregationId,
+        Guid listingId,
+        Guid requesterId,
+        string message,
+        Guid availabilityWindowId,
+        DateTimeOffset madeAt) =>
+        new(id, congregationId, listingId, requesterId, message, madeAt)
+        {
+            HelpTerms = new HelpRequestTerms(availabilityWindowId),
         };
 
     /// <summary>

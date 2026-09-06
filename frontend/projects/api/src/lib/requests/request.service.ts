@@ -7,7 +7,10 @@ import { AcceptedRequest } from '../models/accepted-request';
 import { DeclinedRequest } from '../models/declined-request';
 import { IncomingRequest } from '../models/incoming-request';
 import { MadeRequest } from '../models/made-request';
+import { MakeGiftRequest } from '../models/make-gift-request';
+import { MakeHelpRequest } from '../models/make-help-request';
 import { MakeLoanRequest } from '../models/make-loan-request';
+import { MakePurchaseRequest } from '../models/make-purchase-request';
 import { MyRequest } from '../models/my-request';
 import { IRequestService } from './request.service.contract';
 
@@ -20,6 +23,24 @@ export class RequestService implements IRequestService {
   askToBorrow(listingId: string, request: MakeLoanRequest): Promise<MadeRequest> {
     return firstValueFrom(
       this.http.post<MadeRequest>(`${this.baseUrl}/listings/${listingId}/requests/loan`, request),
+    );
+  }
+
+  askForGift(listingId: string, request: MakeGiftRequest): Promise<MadeRequest> {
+    return firstValueFrom(
+      this.http.post<MadeRequest>(`${this.baseUrl}/listings/${listingId}/requests/gift`, request),
+    );
+  }
+
+  askToBuy(listingId: string, request: MakePurchaseRequest): Promise<MadeRequest> {
+    return firstValueFrom(
+      this.http.post<MadeRequest>(`${this.baseUrl}/listings/${listingId}/requests/purchase`, request),
+    );
+  }
+
+  askForHelp(listingId: string, request: MakeHelpRequest): Promise<MadeRequest> {
+    return firstValueFrom(
+      this.http.post<MadeRequest>(`${this.baseUrl}/listings/${listingId}/requests/help`, request),
     );
   }
 

@@ -6,6 +6,7 @@
       <a class="btn btn-primary" routerLink="/board">Back to the board</a>
     </div>
   } @else if (listing(); as detail) {
+    @let words = wordsFor(detail.kind);
     <a class="back-link" routerLink="/board">&larr; Board</a>
 
     <div class="detail">
@@ -23,11 +24,28 @@
             <dt>Neighbourhood</dt>
             <dd>{{ detail.neighbourhood }}</dd>
           </div>
+          @if (detail.condition) {
+            <div>
+              <dt>Condition</dt>
+              <dd>{{ detail.condition }}</dd>
+            </div>
+          }
           <div>
             <dt>Category</dt>
             <dd>{{ detail.category }}</dd>
           </div>
         </dl>
+
+        @if (detail.availabilityWindows.length > 0) {
+          <dl class="facts">
+            <div>
+              <dt>When {{ detail.ownerDisplayName }} is free</dt>
+              @for (window of detail.availabilityWindows; track window.availabilityWindowId) {
+                <dd>{{ window.day }}, {{ window.startsAt }}&ndash;{{ window.endsAt }}</dd>
+              }
+            </div>
+          </dl>
+        }
       </div>
 
       <div class="detail__aside stack-4">
@@ -38,6 +56,8 @@
 
         @if (detail.price !== null) {
           <p class="detail__price">${{ detail.price }} CAD</p>
+          <!-- L2-034: the figure never stands on its own. -->
+          <p class="note">Payment is arranged directly between members, in person.</p>
         }
 
         <span class="person">
@@ -48,7 +68,7 @@
         @if (detail.isOwnedByCaller) {
           <div class="btn-group">
             <button class="btn btn-secondary" type="button" (click)="closeOutDialog.open()">
-              Mark as taken
+              {{ words.closeOut }}
             </button>
           </div>
           <p class="note">
@@ -58,8 +78,8 @@
         } @else if (detail.status === 'Active') {
           <a
             class="btn btn-primary btn-lg btn-block"
-            [routerLink]="['/listings', detail.listingId, 'request']"
-            >Request to borrow</a
+            [routerLink]="['/listings', detail.listingId, 'request', words.requestPath]"
+            >{{ words.ask }}</a
           >
           <p class="note">
             {{ detail.ownerDisplayName }} arranges the handoff with you directly. Barnabas does not
@@ -73,7 +93,7 @@
 
     <bar-confirm-dialog
       #closeOutDialog
-      heading="Mark this as gone?"
+      [heading]="words.closeOutHeading"
       body="It comes off the board and moves to your wrapped-up listings, where it keeps its outcome."
       confirmLabel="Mark it"
       (confirmed)="closeOut()"

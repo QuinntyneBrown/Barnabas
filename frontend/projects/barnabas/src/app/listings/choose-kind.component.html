@@ -7,16 +7,29 @@
 </div>
 
 <div class="container section stack-5">
+  <!--
+    All four kinds and no detail fields. The kind is chosen here and becomes the address of the
+    form that follows, so it is never defaulted and never changes underneath a half-filled form.
+    L2-026.
+  -->
   <nav class="option-grid option-grid--2" aria-label="Choose a listing kind">
     <a class="option option--lend" routerLink="/post/lend">
       <span class="option__title">Lend</span>
       <span class="option__desc">Something you will want back.</span>
     </a>
+    <a class="option option--give" routerLink="/post/give">
+      <span class="option__title">Give</span>
+      <span class="option__desc">Something you are passing on for good.</span>
+    </a>
+    <a class="option option--sell" routerLink="/post/sell">
+      <span class="option__title">Sell</span>
+      <span class="option__desc">Something you are asking a price for.</span>
+    </a>
+    <a class="option option--help" routerLink="/post/help">
+      <span class="option__title">Help</span>
+      <span class="option__desc">Time you can offer — a lift, a hand, an hour.</span>
+    </a>
   </nav>
-
-  <p class="muted">
-    Give, Sell, and Help are on their way. Lend is the one the board can take today.
-  </p>
 
   <a class="btn btn-ghost" routerLink="/board">Cancel</a>
 </div>

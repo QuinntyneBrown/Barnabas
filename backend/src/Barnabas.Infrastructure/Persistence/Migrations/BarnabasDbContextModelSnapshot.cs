@@ -179,6 +179,10 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("ClosedOutAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Condition")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<Guid>("CongregationId")
                         .HasColumnType("uniqueidentifier");
 
@@ -400,6 +404,33 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Barnabas.Domain.Listings.Listing", b =>
                 {
+                    b.OwnsMany("Barnabas.Domain.Listings.AvailabilityWindow", "AvailabilityWindows", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Day")
+                                .HasColumnType("int");
+
+                            b1.Property<TimeOnly>("EndsAt")
+                                .HasColumnType("time");
+
+                            b1.Property<Guid>("ListingId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<TimeOnly>("StartsAt")
+                                .HasColumnType("time");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ListingId");
+
+                            b1.ToTable("AvailabilityWindows", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("ListingId");
+                        });
+
                     b.OwnsOne("Barnabas.Domain.Listings.LoanTerms", "LoanTerms", b1 =>
                         {
                             b1.Property<Guid>("ListingId")
@@ -416,6 +447,8 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ListingId");
                         });
+
+                    b.Navigation("AvailabilityWindows");
 
                     b.Navigation("LoanTerms");
                 });
@@ -440,6 +473,23 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Barnabas.Domain.Requests.ListingRequest", b =>
                 {
+                    b.OwnsOne("Barnabas.Domain.Requests.HelpRequestTerms", "HelpTerms", b1 =>
+                        {
+                            b1.Property<Guid>("ListingRequestId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<Guid>("AvailabilityWindowId")
+                                .HasColumnType("uniqueidentifier")
+                                .HasColumnName("AvailabilityWindowId");
+
+                            b1.HasKey("ListingRequestId");
+
+                            b1.ToTable("ListingRequests");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ListingRequestId");
+                        });
+
                     b.OwnsOne("Barnabas.Domain.Requests.LoanRequestTerms", "LoanTerms", b1 =>
                         {
                             b1.Property<Guid>("ListingRequestId")
@@ -461,7 +511,28 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("ListingRequestId");
                         });
 
+                    b.OwnsOne("Barnabas.Domain.Requests.PickupRequestTerms", "PickupTerms", b1 =>
+                        {
+                            b1.Property<Guid>("ListingRequestId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTimeOffset>("PickupAt")
+                                .HasColumnType("datetimeoffset")
+                                .HasColumnName("PickupAt");
+
+                            b1.HasKey("ListingRequestId");
+
+                            b1.ToTable("ListingRequests");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ListingRequestId");
+                        });
+
+                    b.Navigation("HelpTerms");
+
                     b.Navigation("LoanTerms");
+
+                    b.Navigation("PickupTerms");
                 });
 
             modelBuilder.Entity("Barnabas.Domain.Messaging.MessageThread", b =>
