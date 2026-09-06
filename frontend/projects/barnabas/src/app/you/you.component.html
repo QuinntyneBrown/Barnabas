@@ -16,6 +16,15 @@
     </a>
   </div>
 
+  @if (isModerator()) {
+    <div class="hub">
+      <a routerLink="/moderation/invite">
+        <span class="hub__label">Moderator tools</span>
+        <span class="hub__meta">Invite somebody to the board</span>
+      </a>
+    </div>
+  }
+
   <button class="btn btn-ghost" type="button" (click)="signOutDialog.open()">Sign out</button>
 </div>
 

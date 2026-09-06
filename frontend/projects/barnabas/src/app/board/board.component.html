@@ -1,6 +1,6 @@
 <div class="masthead on-ink">
   <div class="container stack-3">
-    <h1 class="masthead-title">St.&nbsp;Aidan's board</h1>
+    <h1 class="masthead-title">{{ congregationName() }} board</h1>
 
     @if (loading()) {
       <p class="masthead-note">Loading listings…</p>
@@ -48,7 +48,7 @@
   @if (failed()) {
     <div class="state stack-4">
       <h2>The board did not load</h2>
-      <p>Something went wrong between here and St.&nbsp;Aidan's. Nothing you posted has been lost.</p>
+      <p>Something went wrong between here and the board. Nothing you posted has been lost.</p>
       <div class="btn-group">
         <button class="btn btn-primary" type="button" (click)="retry()">Try again</button>
       </div>

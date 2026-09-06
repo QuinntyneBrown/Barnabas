@@ -1,0 +1,29 @@
+<div class="masthead masthead--stone masthead--short">
+  <div class="container stack-2">
+    <a class="back-link" routerLink="/you">&larr; You</a>
+    <h1 class="masthead-title">Invite someone</h1>
+    <p class="masthead-note">A code to hand to somebody who should be on the board.</p>
+  </div>
+</div>
+
+<div class="container section stack-5">
+  @if (issued(); as invite) {
+    <div class="field-block field-block--paper stack-3">
+      <p class="muted">Give them this code.</p>
+      <!-- Read aloud and typed by hand, so it is set large and spaced. -->
+      <p class="display">{{ invite.code }}</p>
+      <p class="muted small">It works once, and stops working on {{ invite.expiresAt }}.</p>
+    </div>
+  }
+
+  @if (failed()) {
+    <p class="field-error" role="alert">The code could not be issued. Try again in a moment.</p>
+  }
+
+  <div class="btn-group">
+    <button class="btn btn-primary btn-lg" type="button" [disabled]="issuing()" (click)="issue()">
+      {{ issued() ? 'Issue another code' : 'Issue a code' }}
+    </button>
+    <a class="btn btn-ghost btn-lg" routerLink="/you">Done</a>
+  </div>
+</div>

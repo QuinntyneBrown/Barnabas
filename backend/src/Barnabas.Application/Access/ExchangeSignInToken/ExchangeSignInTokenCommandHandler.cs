@@ -70,6 +70,6 @@ public sealed class ExchangeSignInTokenCommandHandler : IRequestHandler<Exchange
 
         var access = _issuer.Issue(member, session);
 
-        return new SessionResult(session.Id, access.Value, access.ExpiresOn, refreshSecret);
+        return new SessionResult(session.Id, access.Value, access.ExpiresOn, refreshSecret, member.Status, member.Role);
     }
 }

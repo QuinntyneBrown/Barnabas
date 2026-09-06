@@ -1,0 +1,26 @@
+<div class="container section">
+  <div class="state stack-4">
+    <h1>{{ heading() }}</h1>
+
+    @switch (refusal()) {
+      @case ('unrecognised') {
+        <p>Check the code against what you were given — it is easy to read one character for another.</p>
+      }
+      @case ('spent') {
+        <!-- Expired, already used, or withdrawn. Which of the three is deliberately not said. -->
+        <p>Ask whoever invited you for a fresh code.</p>
+      }
+      @case ('throttled') {
+        <p>That is a lot of attempts in a short time. Wait a while and try again.</p>
+      }
+      @default {
+        <p>Something went wrong between here and your congregation. Try again in a moment.</p>
+      }
+    }
+
+    <div class="btn-group">
+      <a class="btn btn-primary" routerLink="/join">Try another code</a>
+      <a class="btn btn-ghost" routerLink="/">Back</a>
+    </div>
+  </div>
+</div>

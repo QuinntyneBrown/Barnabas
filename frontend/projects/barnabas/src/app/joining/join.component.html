@@ -1,0 +1,30 @@
+<div class="masthead masthead--stone masthead--short">
+  <div class="container stack-2">
+    <h1 class="masthead-title">Join your congregation</h1>
+    <p class="masthead-note">Somebody at your parish will have given you a code.</p>
+  </div>
+</div>
+
+<div class="container section">
+  <form class="form stack-7" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="code">Invite code</label>
+      <input
+        type="text"
+        id="code"
+        name="code"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="ABCD2345"
+        [ngModel]="code()"
+        (ngModelChange)="code.set($event)"
+      />
+      <p class="field-hint">Capitals or not, and a space in the middle is fine.</p>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary btn-lg" type="submit" [disabled]="redeeming()">Continue</button>
+      <a class="btn btn-ghost btn-lg" routerLink="/">Back</a>
+    </div>
+  </form>
+</div>

@@ -18,6 +18,14 @@ import { ConfirmDialogComponent } from '@barnabas/components';
 })
 export class YouComponent {
   private readonly session = inject(SessionStore);
+
+  /**
+   * Whether to offer the moderator's own tools.
+   *
+   * Hiding the entry is presentation and nothing more: the API refuses an ordinary member the
+   * queue and the invite endpoint regardless. L2-003 asks for both halves.
+   */
+  readonly isModerator = this.session.isModerator;
   private readonly router = inject(Router);
 
   async signOut(): Promise<void> {
