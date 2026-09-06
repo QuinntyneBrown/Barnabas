@@ -44,8 +44,17 @@ say what it cost rather than quietly narrowing scope.
 
 - Prefer signals over RxJS. Reach for RxJS only for genuine streams and events.
 - No single-file components. Template, styles, and class each live in their own file.
-- Consume services through an interface, never a concrete class. The component
-  depends on the abstraction; the implementation is provided by DI.
+- Consume services through an interface, never a concrete class. A contract is a
+  TypeScript `interface` and an `InjectionToken` declared together in a
+  `*.contract.ts` file; a consumer calls `inject(THE_TOKEN)` and has no
+  compile-time knowledge of any implementation.
+- Prefix an interface with `I` only where it is a behavioural contract with
+  swappable implementations — `IListingsApi`, against `ListingsApi` and
+  `ListingsApiMock`. The implementation drops the prefix and never takes an
+  `Impl` suffix. A data structure that nothing polymorphs over carries no prefix.
+- Bind a token to an implementation at the host and nowhere else: the application
+  binds the real one, a test host binds the mock. Nothing beneath the host names
+  both, which is what makes the seam a real one.
 - Organize the workspace into `api`, `components`, and `domain` libraries.
 - Keep components presentational. Behavior belongs in services, state in signals.
 
