@@ -40,6 +40,10 @@ import { ThreadsComponent } from './messaging/threads.component';
 
 import { InviteSomeoneComponent } from './moderation/invite-someone.component';
 
+import { DirectoryComponent } from './members/directory.component';
+import { MemberProfileComponent } from './members/member-profile.component';
+
+import { ProfileSettingsComponent } from './you/profile-settings.component';
 import { YouComponent } from './you/you.component';
 
 import { ComingSoonComponent } from './placeholders/coming-soon.component';
@@ -174,6 +178,11 @@ export const routes: Routes = [
       { path: 'threads/:threadId', component: ThreadComponent, title: 'Messages · Barnabas' },
 
       { path: 'you', component: YouComponent, title: 'You · Barnabas' },
+      {
+        path: 'you/profile',
+        component: ProfileSettingsComponent,
+        title: 'Profile and settings · Barnabas',
+      },
 
       {
         path: 'moderation/invite',
@@ -200,15 +209,8 @@ export const routes: Routes = [
           body: 'Requests and replies are in your inbox in the meantime.',
         },
       },
-      {
-        path: 'members/:memberId',
-        component: ComingSoonComponent,
-        title: 'Member · Barnabas',
-        data: {
-          heading: 'Member profiles are on their way',
-          body: 'You can see who posted a listing on the listing itself.',
-        },
-      },
+      { path: 'directory', component: DirectoryComponent, title: 'Directory · Barnabas' },
+      { path: 'members/:memberId', component: MemberProfileComponent, title: 'Member · Barnabas' },
     ],
   },
   // Says so rather than redirecting. A member who mistyped an address was being shown the

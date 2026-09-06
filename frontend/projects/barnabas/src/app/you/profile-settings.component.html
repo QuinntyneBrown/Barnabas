@@ -1,0 +1,131 @@
+<div class="masthead masthead--stone masthead--short">
+  <div class="container stack-2">
+    <a class="back-link" routerLink="/you">&larr; You</a>
+    <h1 class="masthead-title">Profile and settings</h1>
+  </div>
+</div>
+
+<div class="container section">
+  @if (loading() && profile() === null) {
+    <p role="status">Loading your profile.</p>
+  } @else if (profile(); as saved) {
+    <form class="form stack-7" (ngSubmit)="save()">
+      <div class="field">
+        <label for="displayName">What the congregation calls you</label>
+        <input
+          type="text"
+          id="displayName"
+          name="displayName"
+          [ngModel]="displayName()"
+          (ngModelChange)="displayName.set($event); touched()"
+          [attr.aria-invalid]="errors().has('displayName') ? 'true' : null"
+          [attr.aria-describedby]="errors().has('displayName') ? 'displayName-error' : null"
+        />
+        @if (errors().messageFor('displayName'); as message) {
+          <p class="field-error" id="displayName-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="hood">Neighbourhood</label>
+        <!-- This congregation's, returned with the profile. Free text is refused at the API too. -->
+        <select
+          id="hood"
+          name="hood"
+          [ngModel]="neighbourhood()"
+          (ngModelChange)="neighbourhood.set($event); touched()"
+          [attr.aria-invalid]="errors().has('neighbourhood') ? 'true' : null"
+          [attr.aria-describedby]="errors().has('neighbourhood') ? 'hood-error' : null"
+        >
+          @for (option of neighbourhoods(); track option) {
+            <option [value]="option">{{ option }}</option>
+          }
+        </select>
+        @if (errors().messageFor('neighbourhood'); as message) {
+          <p class="field-error" id="hood-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="description">A few words about you</label>
+        <p class="field-hint">Shown on your profile to the rest of the congregation.</p>
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          [ngModel]="description()"
+          (ngModelChange)="description.set($event); touched()"
+          [attr.aria-invalid]="errors().has('description') ? 'true' : null"
+          [attr.aria-describedby]="errors().has('description') ? 'description-error' : null"
+        ></textarea>
+        @if (errors().messageFor('description'); as message) {
+          <p class="field-error" id="description-error">{{ message }}</p>
+        }
+      </div>
+
+      <fieldset class="field" [attr.aria-describedby]="errors().has('helpTags') ? 'helpTags-error' : 'helpTags-hint'">
+        <legend>What you can help with</legend>
+        <p class="field-hint" id="helpTags-hint">
+          People search the directory by these, so pick what you would actually say yes to.
+        </p>
+
+        <div class="check-grid">
+          @for (tag of availableHelpTags(); track tag) {
+            <div class="choice">
+              <input
+                type="checkbox"
+                [attr.id]="'tag-' + tag"
+                [name]="'tag-' + tag"
+                [ngModel]="offers(tag)"
+                (ngModelChange)="toggle(tag)"
+              />
+              <label [attr.for]="'tag-' + tag">{{ tag }}</label>
+            </div>
+          }
+        </div>
+
+        @if (errors().messageFor('helpTags'); as message) {
+          <p class="field-error" id="helpTags-error">{{ message }}</p>
+        }
+      </fieldset>
+
+      <div class="field">
+        <label for="email">Email address</label>
+        <p class="field-hint">
+          Where your sign-in link goes. Barnabas holds no password, so this is the only way back in
+          — ask a moderator if it needs changing.
+        </p>
+        <input type="email" id="email" name="email" [value]="saved.emailAddress" disabled />
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg" type="submit" [disabled]="saving()">Save changes</button>
+      </div>
+
+      <!--
+        Confirmed without leaving the screen. A member correcting a description has not finished
+        with it, and being thrown back to the board would make small corrections expensive.
+      -->
+      @if (savedJustNow()) {
+        <p class="note" role="status">Saved</p>
+      }
+    </form>
+
+    <div class="section stack-3">
+      <h2>Leave the board</h2>
+      <p class="muted">
+        Your listings come off the board and you are signed out. Nothing you have said to anybody
+        disappears.
+      </p>
+      <button class="btn btn-ghost" type="button" (click)="leaveDialog.open()">Leave {{ 'the board' }}</button>
+    </div>
+  }
+</div>
+
+<bar-confirm-dialog
+  #leaveDialog
+  heading="Leave the board?"
+  body="Your active listings come off the board and you are signed out. You would need a fresh invite code to come back."
+  confirmLabel="Leave"
+  (confirmed)="leave()"
+/>

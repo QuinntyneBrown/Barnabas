@@ -37,6 +37,32 @@ public sealed record RedeemedInviteCode(
 
 public sealed record JoinedCongregation(Guid MemberId, string CongregationName, string Status);
 
+public sealed record MyProfileBody(
+    Guid MemberId,
+    string DisplayName,
+    string EmailAddress,
+    string Neighbourhood,
+    string? Description,
+    IReadOnlyList<string> HelpTags,
+    IReadOnlyList<string> Neighbourhoods,
+    IReadOnlyList<string> AvailableHelpTags);
+
+public sealed record ProfileListingBody(Guid ListingId, string Kind, string Title, decimal? Price);
+
+public sealed record MemberProfileBody(
+    Guid MemberId,
+    string DisplayName,
+    string Neighbourhood,
+    string? Description,
+    IReadOnlyList<string> HelpTags,
+    IReadOnlyList<ProfileListingBody> ActiveListings);
+
+public sealed record DirectoryMemberBody(
+    Guid MemberId,
+    string DisplayName,
+    string Neighbourhood,
+    IReadOnlyList<string> HelpTags);
+
 public sealed record BoardListingBody(
     Guid ListingId,
     string Kind,

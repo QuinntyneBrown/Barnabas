@@ -13,6 +13,7 @@ export * from './lib/congregations/congregation.service.contract';
 export * from './lib/invitations/invitation.service.contract';
 export * from './lib/invitations/invite.service.contract';
 export * from './lib/listings/listing.service.contract';
+export * from './lib/members/member.service.contract';
 export * from './lib/requests/request.service.contract';
 export * from './lib/threads/thread.service.contract';
 
@@ -21,6 +22,7 @@ export * from './lib/congregations/congregation.service';
 export * from './lib/invitations/invitation.service';
 export * from './lib/invitations/invite.service';
 export * from './lib/listings/listing.service';
+export * from './lib/members/member.service';
 export * from './lib/requests/request.service';
 export * from './lib/threads/thread.service';
 
@@ -36,6 +38,7 @@ export * from './lib/models/listing-status';
 export * from './lib/models/request-status';
 export * from './lib/models/session';
 export * from './lib/models/congregation';
+export * from './lib/models/member-profile';
 export * from './lib/models/redeemed-invite';
 export * from './lib/models/board-listing';
 export * from './lib/models/board-page';
