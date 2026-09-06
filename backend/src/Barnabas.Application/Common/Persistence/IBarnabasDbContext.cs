@@ -3,6 +3,7 @@ using Barnabas.Domain.Congregations;
 using Barnabas.Domain.Listings;
 using Barnabas.Domain.Members;
 using Barnabas.Domain.Messaging;
+using Barnabas.Domain.Moderation;
 using Barnabas.Domain.Notifications;
 using Barnabas.Domain.Requests;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,8 @@ public interface IBarnabasDbContext
     DbSet<MessageThread> MessageThreads { get; }
 
     DbSet<Message> Messages { get; }
+
+    DbSet<ListingReport> ListingReports { get; }
 
     DbSet<Notification> Notifications { get; }
 

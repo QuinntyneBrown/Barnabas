@@ -85,6 +85,19 @@
             {{ detail.ownerDisplayName }} arranges the handoff with you directly. Barnabas does not
             manage deposits, delivery, or returns.
           </p>
+
+          <button class="btn btn-ghost btn-sm" type="button" (click)="reportDialog.open()">
+            Report this listing
+          </button>
+
+          <!-- Beside the button that opens it, because a template reference reaches only within
+               its own block. Only somebody who is not the owner ever sees either. -->
+          <bar-report-listing-dialog
+            #reportDialog
+            [listingId]="detail.listingId"
+            [ownerDisplayName]="detail.ownerDisplayName"
+            (sent)="reported()"
+          />
         } @else {
           <p class="note">This listing has been taken off the board.</p>
         }

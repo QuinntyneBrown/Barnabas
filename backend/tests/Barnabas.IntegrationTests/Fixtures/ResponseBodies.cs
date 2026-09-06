@@ -196,3 +196,33 @@ public sealed record ThreadDetailBody(
     string OtherMemberDisplayName,
     string RequestStatus,
     IReadOnlyList<MessageBody> Messages);
+
+public sealed record ReportedListing(Guid ReportId, Guid ListingId);
+
+public sealed record ListingReportBody(
+    Guid ReportId,
+    string Reason,
+    string? Note,
+    Guid ReporterId,
+    string ReporterDisplayName,
+    DateTimeOffset ReportedAt);
+
+public sealed record FlaggedListingBody(
+    Guid ListingId,
+    string Kind,
+    string Title,
+    string Description,
+    Guid OwnerId,
+    string OwnerDisplayName,
+    DateTimeOffset FlaggedAt,
+    IReadOnlyList<ListingReportBody> Reports);
+
+public sealed record ReviewedListing(Guid ListingId, string Status, bool Flagged);
+
+public sealed record PendingMemberBody(
+    Guid MemberId,
+    string DisplayName,
+    string Neighbourhood,
+    string? ReasonForJoining);
+
+public sealed record DecidedMember(Guid MemberId, string Status);

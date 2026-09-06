@@ -10,10 +10,6 @@ export class ListingDetailPage {
   constructor(private readonly page: Page) {}
 
   get title(): Locator {
-    return this.page.getByRole('heading', { level: 1 });
-  }
-
-  get title(): Locator {
     return this.page.locator('.detail__title');
   }
 
@@ -62,6 +58,11 @@ export class ListingDetailPage {
    */
   get askAction(): Locator {
     return this.page.getByRole('link', { name: /^Request/ });
+  }
+
+  /** Any member but the owner may report it. The owner is not offered it at all. */
+  get report(): Locator {
+    return this.page.getByRole('button', { name: 'Report this listing' });
   }
 
   async ask(): Promise<void> {

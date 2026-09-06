@@ -250,6 +250,9 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(4000)")
                         .UseCollation("SQL_Latin1_General_CP1_CI_AS");
 
+                    b.Property<DateTimeOffset?>("FlaggedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<int>("Kind")
                         .HasColumnType("int");
 
@@ -268,6 +271,9 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTimeOffset?>("RemovedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -280,6 +286,10 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
+
+                    b.HasIndex("CongregationId", "FlaggedAt")
+                        .HasDatabaseName("IX_Listings_Flagged")
+                        .HasFilter("[FlaggedAt] IS NOT NULL");
 
                     b.HasIndex("CongregationId", "Status", "PostedAt");
 
@@ -425,6 +435,50 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("ThreadReadMarks", (string)null);
+                });
+
+            modelBuilder.Entity("Barnabas.Domain.Moderation.ListingReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CongregationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("Outcome")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Reason")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("ReportedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ReporterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ResolvedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("ResolvedByMemberId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CongregationId", "ResolvedAt");
+
+                    b.HasIndex("ListingId", "ReporterId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ListingReports_OneReportPerMember");
+
+                    b.ToTable("ListingReports", (string)null);
                 });
 
             modelBuilder.Entity("Barnabas.Domain.Notifications.Notification", b =>

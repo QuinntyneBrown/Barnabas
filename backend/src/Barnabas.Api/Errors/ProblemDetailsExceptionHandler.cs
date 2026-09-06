@@ -6,6 +6,7 @@ using Barnabas.Domain.Access;
 using Barnabas.Domain.Common;
 using Barnabas.Domain.Listings;
 using Barnabas.Domain.Messaging;
+using Barnabas.Domain.Moderation;
 using Barnabas.Domain.Requests;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
@@ -156,6 +157,16 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
             "That role cannot be granted here."),
 
         ListingNotActiveException => Problem(StatusCodes.Status409Conflict, "The listing is no longer active."),
+
+        // Reported once, permanently. Unlike a declined request, which may be asked again, there
+        // is no second reading of the same complaint from the same person - L2-080 AC2.
+        AlreadyReportedException => Problem(
+            StatusCodes.Status409Conflict,
+            "You have already reported that listing."),
+
+        ListingNotFlaggedException => Problem(
+            StatusCodes.Status409Conflict,
+            "That listing has not been reported."),
 
         ListingNotRestorableException => Problem(
             StatusCodes.Status409Conflict,

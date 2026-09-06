@@ -26,9 +26,13 @@
 
   @if (isModerator()) {
     <div class="hub">
-      <a routerLink="/moderation/invite">
+      <a routerLink="/moderation/queue">
         <span class="hub__label">Moderator tools</span>
-        <span class="hub__meta">Invite somebody to the board</span>
+        <span class="hub__meta">Reported listings, and members waiting to join</span>
+      </a>
+      <a routerLink="/moderation/invite">
+        <span class="hub__label">Invite someone</span>
+        <span class="hub__meta">A code to hand to somebody who should be here</span>
       </a>
     </div>
   }

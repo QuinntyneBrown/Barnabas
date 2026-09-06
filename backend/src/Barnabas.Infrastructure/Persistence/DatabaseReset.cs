@@ -36,6 +36,7 @@ public sealed class DatabaseReset
         "ThreadReadMarks",
         "MessageThreads",
         "ListingRequests",
+        "ListingReports",
         "AvailabilityWindows",
         "Listings",
         "RefreshTokens",
