@@ -92,6 +92,14 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
 
         ListingNotActiveException => Problem(StatusCodes.Status409Conflict, "The listing is no longer active."),
 
+        ListingNotRestorableException => Problem(
+            StatusCodes.Status409Conflict,
+            "The listing cannot be put back on the board."),
+
+        ListingStillOnTheBoardException => Problem(
+            StatusCodes.Status409Conflict,
+            "Take the listing off the board before deleting it."),
+
         RequestAlreadyDecidedException => Problem(StatusCodes.Status409Conflict, "The request has already been decided."),
 
         NotAPartyException => Problem(StatusCodes.Status404NotFound, "The thread was not found."),

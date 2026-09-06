@@ -1,10 +1,15 @@
+using Barnabas.Api.Contracts;
+using Barnabas.Application.Listings.ArchiveListing;
 using Barnabas.Application.Listings.CloseOutListing;
+using Barnabas.Application.Listings.DeleteListing;
+using Barnabas.Application.Listings.EditListing;
 using Barnabas.Application.Listings.GetListing;
 using Barnabas.Application.Listings.GetMyListings;
 using Barnabas.Application.Listings.PostGiveListing;
 using Barnabas.Application.Listings.PostHelpListing;
 using Barnabas.Application.Listings.PostLendListing;
 using Barnabas.Application.Listings.PostSellListing;
+using Barnabas.Application.Listings.RestoreListing;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -98,6 +103,64 @@ public sealed class ListingsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ListingDetailDto>> Get(Guid listingId, CancellationToken cancellationToken) =>
         Ok(await _sender.Send(new GetListingQuery(listingId), cancellationToken));
+
+    /// <summary>Corrects a listing's details. Not its kind.</summary>
+    [HttpPut("{listingId:guid}")]
+    [ProducesResponseType<EditedListingResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EditedListingResult>> Edit(
+        Guid listingId,
+        EditListingRequest request,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        return Ok(await _sender.Send(
+            new EditListingCommand(
+                listingId,
+                request.Title,
+                request.Description,
+                request.Category,
+                request.Neighbourhood),
+            cancellationToken));
+    }
+
+    /// <summary>Takes it off the board, keeping it recoverable.</summary>
+    [HttpPost("{listingId:guid}/archive")]
+    [ProducesResponseType<ArchivedListingResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<ArchivedListingResult>> Archive(
+        Guid listingId,
+        CancellationToken cancellationToken) =>
+        Ok(await _sender.Send(new ArchiveListingCommand(listingId), cancellationToken));
+
+    /// <summary>Puts a shelved listing back. A closed-out one stays where it is.</summary>
+    [HttpPost("{listingId:guid}/restore")]
+    [ProducesResponseType<RestoredListingResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<RestoredListingResult>> Restore(
+        Guid listingId,
+        CancellationToken cancellationToken) =>
+        Ok(await _sender.Send(new RestoreListingCommand(listingId), cancellationToken));
+
+    /// <summary>Removes it for good, along with the conversations it opened.</summary>
+    [HttpDelete("{listingId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult> Delete(Guid listingId, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteListingCommand(listingId), cancellationToken);
+
+        return NoContent();
+    }
 
     [HttpPost("{listingId:guid}/close-out")]
     [ProducesResponseType<CloseOutListingResult>(StatusCodes.Status200OK)]

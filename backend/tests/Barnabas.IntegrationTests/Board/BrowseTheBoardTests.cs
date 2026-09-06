@@ -6,7 +6,7 @@ using Barnabas.Infrastructure.Persistence.Seeding;
 namespace Barnabas.IntegrationTests.Board;
 
 // Acceptance Test
-// Traces to: L2-042, L2-043, L2-044
+// Traces to: L2-042, L2-043, L2-044, L2-045
 // Description: The board shows the congregation's active listings with what a placard renders,
 // and carries each listing's kind as data rather than only as a colour.
 public sealed class BrowseTheBoardTests : AcceptanceTest
@@ -58,6 +58,37 @@ public sealed class BrowseTheBoardTests : AcceptanceTest
 
         page.Listings.ShouldNotContain(listing => listing.ListingId == SeedData.Listings.Drill);
         page.Counts.ShouldNotContainKey(nameof(ListingKind.Sell));
+    }
+
+    // L2-045 AC1: Given a congregation with no active listings, when a member requests the board,
+    // then an empty collection is returned with a 200 status.
+    //
+    // An empty board is an ordinary state rather than an error. A congregation that has posted
+    // nothing gets 200 and nothing in it, so the screen can invite the first listing instead of
+    // reporting a fault.
+    [Fact]
+    public async Task An_empty_board_is_an_empty_collection_and_not_a_failure()
+    {
+        using var marion = await Api.ClientForAsync(SeedData.Marion.Id);
+
+        foreach (var listingId in new[] { SeedData.Listings.Ladder, SeedData.Listings.Drill })
+        {
+            var archived = await marion.PostJsonAsync(
+                $"/listings/{listingId}/archive",
+                new { },
+                TestContext.Current.CancellationToken);
+
+            archived.StatusCode.ShouldBe(HttpStatusCode.OK);
+        }
+
+        var response = await marion.GetAsync("/board", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var page = await response.ReadAsync<BoardPageBody>();
+
+        page.Listings.ShouldBeEmpty();
+        page.NextCursor.ShouldBeNull();
     }
 
     // L2-043 AC1: Given a board of mixed kinds, when it is requested filtered to Lend, then only

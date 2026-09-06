@@ -63,6 +63,9 @@ public sealed class Listing : ITenantOwned, IOwnedResource
 
     public DateTimeOffset? ClosedOutAt { get; private set; }
 
+    /// <summary>When the owner shelved it. Null on a listing that was closed out instead.</summary>
+    public DateTimeOffset? ArchivedAt { get; private set; }
+
     /// <summary>Present on a Lend listing and on no other kind.</summary>
     public LoanTerms? LoanTerms { get; private set; }
 
@@ -201,6 +204,73 @@ public sealed class Listing : ITenantOwned, IOwnedResource
     /// the two derive from the rule independently rather than the server trusting the
     /// client's word for it. This is L2-037.
     /// </remarks>
+    /// <summary>
+    /// Corrects the listing's details. The kind is not among them.
+    /// </summary>
+    /// <remarks>
+    /// A listing's kind decides its fields, its request form and its close-out verb, and requests
+    /// already made against it were made on the strength of that kind. Changing it would leave
+    /// all of those describing something else, so there is no parameter for it here and the
+    /// command refuses one at the edge.
+    /// </remarks>
+    public void Edit(string title, string description, string category, string neighbourhood)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        ArgumentException.ThrowIfNullOrWhiteSpace(description);
+
+        if (!IsActive)
+        {
+            throw new ListingNotActiveException(Id);
+        }
+
+        Title = title;
+        Description = description;
+        Category = category;
+        Neighbourhood = neighbourhood;
+    }
+
+    /// <summary>
+    /// Takes the listing off the board without closing it out.
+    /// </summary>
+    /// <remarks>
+    /// Shelving, not finishing. The owner has not lent, sold or given the thing away; they have
+    /// simply stopped offering it for now, and <see cref="Restore"/> puts it back.
+    /// </remarks>
+    public void Archive(DateTimeOffset asOf)
+    {
+        if (!IsActive)
+        {
+            throw new ListingNotActiveException(Id);
+        }
+
+        Status = ListingStatus.Archived;
+        ArchivedAt = asOf;
+    }
+
+    /// <summary>
+    /// Whether this listing may go back on the board.
+    /// </summary>
+    /// <remarks>
+    /// A Lend listing that has been closed out is <see cref="ListingStatus.Archived"/>, and so is
+    /// one that was merely shelved - the status cannot tell them apart. <see cref="ClosedOutAt"/>
+    /// can: a returned ladder has served its purpose, and putting it back on the board would be
+    /// reopening a finished loan. This is the rule L2-037 and L2-039 would otherwise disagree
+    /// about.
+    /// </remarks>
+    public bool CanBeRestored => Status == ListingStatus.Archived && ClosedOutAt is null;
+
+    /// <summary>Puts a shelved listing back on the board.</summary>
+    public void Restore()
+    {
+        if (!CanBeRestored)
+        {
+            throw new ListingNotRestorableException(Id);
+        }
+
+        Status = ListingStatus.Active;
+        ArchivedAt = null;
+    }
+
     public void CloseOut(DateTimeOffset asOf)
     {
         if (!IsActive)
