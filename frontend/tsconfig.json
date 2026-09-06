@@ -1,0 +1,57 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    /* The three libraries resolve to their source, not to dist/. `ng serve` then
+       compiles library source directly, so there is no build step in the watch loop
+       and no stale-dist class of bug. `ng build api` still produces a publishable
+       package when one is ever wanted. */
+    "paths": {
+      "@barnabas/api": ["./projects/api/src/public-api.ts"],
+      "@barnabas/domain": ["./projects/domain/src/public-api.ts"],
+      "@barnabas/components": ["./projects/components/src/public-api.ts"]
+    },
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/barnabas/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/api/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/api/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/domain/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/domain/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/components/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/components/tsconfig.spec.json"
+    }
+  ]
+}

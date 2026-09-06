@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Barnabas.Application\Barnabas.Application.csproj" />
+    <ProjectReference Include="..\Barnabas.Infrastructure\Barnabas.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Barnabas.IntegrationTests" />
+  </ItemGroup>
+
+</Project>

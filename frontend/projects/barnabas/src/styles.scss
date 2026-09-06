@@ -1,0 +1,7 @@
+// Application-level overrides only.
+//
+// The design system lives in styles/barnabas.css, carried across from
+// docs/mocks/styles.css and registered ahead of this file in angular.json. Keeping it
+// as one unmodified file is deliberate: `diff docs/mocks/styles.css
+// projects/barnabas/src/styles/barnabas.css` stays short and reviewable, which is the
+// strongest guarantee we can give that the build still matches the visual authority.

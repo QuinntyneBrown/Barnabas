@@ -1,0 +1,24 @@
+// The two sets of breakpoints in play, named so they are never confused.
+//
+// The bands are the widths L2-108 requires every screen to be correct at.
+// The mosaic and nav breakpoints are the ones docs/mocks/styles.css actually uses.
+// They are deliberately not aligned: the mock's numbers already satisfy the criteria
+// (one column at 375, three at 1200), and moving them would alter the visual authority
+// to no requirement's benefit.
+
+$band-sm: 576px;
+$band-md: 768px;
+$band-lg: 992px;
+$band-xl: 1200px;
+
+$mosaic-2: 560px;
+$mosaic-3: 1024px;
+$mosaic-4: 1400px;
+
+$nav-swap: 768px;
+
+@mixin from($width) {
+  @media (min-width: $width) {
+    @content;
+  }
+}

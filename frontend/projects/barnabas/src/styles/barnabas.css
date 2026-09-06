@@ -1,0 +1,1520 @@
+/* ==========================================================================
+   Barnabas — design system
+   --------------------------------------------------------------------------
+   A congregation's lending/helping board, built to read as a parish
+   noticeboard rather than a marketplace.
+
+   The idea: white is the ground, indigo is the ink, and the three palette
+   colours are FIELDS — flat areas of colour that carry type and drawing
+   inside them. Listings are placards butted into a mosaic, not cards
+   floating on a background. No shadows, no gradients, no rounded cards.
+
+   Two typefaces, split by who is speaking:
+     Archivo    — the board's own voice (nav, headings, labels, data)
+     Newsreader — members' own words only (bios, messages, request notes)
+
+   Fonts are linked from each page's <head>; see any page for the tag.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Palette. Only these four values exist; everything else is a tint. */
+  --page:  #ffffff;
+  --ink:   #020029;
+  --paper: #faecd6;
+  --stone: #d9d9d9;
+
+  /* Tints of the ink, for light fields.
+     --ink-65 is the muted-text floor: 5.8:1 on stone (the darkest light
+     field), 6.7:1 on white. Anything lighter fails AA on stone. */
+  --ink-80: rgba(2, 0, 41, .80);
+  --ink-65: rgba(2, 0, 41, .65);
+  --ink-16: rgba(2, 0, 41, .16);
+  --ink-08: rgba(2, 0, 41, .08);
+
+  /* Tints of the paper, for indigo fields. */
+  --paper-72: rgba(250, 236, 214, .72);
+  --paper-24: rgba(250, 236, 214, .24);
+  --paper-12: rgba(250, 236, 214, .12);
+
+  /* Type */
+  --font-board: "Archivo Variable", "Archivo", "Segoe UI", -apple-system,
+                BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  --font-voice: "Newsreader Variable", "Newsreader", Georgia, "Times New Roman", serif;
+
+  --t-small:   0.875rem;
+  --t-body:    1rem;
+  --t-body-lg: 1.125rem;
+  --t-title:   clamp(1.25rem, 1rem + 0.8vw, 1.5rem);
+  --t-head:    clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+  --t-display: clamp(2.5rem, 1.5rem + 4.5vw, 5rem);
+  --t-mega:    clamp(3rem, 1.2rem + 8vw, 7rem);
+
+  /* Width axis on Archivo. Display type runs wide so it reads as signage. */
+  --wide:  118;
+  --wider: 125;
+
+  /* Space. 8px based, with a long top end — the airiness lives up here. */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+  --s-11: 160px;
+
+  /* Layout */
+  --container: 1160px;
+  --measure: 66ch;
+  --header-height: 68px;
+  --bottom-nav-height: 68px;
+
+  /* The only radius in the system, and only on things you touch. */
+  --radius: 4px;
+
+  --hairline: 1px solid var(--ink);
+  --rule: 1px solid var(--ink-16);
+}
+
+/* --------------------------------------------------------------------------
+   2. Reset and base
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-board);
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.55;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: var(--bottom-nav-height);
+}
+
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+h1 { font-size: var(--t-head); }
+h2 { font-size: var(--t-title); }
+h3 { font-size: var(--t-body-lg); line-height: 1.25; letter-spacing: -0.01em; }
+h4 { font-size: var(--t-body); line-height: 1.3; letter-spacing: 0; }
+
+p { margin: 0; }
+
+a { color: inherit; }
+
+ul, ol, dl, dd { margin: 0; padding: 0; }
+li { list-style: none; }
+
+fieldset { margin: 0; padding: 0; border: 0; }
+
+hr {
+  height: 0;
+  margin: var(--s-7) 0;
+  border: 0;
+  border-top: var(--rule);
+}
+
+/* Focus. On a colour field the ring takes currentColor, so it is cream on
+   an indigo placard and indigo on a cream one — self-solving. On the white
+   ground it needs full-strength ink instead of whatever muted tint is
+   inherited there. */
+:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+body :focus-visible {
+  outline-color: var(--ink);
+}
+
+.field-block :focus-visible,
+.placard:focus-visible,
+.site-header :focus-visible,
+.bottom-nav :focus-visible,
+.masthead :focus-visible {
+  outline-color: currentColor;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* --------------------------------------------------------------------------
+   3. Typography helpers
+   -------------------------------------------------------------------------- */
+
+.display {
+  font-size: var(--t-display);
+  font-weight: 800;
+  font-stretch: 118%;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+}
+
+.mega {
+  font-size: var(--t-mega);
+  font-weight: 800;
+  font-stretch: 118%;
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+}
+
+/* Members' own words. Never used for interface text. */
+.voice {
+  font-family: var(--font-voice);
+  font-size: var(--t-body-lg);
+  font-weight: 400;
+  line-height: 1.62;
+  letter-spacing: 0;
+}
+
+.voice-lg {
+  font-family: var(--font-voice);
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.lede {
+  font-size: var(--t-body-lg);
+  line-height: 1.55;
+  color: var(--ink-80);
+  max-width: var(--measure);
+}
+
+.muted { color: var(--ink-65); }
+.small { font-size: var(--t-small); }
+.measure { max-width: var(--measure); }
+
+/* On a colour field, mute by opacity so it works against either ink. */
+.field-block .muted,
+.placard .muted,
+.masthead .muted { color: inherit; opacity: 0.72; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: var(--s-3) var(--s-4);
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. Layout primitives
+   -------------------------------------------------------------------------- */
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--s-5);
+}
+
+@media (min-width: 768px) {
+  .container { padding-inline: var(--s-6); }
+}
+
+.page-main {
+  display: block;
+  padding-bottom: var(--s-10);
+}
+
+/* Vertical rhythm. The generous end of the scale is the point. */
+.stack     { display: flex; flex-direction: column; gap: var(--s-4); }
+.stack-2   { display: flex; flex-direction: column; gap: var(--s-2); }
+.stack-3   { display: flex; flex-direction: column; gap: var(--s-3); }
+.stack-5   { display: flex; flex-direction: column; gap: var(--s-5); }
+.stack-6   { display: flex; flex-direction: column; gap: var(--s-6); }
+.stack-7   { display: flex; flex-direction: column; gap: var(--s-7); }
+.section   { padding-block: var(--s-9); }
+.section-tight { padding-block: var(--s-7); }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+}
+
+.row-between {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+}
+
+.spread { margin-left: auto; }
+
+/* --------------------------------------------------------------------------
+   5. Site header — a solid indigo bar on every page
+   -------------------------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  min-height: var(--header-height);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  color: inherit;
+  font-weight: 800;
+  font-stretch: 112%;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 26px;
+  height: 26px;
+  flex: none;
+}
+
+.primary-nav { display: none; }
+
+@media (min-width: 768px) {
+  .primary-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    margin-left: var(--s-4);
+  }
+
+  .primary-nav a {
+    padding: var(--s-2) var(--s-3);
+    color: var(--paper-72);
+    font-size: var(--t-small);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .primary-nav a:hover { color: var(--paper); }
+
+  .primary-nav a[aria-current="page"] {
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  /* Post is a destination, not a decoration — but it is the supply side,
+     so it carries the one filled control in the bar. */
+  .primary-nav .nav-post {
+    margin-left: var(--s-2);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .primary-nav .nav-post:hover { background: #fff; color: var(--ink); }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-left: auto;
+}
+
+.bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.bell:hover { background: var(--paper-12); }
+
+.bell svg { width: 22px; height: 22px; }
+
+.bell-count {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   6. Bottom nav — the same five destinations, same order, on phones
+   -------------------------------------------------------------------------- */
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: var(--bottom-nav-height);
+  background: var(--ink);
+  color: var(--paper);
+  border-top: 1px solid var(--paper-24);
+}
+
+.bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--paper-72);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bottom-nav svg { width: 22px; height: 22px; }
+
+.bottom-nav a[aria-current="page"] {
+  color: var(--ink);
+  background: var(--paper);
+}
+
+@media (min-width: 768px) {
+  body { padding-bottom: 0; }
+  .bottom-nav { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   7. Masthead — a full-bleed band of colour with the page title inside it.
+      Every page gets one; its height scales with the page's weight.
+   -------------------------------------------------------------------------- */
+
+.masthead {
+  background: var(--ink);
+  color: var(--paper);
+  padding-block: var(--s-8);
+}
+
+.masthead--paper {
+  background: var(--paper);
+  color: var(--ink);
+  border-bottom: var(--hairline);
+}
+
+.masthead--stone {
+  background: var(--stone);
+  color: var(--ink);
+}
+
+.masthead--plain {
+  background: var(--page);
+  color: var(--ink);
+  border-bottom: var(--rule);
+}
+
+.masthead--tall { padding-block: var(--s-9) var(--s-8); }
+.masthead--short { padding-block: var(--s-6); }
+
+.masthead .container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.masthead-title {
+  font-size: var(--t-display);
+  font-weight: 800;
+  font-stretch: 118%;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+}
+
+.masthead--short .masthead-title {
+  font-size: var(--t-head);
+  font-stretch: 112%;
+  max-width: none;
+}
+
+.masthead-note {
+  font-size: var(--t-body-lg);
+  opacity: 0.78;
+  max-width: 46ch;
+}
+
+.masthead-count {
+  font-size: var(--t-small);
+  font-weight: 600;
+  opacity: 0.72;
+}
+
+/* Step marker for the two-step post flow — a real sequence, so it earns
+   the numbering. */
+.step-marker {
+  font-size: var(--t-small);
+  font-weight: 600;
+  opacity: 0.72;
+}
+
+/* --------------------------------------------------------------------------
+   8. Back link — a drawn chevron, not an arrow character in the text
+   -------------------------------------------------------------------------- */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding-block: var(--s-4);
+  color: inherit;
+  font-size: var(--t-small);
+  font-weight: 600;
+  text-decoration: none;
+  opacity: 0.75;
+}
+
+.back-link:hover { opacity: 1; }
+.back-link svg { width: 16px; height: 16px; flex: none; }
+
+/* --------------------------------------------------------------------------
+   9. The mosaic and its placards
+      Hairlines come from a 1px grid gap over an indigo backdrop, so every
+      seam is exact and the wall reads as one object.
+   -------------------------------------------------------------------------- */
+
+.mosaic {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: var(--hairline);
+  border-left: var(--hairline);
+}
+
+.mosaic > .placard {
+  border-right: var(--hairline);
+  border-bottom: var(--hairline);
+}
+
+@media (min-width: 560px)  { .mosaic { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .mosaic { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1400px) { .mosaic { grid-template-columns: repeat(4, 1fr); } }
+
+.placard {
+  display: flex;
+  flex-direction: column;
+  min-height: 21rem;
+  padding: var(--s-5);
+  background: var(--page);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color .18s ease, color .18s ease;
+}
+
+@media (min-width: 768px) {
+  .placard { padding: var(--s-6); min-height: 23rem; }
+}
+
+.placard--lend,
+.placard--help { background: var(--ink);   color: var(--paper); }
+.placard--give { background: var(--paper); color: var(--ink); }
+.placard--sell { background: var(--stone); color: var(--ink); }
+
+/* Hover inverts the field. The drawings are currentColor, so they flip too. */
+.placard--lend:hover,
+.placard--help:hover { background: var(--paper); color: var(--ink); }
+.placard--give:hover,
+.placard--sell:hover { background: var(--ink);   color: var(--paper); }
+
+.placard__kind {
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid currentColor;
+  font-size: var(--t-small);
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.placard__art {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding-block: var(--s-6);
+  min-height: 8rem;
+}
+
+.placard__art svg {
+  width: 100%;
+  height: auto;
+  max-height: 11rem;
+}
+
+/* Help offers have no object in them — help is time, not a thing — so the
+   member's own words fill the block instead. */
+.placard__words {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding-block: var(--s-6);
+  font-family: var(--font-voice);
+  font-size: clamp(1.125rem, 0.9rem + 0.9vw, 1.5rem);
+  line-height: 1.34;
+  text-wrap: balance;
+}
+
+.placard__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  margin-top: auto;
+}
+
+.placard__title {
+  font-size: var(--t-title);
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.placard__meta {
+  font-size: var(--t-small);
+  opacity: 0.75;
+}
+
+.placard__price {
+  margin-top: var(--s-2);
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
+}
+
+/* A placard that spans two columns, for a featured listing on the board. */
+@media (min-width: 1024px) {
+  .placard--wide { grid-column: span 2; }
+  .placard--wide .placard__title { font-size: var(--t-head); }
+}
+
+/* --------------------------------------------------------------------------
+   10. Buttons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 48px;
+  padding: var(--s-3) var(--s-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--t-body);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.btn svg { width: 18px; height: 18px; flex: none; }
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn-primary:hover { background: #1a1750; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.btn-secondary:hover { background: var(--ink-08); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-80);
+}
+
+.btn-ghost:hover { color: var(--ink); background: var(--ink-08); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.btn-danger:hover { background: var(--ink); color: var(--paper); }
+
+/* On an indigo field the primary button has to invert. */
+.on-ink .btn-primary { background: var(--paper); color: var(--ink); }
+.on-ink .btn-primary:hover { background: #fff; }
+.on-ink .btn-secondary { color: var(--paper); border-color: var(--paper); }
+.on-ink .btn-secondary:hover { background: var(--paper-12); }
+.on-ink .btn-ghost { color: var(--paper-72); }
+.on-ink .btn-ghost:hover { color: var(--paper); background: var(--paper-12); }
+
+.btn-block { display: flex; width: 100%; }
+.btn-sm { min-height: 38px; padding: var(--s-2) var(--s-4); font-size: var(--t-small); }
+.btn-lg { min-height: 56px; padding: var(--s-4) var(--s-7); font-size: var(--t-body-lg); }
+
+.btn[disabled],
+.btn[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+/* A quiet inline link that still reads as a link. */
+.link {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.link:hover { text-decoration-thickness: 2px; }
+
+/* --------------------------------------------------------------------------
+   11. Chips — one level of tabs under a primary destination, never nested
+   -------------------------------------------------------------------------- */
+
+.chip-row {
+  display: flex;
+  gap: var(--s-2);
+  overflow-x: auto;
+  padding-bottom: var(--s-2);
+  scrollbar-width: none;
+}
+
+.chip-row::-webkit-scrollbar { display: none; }
+
+@media (min-width: 768px) {
+  .chip-row { flex-wrap: wrap; overflow: visible; padding-bottom: 0; }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex: none;
+  min-height: 40px;
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--ink-16);
+  border-radius: var(--radius);
+  color: var(--ink-80);
+  font-size: var(--t-small);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--page);
+}
+
+.chip:hover { border-color: var(--ink); color: var(--ink); }
+
+.chip[aria-current="true"],
+.chip.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.chip-count {
+  font-weight: 700;
+  opacity: .7;
+}
+
+/* Chips sitting on an indigo masthead. */
+.on-ink .chip {
+  background: transparent;
+  border-color: var(--paper-24);
+  color: var(--paper-72);
+}
+
+.on-ink .chip:hover { border-color: var(--paper); color: var(--paper); }
+
+.on-ink .chip[aria-current="true"],
+.on-ink .chip.is-active {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   12. Type and status labels
+   -------------------------------------------------------------------------- */
+
+/* Sentence case at a readable size, never tracked-out caps. */
+.kind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.kind::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--ink);
+}
+
+.kind--lend::before { background: var(--ink); }
+.kind--give::before { background: var(--paper); }
+.kind--sell::before { background: var(--stone); }
+.kind--help::before { background: var(--ink); border-style: dashed; }
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--ink);
+  font-size: var(--t-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status--live      { background: var(--ink);   color: var(--paper); }
+.status--pending   { background: var(--paper); color: var(--ink); }
+.status--accepted  { background: var(--ink);   color: var(--paper); }
+.status--declined  { background: var(--page);  color: var(--ink-65); border-color: var(--ink-16); }
+.status--closed    { background: var(--stone); color: var(--ink); }
+.status--flagged   { background: var(--page);  color: var(--ink); border-style: dashed; }
+
+.tag-list { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+
+.tag {
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--ink-16);
+  font-size: var(--t-small);
+  color: var(--ink-80);
+}
+
+.count-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 var(--s-3);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--t-small);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+a.count-pill:hover { background: #1a1750; }
+
+/* --------------------------------------------------------------------------
+   13. Field blocks — a slab of colour used mid-page to carry a message
+   -------------------------------------------------------------------------- */
+
+.field-block {
+  padding: var(--s-7) var(--s-6);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.field-block--paper {
+  background: var(--paper);
+  color: var(--ink);
+  border: var(--hairline);
+}
+
+.field-block--stone {
+  background: var(--stone);
+  color: var(--ink);
+}
+
+.field-block--outline {
+  background: var(--page);
+  color: var(--ink);
+  border: var(--hairline);
+}
+
+@media (min-width: 768px) {
+  .field-block { padding: var(--s-8) var(--s-7); }
+}
+
+.field-block h2,
+.field-block h1 { text-wrap: balance; }
+
+/* Full-bleed band, breaking out of the container. */
+.band {
+  background: var(--ink);
+  color: var(--paper);
+  padding-block: var(--s-9);
+}
+
+.band--paper { background: var(--paper); color: var(--ink); }
+.band--stone { background: var(--stone); color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   14. Forms
+   -------------------------------------------------------------------------- */
+
+.form { max-width: 40rem; }
+
+.field { display: flex; flex-direction: column; gap: var(--s-2); }
+
+.field > label,
+.field > legend,
+.field-label {
+  font-size: var(--t-small);
+  font-weight: 600;
+  padding: 0;
+}
+
+.field-hint {
+  font-size: var(--t-small);
+  color: var(--ink-65);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  min-height: 52px;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--page);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: var(--t-body);
+  line-height: 1.45;
+}
+
+textarea {
+  min-height: 9rem;
+  resize: vertical;
+  font-family: var(--font-voice);
+  font-size: var(--t-body-lg);
+  line-height: 1.6;
+}
+
+input::placeholder,
+textarea::placeholder { color: var(--ink-65); }
+
+select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%),
+                    linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position: calc(100% - 21px) 23px, calc(100% - 15px) 23px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: var(--s-8);
+}
+
+.input-prefix {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+.input-prefix span {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--s-4);
+  background: var(--stone);
+  border-right: 1px solid var(--ink);
+  font-weight: 600;
+}
+
+.input-prefix input {
+  border: 0;
+  border-radius: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-5);
+}
+
+@media (min-width: 768px) {
+  .form-grid { grid-template-columns: 1fr 1fr; }
+  .form-grid .span-2 { grid-column: 1 / -1; }
+}
+
+/* Big tappable choices — the post-type picker and the availability picker. */
+.option-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--ink);
+  border: var(--hairline);
+}
+
+@media (min-width: 700px) {
+  .option-grid--2 { grid-template-columns: 1fr 1fr; }
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-6);
+  min-height: 11rem;
+  background: var(--page);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color .18s ease, color .18s ease;
+}
+
+.option:hover { background: var(--ink); color: var(--paper); }
+
+.option--lend:hover,
+.option--help:hover { background: var(--ink);   color: var(--paper); }
+.option--give:hover { background: var(--paper); color: var(--ink); }
+.option--sell:hover { background: var(--stone); color: var(--ink); }
+
+.option__title {
+  font-size: var(--t-head);
+  font-weight: 800;
+  font-stretch: 112%;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.option__desc { font-size: var(--t-body); opacity: .78; margin-top: auto; }
+
+/* Radio and checkbox rows */
+.choice-list { display: flex; flex-direction: column; gap: 1px; background: var(--ink-16); border: var(--rule); }
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  background: var(--page);
+  cursor: pointer;
+}
+
+.choice:hover { background: var(--ink-08); }
+
+.choice input { margin: 3px 0 0; width: 20px; height: 20px; accent-color: var(--ink); flex: none; }
+
+.choice:has(input:checked) { background: var(--paper); }
+
+.choice__title { font-weight: 600; }
+.choice__desc { font-size: var(--t-small); color: var(--ink-65); }
+
+.check-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--ink-16);
+  border: var(--rule);
+}
+
+@media (min-width: 700px) { .check-grid { grid-template-columns: 1fr 1fr; } }
+
+.upload-tile {
+  display: grid;
+  place-items: center;
+  gap: var(--s-3);
+  min-height: 14rem;
+  padding: var(--s-6);
+  border: 2px dashed var(--ink-16);
+  color: var(--ink-65);
+  text-align: center;
+}
+
+.upload-tile svg { width: 40px; height: 40px; }
+
+.time-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: var(--rule);
+}
+
+@media (min-width: 768px) {
+  .time-row { grid-template-columns: 1.2fr 1fr 1fr; align-items: end; }
+}
+
+/* --------------------------------------------------------------------------
+   15. Rows and lists
+   -------------------------------------------------------------------------- */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  border-top: var(--rule);
+}
+
+.list-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-4);
+  padding: var(--s-5) 0;
+  border-bottom: var(--rule);
+}
+
+a.list-row {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.list-row:hover { background: var(--ink-08); }
+
+.list-row__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--s-2); }
+.list-row__title { font-size: var(--t-body-lg); font-weight: 700; letter-spacing: -0.01em; }
+.list-row__meta { font-size: var(--t-small); color: var(--ink-65); }
+.list-row__actions { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+
+.list-row--unread { border-left: 4px solid var(--ink); padding-left: var(--s-4); }
+.list-row--muted .list-row__title { color: var(--ink-65); }
+
+.unread-dot {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  margin-top: 8px;
+  background: var(--ink);
+}
+
+/* A quoted request or message, in the member's own voice. */
+.quote {
+  padding: var(--s-4) var(--s-5);
+  border-left: 3px solid var(--ink);
+  background: var(--paper);
+  font-family: var(--font-voice);
+  font-size: var(--t-body-lg);
+  line-height: 1.55;
+}
+
+/* --------------------------------------------------------------------------
+   16. Avatars — square blocks, to keep the placard language consistent
+   -------------------------------------------------------------------------- */
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: 1px solid var(--ink);
+  font-weight: 800;
+  font-stretch: 112%;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+}
+
+.avatar--paper { background: var(--paper); color: var(--ink); }
+.avatar--stone { background: var(--stone); color: var(--ink); }
+.avatar--ink   { background: var(--ink);   color: var(--paper); }
+
+.avatar--sm { width: 34px; height: 34px; font-size: 0.75rem; }
+.avatar--lg { width: 88px; height: 88px; font-size: 1.75rem; }
+.avatar--xl { width: 140px; height: 140px; font-size: 2.75rem; }
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  text-decoration: none;
+  color: inherit;
+}
+
+.person__name { font-weight: 600; }
+.person__meta { font-size: var(--t-small); color: var(--ink-65); }
+
+/* --------------------------------------------------------------------------
+   17. Listing detail
+   -------------------------------------------------------------------------- */
+
+.detail {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-7);
+}
+
+@media (min-width: 1024px) {
+  .detail {
+    grid-template-columns: 1.35fr 1fr;
+    gap: var(--s-8);
+    align-items: start;
+  }
+}
+
+.detail__art {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  padding: var(--s-8);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.detail__art--paper { background: var(--paper); color: var(--ink); border: var(--hairline); }
+.detail__art--stone { background: var(--stone); color: var(--ink); }
+
+.detail__art svg { width: 100%; height: 100%; }
+
+.detail__title {
+  font-size: var(--t-head);
+  font-weight: 800;
+  font-stretch: 112%;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.detail__price {
+  font-size: 2.25rem;
+  font-weight: 800;
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
+}
+
+.detail__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+@media (min-width: 1024px) {
+  .detail__aside { position: sticky; top: calc(var(--header-height) + var(--s-6)); }
+}
+
+/* Facts. A description list, set as rows with rules — no uppercase labels
+   and no middle dots. */
+.facts { border-top: var(--rule); }
+
+.facts div {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-1);
+  padding: var(--s-4) 0;
+  border-bottom: var(--rule);
+}
+
+@media (min-width: 480px) {
+  .facts div { grid-template-columns: 10rem 1fr; gap: var(--s-4); align-items: baseline; }
+}
+
+.facts dt { font-size: var(--t-small); font-weight: 600; color: var(--ink-65); }
+.facts dd { margin: 0; }
+
+.note {
+  padding: var(--s-4) var(--s-5);
+  border: var(--rule);
+  font-size: var(--t-small);
+  color: var(--ink-80);
+}
+
+/* --------------------------------------------------------------------------
+   18. Messages
+   -------------------------------------------------------------------------- */
+
+.thread-context {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  border: var(--hairline);
+  text-decoration: none;
+  color: inherit;
+}
+
+.thread-context:hover { background: var(--ink-08); }
+
+.thread-context__art {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex: none;
+  padding: var(--s-2);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  padding-block: var(--s-6);
+}
+
+.message { display: flex; flex-direction: column; gap: var(--s-2); max-width: min(88%, 36rem); }
+.message--in  { align-self: flex-start; }
+.message--out { align-self: flex-end; align-items: flex-end; }
+
+.message__bubble {
+  padding: var(--s-4) var(--s-5);
+  font-family: var(--font-voice);
+  font-size: var(--t-body-lg);
+  line-height: 1.55;
+  background: var(--paper);
+  color: var(--ink);
+  border: var(--hairline);
+}
+
+.message--out .message__bubble {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.message__meta { font-size: var(--t-small); color: var(--ink-65); }
+
+.composer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-3);
+  padding-top: var(--s-5);
+  border-top: var(--rule);
+}
+
+@media (min-width: 768px) {
+  .composer { grid-template-columns: 1fr auto; align-items: end; }
+}
+
+.composer textarea { min-height: 6rem; }
+
+/* --------------------------------------------------------------------------
+   19. States
+   -------------------------------------------------------------------------- */
+
+.state {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-5);
+  max-width: 34rem;
+  margin-inline: auto;
+  padding-block: var(--s-9);
+  text-align: center;
+}
+
+.state svg { width: 96px; height: 96px; }
+.state h1, .state h2 { font-size: var(--t-head); text-wrap: balance; }
+.state p { color: var(--ink-65); max-width: 42ch; }
+
+.on-ink.state p { color: var(--paper-72); }
+
+/* Loading skeletons */
+.skeleton {
+  background: var(--ink-08);
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(2, 0, 41, .06), transparent);
+  animation: sweep 1.4s linear infinite;
+}
+
+@keyframes sweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* --------------------------------------------------------------------------
+   20. Dialogs
+   -------------------------------------------------------------------------- */
+
+dialog {
+  width: min(28rem, calc(100vw - 2rem));
+  padding: var(--s-6);
+  border: var(--hairline);
+  border-radius: 0;
+  background: var(--page);
+  color: var(--ink);
+}
+
+dialog::backdrop { background: rgba(2, 0, 41, .55); }
+
+dialog h2 { margin-bottom: var(--s-3); }
+dialog p { color: var(--ink-65); margin-bottom: var(--s-6); }
+
+/* --------------------------------------------------------------------------
+   21. Auth pages — a narrow column, no nav
+   -------------------------------------------------------------------------- */
+
+.auth {
+  max-width: 30rem;
+  margin-inline: auto;
+  padding-block: var(--s-9);
+}
+
+@media (min-width: 768px) {
+  .auth { padding-block: var(--s-10); }
+}
+
+.auth h1 { font-size: var(--t-head); margin-bottom: var(--s-3); }
+
+/* --------------------------------------------------------------------------
+   22. The You hub — big labelled rows, nothing hidden
+   -------------------------------------------------------------------------- */
+
+.hub {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--ink-16);
+  border-block: var(--rule);
+}
+
+@media (min-width: 768px) { .hub { grid-template-columns: 1fr 1fr; } }
+
+.hub a {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-4);
+  background: var(--page);
+  color: inherit;
+  text-decoration: none;
+}
+
+.hub a:hover { background: var(--paper); }
+
+.hub__label { font-size: var(--t-body-lg); font-weight: 600; }
+.hub__meta { font-size: var(--t-small); color: var(--ink-65); }
+.hub svg { width: 22px; height: 22px; flex: none; }
+
+/* --------------------------------------------------------------------------
+   23. Utilities
+   -------------------------------------------------------------------------- */
+
+.bleed-top { margin-top: calc(var(--s-7) * -1); }
+.no-wrap { white-space: nowrap; }
+.grow { flex: 1; }
+.center { text-align: center; }
+.divider { border-top: var(--rule); }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-7);
+}
+
+@media (min-width: 900px) {
+  .two-col { grid-template-columns: 1fr 1fr; gap: var(--s-8); }
+  .two-col--rail { grid-template-columns: 17rem 1fr; }
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--ink);
+  border: var(--hairline);
+}
+
+@media (min-width: 700px)  { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .card-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* --------------------------------------------------------------------------
+   24. Motion — one orchestrated moment, and nothing else
+   -------------------------------------------------------------------------- */
+
+.mosaic .placard {
+  animation: rise .5s cubic-bezier(.2, .7, .3, 1) backwards;
+}
+
+.mosaic .placard:nth-child(1) { animation-delay: 0ms; }
+.mosaic .placard:nth-child(2) { animation-delay: 40ms; }
+.mosaic .placard:nth-child(3) { animation-delay: 80ms; }
+.mosaic .placard:nth-child(4) { animation-delay: 120ms; }
+.mosaic .placard:nth-child(5) { animation-delay: 160ms; }
+.mosaic .placard:nth-child(6) { animation-delay: 200ms; }
+.mosaic .placard:nth-child(7) { animation-delay: 240ms; }
+.mosaic .placard:nth-child(8) { animation-delay: 280ms; }
+.mosaic .placard:nth-child(n + 9) { animation-delay: 320ms; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}

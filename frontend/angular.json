@@ -1,0 +1,176 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "barnabas": {
+      "projectType": "application",
+      "root": "projects/barnabas",
+      "sourceRoot": "projects/barnabas/src",
+      "prefix": "bar",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/barnabas/src/main.ts",
+            "tsConfig": "projects/barnabas/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/barnabas/public"
+              }
+            ],
+            "styles": [
+              "node_modules/@fontsource-variable/archivo/wdth.css",
+              "node_modules/@fontsource-variable/newsreader/opsz.css",
+              "node_modules/@fontsource-variable/newsreader/opsz-italic.css",
+              "projects/barnabas/src/styles/barnabas.css",
+              "projects/barnabas/src/styles.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/barnabas/src/styles"
+              ]
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "barnabas:build:production"
+            },
+            "development": {
+              "buildTarget": "barnabas:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+    "api": {
+      "projectType": "library",
+      "root": "projects/api",
+      "sourceRoot": "projects/api/src",
+      "prefix": "bar",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/api/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/api/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    },
+    "domain": {
+      "projectType": "library",
+      "root": "projects/domain",
+      "sourceRoot": "projects/domain/src",
+      "prefix": "bar",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/domain/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/domain/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    },
+    "components": {
+      "projectType": "library",
+      "root": "projects/components",
+      "sourceRoot": "projects/components/src",
+      "prefix": "bar",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/components/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/components/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    }
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "style": "scss",
+      "skipTests": true,
+      "type": "component",
+      "addTypeToClassName": true
+    },
+    "@schematics/angular:directive": {
+      "skipTests": true,
+      "type": "directive",
+      "addTypeToClassName": true
+    },
+    "@schematics/angular:service": {
+      "skipTests": true,
+      "type": "service",
+      "addTypeToClassName": true
+    },
+    "@schematics/angular:guard": {
+      "skipTests": true,
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "skipTests": true,
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "skipTests": true,
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "skipTests": true,
+      "typeSeparator": "."
+    },
+    "@schematics/angular:class": {
+      "skipTests": true
+    }
+  }
+}

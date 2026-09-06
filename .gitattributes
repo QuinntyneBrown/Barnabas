@@ -1,0 +1,17 @@
+# Normalise to LF in the repository; check out native on Windows.
+* text=auto
+
+*.cs        text diff=csharp
+*.ts        text
+*.html      text
+*.scss      text
+*.css       text
+*.json      text
+*.md        text
+*.props     text
+*.csproj    text
+*.slnx      text
+
+*.png       binary
+*.ico       binary
+*.woff2     binary
