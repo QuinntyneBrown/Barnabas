@@ -51,6 +51,21 @@ export class ThreadPage {
     return this.message(body).locator('.message__meta');
   }
 
+  /**
+   * The listing the conversation is about, which opens it.
+   *
+   * A thread that did not lead back to the thing it concerns leaves a member scrolling their own
+   * words to remember what they asked for - L2-068 AC1.
+   */
+  get listing(): Locator {
+    return this.page.locator('.thread-context');
+  }
+
+  /** The other party's name, which opens their profile. L2-068 AC2. */
+  otherMember(name: string): Locator {
+    return this.page.getByRole('link', { name, exact: true });
+  }
+
   get composer(): Locator {
     return this.page.getByLabel(/^Reply to/);
   }
