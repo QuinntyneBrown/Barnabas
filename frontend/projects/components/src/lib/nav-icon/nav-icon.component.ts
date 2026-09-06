@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-import { NavIcon } from './nav-destinations';
+import { NavIcon } from './nav-icon';
 
 /**
  * The drawing beside a destination in the bottom bar.

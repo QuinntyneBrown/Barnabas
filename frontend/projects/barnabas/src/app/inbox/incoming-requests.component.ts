@@ -3,8 +3,8 @@ import { Router, RouterLink } from '@angular/router';
 import { IncomingRequest } from '@barnabas/api';
 import { RequestStore } from '@barnabas/domain';
 
-import { ConfirmDialogComponent } from '../dialogs/confirm-dialog.component';
-import { InboxChipsComponent } from './inbox-chips.component';
+import { ConfirmDialogComponent } from '@barnabas/components';
+import { InboxChipsComponent } from '../shell/inbox-chips.component';
 
 /**
  * What has been asked of the member.

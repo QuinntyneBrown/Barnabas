@@ -3,8 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LISTING_SERVICE, REQUEST_SERVICE, ListingDetail } from '@barnabas/api';
 
-import { FieldErrors } from '../forms/field-errors';
-import { focusFirstInvalid } from '../forms/focus-first-invalid';
+import { FieldErrors } from '@barnabas/domain';
+import { focusFirstInvalid } from '@barnabas/domain';
 
 /**
  * Asking to borrow something.

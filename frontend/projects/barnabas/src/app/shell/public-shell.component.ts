@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
-import { SkipLinkComponent } from './skip-link.component';
+import { SkipLinkComponent } from '@barnabas/components';
 
 /**
  * The shell for the screens a member sees before they are signed in.

@@ -1,28 +1,34 @@
 import { Routes } from '@angular/router';
-import {
-  AppShellComponent,
-  BoardComponent,
-  CheckYourEmailComponent,
-  ChooseKindComponent,
-  ComingSoonComponent,
-  IncomingRequestsComponent,
-  LandingComponent,
-  LinkExpiredComponent,
-  ListingDetailComponent,
-  ListingPostedComponent,
-  MyListingsComponent,
-  OutgoingRequestsComponent,
-  PostLendComponent,
-  PublicShellComponent,
-  RequestAcceptedComponent,
-  RequestLendComponent,
-  RequestSentComponent,
-  SignInComponent,
-  SignInLandingComponent,
-  ThreadComponent,
-  ThreadsComponent,
-  YouComponent,
-} from '@barnabas/components';
+import { AppShellComponent } from './shell/app-shell.component';
+import { PublicShellComponent } from './shell/public-shell.component';
+
+import { CheckYourEmailComponent } from './access/check-your-email.component';
+import { LandingComponent } from './access/landing.component';
+import { LinkExpiredComponent } from './access/link-expired.component';
+import { SignInComponent } from './access/sign-in.component';
+import { SignInLandingComponent } from './access/sign-in-landing.component';
+
+import { BoardComponent } from './board/board.component';
+
+import { ChooseKindComponent } from './listings/choose-kind.component';
+import { ListingDetailComponent } from './listings/listing-detail.component';
+import { ListingPostedComponent } from './listings/listing-posted.component';
+import { MyListingsComponent } from './listings/my-listings.component';
+import { PostLendComponent } from './listings/post-lend.component';
+
+import { RequestAcceptedComponent } from './requests/request-accepted.component';
+import { RequestLendComponent } from './requests/request-lend.component';
+import { RequestSentComponent } from './requests/request-sent.component';
+
+import { IncomingRequestsComponent } from './inbox/incoming-requests.component';
+import { OutgoingRequestsComponent } from './inbox/outgoing-requests.component';
+
+import { ThreadComponent } from './messaging/thread.component';
+import { ThreadsComponent } from './messaging/threads.component';
+
+import { YouComponent } from './you/you.component';
+
+import { ComingSoonComponent } from './placeholders/coming-soon.component';
 import { authGuard } from '@barnabas/domain';
 
 /**

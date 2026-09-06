@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BoardStore } from '@barnabas/domain';
 
-import { PlacardComponent } from './placard.component';
+import { PlacardComponent } from '@barnabas/domain';
 
 /**
  * The board: everything the congregation currently has on offer.

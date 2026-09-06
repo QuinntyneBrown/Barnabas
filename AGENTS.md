@@ -68,7 +68,7 @@ say what it cost rather than quietly narrowing scope.
 Where a component lives is not a matter of taste. Ask these in order and stop at
 the first `yes`.
 
-1. **Is it reached by a route, does it navigate, or does it compose a whole
+1. **Is it reached by a route, is it page chrome, or does it compose a whole
    screen?** → `barnabas`
 2. **Does it inject a token from `@barnabas/api`, or name a type from it?** → `domain`
 3. **Neither.** → `components`
@@ -83,11 +83,15 @@ barnabas    ->  domain, components, api
 
 An import pointing the other way is a defect, not a shortcut.
 
-Navigation is the reason the first question asks about it as well as about
+Page chrome is the reason the first question asks about it as well as about
 routes. A navigation bar, a chip row, a back link — none is a screen, and none
 touches the API, so the last two questions would send it to `components`, which
-may not name the router at all. Anything that navigates is page chrome, and page
-chrome belongs with the pages.
+may not name the router at all.
+
+Chrome means a component whose purpose is to move you around. Content that
+happens to be clickable is not chrome: a placard is a listing that opens, and a
+listing is content. Ask what the component is for, not whether it contains a
+link.
 
 #### `components` — dumb, congregation-agnostic, publishable
 
@@ -115,7 +119,8 @@ vocabulary. Not publishable.
 - It composes `components` for presentation and passes plain values down. It does
   not restyle its children.
 - It is a self-contained region of a screen — a placard, a request row — never a
-  screen. No routing, no page chrome.
+  screen and never chrome. It defines no routes and navigates nothing
+  programmatically, though it may render a link to a destination it was handed.
 - Stores and guards stay flat under `domain/src/lib/<area>/`; each component gets
   its own folder, class and template and styles in separate files as everywhere.
 

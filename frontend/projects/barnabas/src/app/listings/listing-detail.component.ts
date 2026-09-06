@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, signal } fro
 import { Router, RouterLink } from '@angular/router';
 import { LISTING_SERVICE, ListingDetail } from '@barnabas/api';
 
-import { ConfirmDialogComponent } from '../dialogs/confirm-dialog.component';
+import { ConfirmDialogComponent } from '@barnabas/components';
 
 /**
  * One listing, shown two ways.

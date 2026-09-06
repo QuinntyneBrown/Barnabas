@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { MyListing } from '@barnabas/api';
 import { MyListingsStore } from '@barnabas/domain';
 
-import { ConfirmDialogComponent } from '../dialogs/confirm-dialog.component';
+import { ConfirmDialogComponent } from '@barnabas/components';
 
 /**
  * The listings a member owns, and what is waiting on each.

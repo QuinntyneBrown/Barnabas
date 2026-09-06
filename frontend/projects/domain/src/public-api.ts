@@ -15,3 +15,8 @@ export * from './lib/board/board.store';
 export * from './lib/listings/my-listings.store';
 export * from './lib/requests/request.store';
 export * from './lib/messaging/thread.store';
+
+export * from './lib/board/placard/placard.component';
+
+export * from './lib/forms/field-errors';
+export * from './lib/forms/focus-first-invalid';

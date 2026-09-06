@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SessionStore } from '@barnabas/domain';
 
-import { ConfirmDialogComponent } from '../dialogs/confirm-dialog.component';
+import { ConfirmDialogComponent } from '@barnabas/components';
 
 /**
  * The member's own corner of the board.

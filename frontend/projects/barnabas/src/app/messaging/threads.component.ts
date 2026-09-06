@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ThreadStore } from '@barnabas/domain';
 
-import { InboxChipsComponent } from '../inbox/inbox-chips.component';
+import { InboxChipsComponent } from '../shell/inbox-chips.component';
 
 /**
  * The member's conversations.

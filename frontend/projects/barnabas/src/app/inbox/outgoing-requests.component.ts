@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RequestStore } from '@barnabas/domain';
 
-import { InboxChipsComponent } from './inbox-chips.component';
+import { InboxChipsComponent } from '../shell/inbox-chips.component';
 
 /**
  * What the member asked for, and what became of it.

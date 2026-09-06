@@ -5,7 +5,7 @@ import { ViewportService } from '@barnabas/domain';
 import { BottomNavComponent } from './bottom-nav.component';
 import { NAV_DESTINATIONS } from './nav-destinations';
 import { PrimaryNavComponent } from './primary-nav.component';
-import { SkipLinkComponent } from './skip-link.component';
+import { SkipLinkComponent } from '@barnabas/components';
 
 /**
  * The shell every signed-in screen is rendered inside.

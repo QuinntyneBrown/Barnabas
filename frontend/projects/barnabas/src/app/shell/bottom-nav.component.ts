@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { NavDestination } from './nav-destinations';
-import { NavIconComponent } from './nav-icon.component';
+import { NavIconComponent } from '@barnabas/components';
 
 /**
  * The same five destinations, in the same order, below the medium band.

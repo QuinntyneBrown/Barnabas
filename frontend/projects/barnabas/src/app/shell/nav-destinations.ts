@@ -1,5 +1,4 @@
-/** The icons the bottom bar draws beside each destination. */
-export type NavIcon = 'board' | 'search' | 'post' | 'inbox' | 'person';
+import { NavIcon } from '@barnabas/components';
 
 export interface NavDestination {
   readonly label: string;

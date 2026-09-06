@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ThreadStore } from '@barnabas/domain';
 
-import { FieldErrors } from '../forms/field-errors';
+import { FieldErrors } from '@barnabas/domain';
 
 /**
  * One conversation, and the composer under it.
