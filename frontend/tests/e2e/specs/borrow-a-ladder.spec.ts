@@ -17,6 +17,12 @@ import { expect, test } from '../support/barnabas';
 // Every other spec says one thing precisely. This one says that the things join up, which none
 // of them can on its own. It is the slice's definition of done, walked.
 test('a member borrows a ladder from another member', async ({ page, signInAs }) => {
+  // The longest journey in the suite: two members, seven screens, and four sign-ins between
+  // them. It fits the default timeout when run alone and has intermittently exceeded it in a
+  // full run, which is a slow test rather than a failing one - so it is declared slow instead of
+  // being left to chance.
+  test.slow();
+
   const ladder = 'Extending ladder, three sections';
 
   // Marion signs in and posts the ladder.

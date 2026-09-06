@@ -6,16 +6,30 @@
 </div>
 
 <div class="container section">
+  <nav class="chip-row" aria-label="Which of your listings">
+    <button class="chip" type="button" [attr.aria-pressed]="tab() === 'active'" (click)="show('active')">
+      On the board <span class="chip__count">{{ activeCount() }}</span>
+    </button>
+    <button class="chip" type="button" [attr.aria-pressed]="tab() === 'archived'" (click)="show('archived')">
+      Put away <span class="chip__count">{{ archivedCount() }}</span>
+    </button>
+  </nav>
+
   @if (loading()) {
     <p role="status">Loading your listings.</p>
-  } @else if (mine().length === 0) {
+  } @else if (showing().length === 0) {
     <div class="state stack-4">
-      <h2>You have not posted anything yet</h2>
-      <a class="btn btn-primary" routerLink="/post">Post a listing</a>
+      @if (tab() === 'active') {
+        <h2>You have not posted anything yet</h2>
+        <a class="btn btn-primary" routerLink="/post">Post a listing</a>
+      } @else {
+        <h2>Nothing put away</h2>
+        <p>Listings you take off the board, and those you have marked as gone, collect here.</p>
+      }
     </div>
   } @else {
     <div class="rows">
-      @for (listing of mine(); track listing.listingId) {
+      @for (listing of showing(); track listing.listingId) {
         <div class="list-row">
           <div class="list-row__body stack-2">
             <div class="row-between">
@@ -29,23 +43,57 @@
               <span class="list-row__meta">${{ listing.price }}</span>
             }
 
-            <div class="row">
-              @if (listing.openRequestCount > 0) {
-                <a class="count-pill" routerLink="/inbox/requests">{{ requestLabel(listing) }}</a>
-              } @else {
-                <span class="muted small">No requests yet</span>
-              }
-            </div>
+            @if (tab() === 'active') {
+              <div class="row">
+                @if (listing.openRequestCount > 0) {
+                  <a class="count-pill" routerLink="/inbox/requests">{{ requestLabel(listing) }}</a>
+                } @else {
+                  <span class="muted small">No requests yet</span>
+                }
+              </div>
 
-            <div class="list-row__actions">
-              <button
-                class="btn btn-secondary btn-sm"
-                type="button"
-                (click)="closing.set(listing); closeOutDialog.open()"
-              >
-                {{ closeOutLabel(listing) }}
-              </button>
-            </div>
+              <div class="list-row__actions">
+                <a class="btn btn-ghost btn-sm" [routerLink]="['/listings', listing.listingId, 'edit']">
+                  Edit
+                </a>
+                <button
+                  class="btn btn-ghost btn-sm"
+                  type="button"
+                  (click)="archiving.set(listing); archiveDialog.open()"
+                >
+                  Take off the board
+                </button>
+                <button
+                  class="btn btn-secondary btn-sm"
+                  type="button"
+                  (click)="closing.set(listing); closeOutDialog.open()"
+                >
+                  {{ closeOutLabel(listing) }}
+                </button>
+              </div>
+            } @else {
+              <span class="list-row__meta">{{ listing.status }}</span>
+
+              <div class="list-row__actions">
+                <!--
+                  Restore appears only where there is something to restore. A closed-out loan is
+                  archived too, and putting it back would reopen something already finished — so
+                  the API answers whether it may come back, and the row does not guess.
+                -->
+                @if (listing.canBeRestored) {
+                  <button class="btn btn-secondary btn-sm" type="button" (click)="restore(listing)">
+                    Put back on the board
+                  </button>
+                }
+                <button
+                  class="btn btn-ghost btn-sm"
+                  type="button"
+                  (click)="deleting.set(listing); deleteDialog.open()"
+                >
+                  Delete
+                </button>
+              </div>
+            }
           </div>
         </div>
       }
@@ -56,7 +104,23 @@
 <bar-confirm-dialog
   #closeOutDialog
   heading="Mark this as gone?"
-  body="It comes off the board and moves to your wrapped-up listings, where it keeps its outcome."
+  body="It comes off the board and moves to your put-away listings, where it keeps its outcome."
   confirmLabel="Mark it"
   (confirmed)="confirmCloseOut()"
+/>
+
+<bar-confirm-dialog
+  #archiveDialog
+  heading="Take this off the board?"
+  body="It stops showing to the congregation. You can put it back whenever you like."
+  confirmLabel="Take it off"
+  (confirmed)="confirmArchive()"
+/>
+
+<bar-confirm-dialog
+  #deleteDialog
+  heading="Delete this for good?"
+  body="The listing goes, and so do the requests made against it and any conversations they opened. This cannot be undone."
+  confirmLabel="Delete it"
+  (confirmed)="confirmDelete()"
 />

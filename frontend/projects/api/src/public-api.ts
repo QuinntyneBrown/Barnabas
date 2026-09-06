@@ -40,6 +40,7 @@ export * from './lib/models/post-help-listing';
 export * from './lib/models/availability-window';
 export * from './lib/models/posted-listing';
 export * from './lib/models/closed-out-listing';
+export * from './lib/models/edit-listing';
 export * from './lib/models/make-loan-request';
 export * from './lib/models/make-gift-request';
 export * from './lib/models/make-purchase-request';

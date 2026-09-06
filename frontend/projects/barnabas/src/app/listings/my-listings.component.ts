@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MyListing } from '@barnabas/api';
-import { MyListingsStore } from '@barnabas/domain';
+import { MyListingsStore, wordsFor } from '@barnabas/domain';
 
 import { ConfirmDialogComponent } from '@barnabas/components';
+
+/** Which of the member's own listings they are looking at. */
+export type MyListingsTab = 'active' | 'archived';
 
 /**
  * The listings a member owns, and what is waiting on each.
@@ -12,9 +15,18 @@ import { ConfirmDialogComponent } from '@barnabas/components';
  * needs to know is which of their listings somebody is waiting on. It is a link rather than a
  * label, and it leads to the requests themselves.
  *
- * The close-out button reads in the vocabulary of the listing's kind. The wording is derived
- * from the kind here and the outcome is derived from the kind on the server, independently, so
- * the screen can never talk a listing into an outcome the domain would not have chosen.
+ * Two tabs rather than two screens, because a member putting something away and finding it again
+ * is doing one thing. Whether an archived listing can come back is a property of that listing —
+ * a returned loan cannot — and the API answers it, so the row shows a restore action only where
+ * there is one to offer.
+ *
+ * Every verb here comes from the shared vocabulary. It used to be a switch in this class, which
+ * disagreed with the same switch elsewhere about what a Give listing is marked as.
+ *
+ * The close-out dialog's heading is fixed rather than named after the kind. A native `dialog` is
+ * put into the top layer by `showModal()` in the same tick as the signal that would change its
+ * heading, and the binding has not flushed by then - so a per-kind heading showed the previous
+ * one. The verb belongs on the button, which is where L2-037 asks for it.
  */
 @Component({
   selector: 'bar-my-listings',
@@ -25,26 +37,33 @@ import { ConfirmDialogComponent } from '@barnabas/components';
 export class MyListingsComponent {
   private readonly store = inject(MyListingsStore);
 
-  readonly mine = this.store.mine;
   readonly loading = this.store.loading;
+
+  readonly tab = signal<MyListingsTab>('active');
+
+  readonly showing = computed(() =>
+    this.tab() === 'active' ? this.store.active() : this.store.archived(),
+  );
+
+  readonly activeCount = computed(() => this.store.active().length);
+  readonly archivedCount = computed(() => this.store.archived().length);
 
   /** The listing the open dialog is about. */
   readonly closing = signal<MyListing | null>(null);
+  readonly archiving = signal<MyListing | null>(null);
+  readonly deleting = signal<MyListing | null>(null);
 
   constructor() {
     void this.store.load();
   }
 
-  /** L2-037: Sell closes as sold, Give and Lend as taken, Help as booked. */
+  show(tab: MyListingsTab): void {
+    this.tab.set(tab);
+  }
+
+  /** L2-037: the verb belonging to the kind — taken, sold, or booked. */
   closeOutLabel(listing: MyListing): string {
-    switch (listing.kind) {
-      case 'Sell':
-        return 'Mark as sold';
-      case 'Help':
-        return 'Mark as booked';
-      default:
-        return 'Mark as taken';
-    }
+    return wordsFor(listing.kind).closeOut;
   }
 
   requestLabel(listing: MyListing): string {
@@ -59,5 +78,32 @@ export class MyListingsComponent {
     }
 
     this.closing.set(null);
+  }
+
+  async confirmArchive(): Promise<void> {
+    const listing = this.archiving();
+
+    if (listing) {
+      await this.store.archive(listing.listingId);
+    }
+
+    this.archiving.set(null);
+  }
+
+  async confirmDelete(): Promise<void> {
+    const listing = this.deleting();
+
+    if (listing) {
+      await this.store.remove(listing.listingId);
+    }
+
+    this.deleting.set(null);
+  }
+
+  async restore(listing: MyListing): Promise<void> {
+    await this.store.restore(listing.listingId);
+
+    // Back to where it now is, so the member sees it land rather than watching it vanish.
+    this.tab.set('active');
   }
 }

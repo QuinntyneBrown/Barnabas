@@ -15,7 +15,14 @@ export interface ListingWords {
   /** The call to action a member sees on someone else's listing. */
   readonly ask: string;
 
-  /** The close-out action an owner sees on their own. */
+  /**
+   * The close-out action an owner sees on their own.
+   *
+   * The verb, not the resulting status. L2-037 is precise about the difference: a Give listing is
+   * marked *taken* and becomes `Given away`; a Help offer is marked *booked* and becomes
+   * `Completed`. Labelling the button with the status would be describing the result of the act
+   * rather than the act itself.
+   */
   readonly closeOut: string;
 
   /** The heading of the dialog confirming that close-out. */
@@ -42,8 +49,8 @@ const WORDS: Readonly<Record<ListingKind, ListingWords>> = {
   },
   Give: {
     ask: 'Request this',
-    closeOut: 'Mark as given away',
-    closeOutHeading: 'Mark this as given away?',
+    closeOut: 'Mark as taken',
+    closeOutHeading: 'Mark this as taken?',
     offer: 'is giving this away',
     requestPath: 'give',
     board: 'Giving away',
@@ -58,8 +65,8 @@ const WORDS: Readonly<Record<ListingKind, ListingWords>> = {
   },
   Help: {
     ask: 'Request this help',
-    closeOut: 'Mark as completed',
-    closeOutHeading: 'Mark this as completed?',
+    closeOut: 'Mark as booked',
+    closeOutHeading: 'Mark this as booked?',
     offer: 'offers this',
     requestPath: 'help',
     board: 'Offers of help',
