@@ -11,6 +11,8 @@ import {
   LISTING_SERVICE,
   MEMBER_SERVICE,
   MemberService,
+  SEARCH_SERVICE,
+  SearchService,
   ListingService,
   REQUEST_SERVICE,
   RequestService,
@@ -58,6 +60,7 @@ export const appConfig: ApplicationConfig = {
     { provide: INVITE_SERVICE, useClass: InviteService },
     { provide: LISTING_SERVICE, useClass: ListingService },
     { provide: MEMBER_SERVICE, useClass: MemberService },
+    { provide: SEARCH_SERVICE, useClass: SearchService },
     { provide: REQUEST_SERVICE, useClass: RequestService },
     { provide: THREAD_SERVICE, useClass: ThreadService },
 

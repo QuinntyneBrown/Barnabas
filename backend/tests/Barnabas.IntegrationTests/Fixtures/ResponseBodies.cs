@@ -72,6 +72,19 @@ public sealed record BoardListingBody(
     decimal? Price,
     string? OfferInOwnWords);
 
+public sealed record SearchResultBody(
+    Guid ListingId,
+    string Kind,
+    string Title,
+    string OwnerDisplayName,
+    string Neighbourhood,
+    decimal? Price);
+
+public sealed record SearchPageBody(
+    string Term,
+    IReadOnlyList<SearchResultBody> Results,
+    string? NextCursor);
+
 public sealed record BoardPageBody(
     IReadOnlyList<BoardListingBody> Listings,
     string? NextCursor,

@@ -1,0 +1,116 @@
+<div class="masthead masthead--stone masthead--short">
+  <div class="container stack-2">
+    <h1 class="masthead-title">Search the board</h1>
+  </div>
+</div>
+
+<div class="container section stack-5">
+  <form class="form stack-3" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="term">What are you looking for?</label>
+      <input
+        type="search"
+        id="term"
+        name="term"
+        [ngModel]="term()"
+        (ngModelChange)="term.set($event)"
+      />
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="hood">Neighbourhood</label>
+        <!-- This congregation's own list, read from the congregation rather than written here. -->
+        <select id="hood" name="hood" [ngModel]="neighbourhood()" (ngModelChange)="neighbourhood.set($event)">
+          <option value="">Anywhere</option>
+          @for (option of neighbourhoods(); track option) {
+            <option [value]="option">{{ option }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="maxPrice">Up to</label>
+        <input
+          type="number"
+          id="maxPrice"
+          name="maxPrice"
+          min="0"
+          step="1"
+          [ngModel]="maxPrice()"
+          (ngModelChange)="maxPrice.set($event)"
+        />
+        <!-- A price narrows to things that have one, which is only what is for sale. -->
+        <p class="field-hint">A price shows only things for sale.</p>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary btn-lg" type="submit" [disabled]="searching()">Search</button>
+    </div>
+  </form>
+
+  @if (searchedFor(); as searched) {
+    <nav class="chip-row" aria-label="Narrow the results by kind">
+      @for (option of kinds; track option.kind) {
+        <button
+          class="chip chip--{{ option.kind.toLowerCase() }}"
+          type="button"
+          [attr.aria-pressed]="kind() === option.kind"
+          (click)="narrowTo(option.kind)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </nav>
+
+    @if (failed()) {
+      <div class="state stack-4">
+        <h2>The search did not run</h2>
+        <div class="btn-group">
+          <button class="btn btn-primary" type="button" (click)="submit()">Try again</button>
+        </div>
+      </div>
+    } @else if (results().length === 0) {
+      <div class="state stack-4">
+        <!-- The term is stated, because there is nothing else on the screen to say what happened. -->
+        <h2>Nothing found for &ldquo;{{ searched }}&rdquo;</h2>
+
+        @if (filtered()) {
+          <p>The filters may be narrowing it too far.</p>
+          <div class="btn-group">
+            <button class="btn btn-primary" type="button" (click)="clearFilters()">Clear the filters</button>
+          </div>
+        } @else {
+          <p>Try another word, or look at the whole board.</p>
+          <div class="btn-group">
+            <a class="btn btn-primary" routerLink="/board">Back to the board</a>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="muted">
+        {{ results().length }} for &ldquo;{{ searched }}&rdquo;
+      </p>
+
+      <div class="rows">
+        @for (result of results(); track result.listingId) {
+          <div class="list-row">
+            <div class="list-row__body stack-2">
+              <div class="row-between">
+                <a class="list-row__title link" [routerLink]="['/listings', result.listingId]">{{
+                  result.title
+                }}</a>
+                <span class="kind kind--{{ result.kind.toLowerCase() }}">{{ labelFor(result.kind) }}</span>
+              </div>
+              <span class="list-row__meta">{{ result.ownerDisplayName }} · {{ result.neighbourhood }}</span>
+              @if (result.price !== null) {
+                <span class="list-row__meta">${{ result.price }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

@@ -14,8 +14,20 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.OwnerId).IsRequired();
         builder.Property(l => l.Kind).HasConversion<int>();
         builder.Property(l => l.Status).HasConversion<int>();
-        builder.Property(l => l.Title).IsRequired().HasMaxLength(Listing.TitleMaxLength);
-        builder.Property(l => l.Description).IsRequired().HasMaxLength(Listing.DescriptionMaxLength);
+        // Declared case-insensitive rather than left to whichever collation the server was
+        // installed with. L2-048 AC3 requires LADDER and ladder to give the same answer, and a
+        // TestDatabase created at the server default would be proving something about the
+        // machine instead of about Barnabas - the argument ADR-0001 makes about constraints,
+        // applied to a comparison.
+        builder.Property(l => l.Title)
+            .IsRequired()
+            .HasMaxLength(Listing.TitleMaxLength)
+            .UseCollation(Collations.CaseInsensitive);
+
+        builder.Property(l => l.Description)
+            .IsRequired()
+            .HasMaxLength(Listing.DescriptionMaxLength)
+            .UseCollation(Collations.CaseInsensitive);
         builder.Property(l => l.Category).IsRequired().HasMaxLength(100);
         builder.Property(l => l.Neighbourhood).IsRequired().HasMaxLength(200);
         builder.Property(l => l.Price).HasPrecision(18, 2);

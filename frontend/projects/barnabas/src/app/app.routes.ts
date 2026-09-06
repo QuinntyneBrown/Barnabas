@@ -41,6 +41,7 @@ import { ThreadsComponent } from './messaging/threads.component';
 import { InviteSomeoneComponent } from './moderation/invite-someone.component';
 
 import { DirectoryComponent } from './members/directory.component';
+import { SearchComponent } from './search/search.component';
 import { MemberProfileComponent } from './members/member-profile.component';
 
 import { ProfileSettingsComponent } from './you/profile-settings.component';
@@ -191,15 +192,7 @@ export const routes: Routes = [
       },
 
       // Reachable so the five destinations are five at every width, and honest about being empty.
-      {
-        path: 'search',
-        component: ComingSoonComponent,
-        title: 'Search · Barnabas',
-        data: {
-          heading: 'Search is on its way',
-          body: 'For now the whole board fits on one screen.',
-        },
-      },
+      { path: 'search', component: SearchComponent, title: 'Search · Barnabas' },
       {
         path: 'notifications',
         component: ComingSoonComponent,
