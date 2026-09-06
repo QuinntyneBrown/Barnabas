@@ -83,6 +83,14 @@ public sealed class Member : ITenantOwned
     /// <summary>When they left. A departed member is on no board and in no directory.</summary>
     public DateTimeOffset? LeftAt { get; private set; }
 
+    /// <summary>When their personal data was erased at their request. L2-101 AC2.</summary>
+    public DateTimeOffset? ErasedAt { get; private set; }
+
+    public bool IsErased => ErasedAt is not null;
+
+    /// <summary>What a member's name reads as once they have been erased.</summary>
+    public const string ErasedDisplayName = "A former member";
+
     /// <summary>
     /// Begins a membership, awaiting a moderator.
     /// </summary>
@@ -146,6 +154,45 @@ public sealed class Member : ITenantOwned
     {
         Status = MemberStatus.Left;
         LeftAt = asOf;
+    }
+
+    /// <summary>
+    /// Erases them: the name goes, the address goes, and everything they wrote about themselves
+    /// goes.
+    /// </summary>
+    /// <remarks>
+    /// Anonymised in place rather than deleted, and irreversibly. The row is what every listing,
+    /// request and thread they were part of points at, and deleting it would break the other
+    /// party's record of a conversation they are entitled to keep - <c>L2-066 AC1</c>. What is
+    /// left is a tombstone: a member existed, and nothing about who.
+    /// <para>
+    /// The address is replaced with one derived from the identifier under <c>.invalid</c>, which
+    /// is reserved by RFC 2606 and can never be delivered to. It is not the old address hashed:
+    /// a hash of a known address is a lookup table away from being the address again, and
+    /// <c>L2-101</c> asks for irreversible.
+    /// </para>
+    /// <para>
+    /// Leaving is a separate act and remains one. Somebody may leave and stay reachable; erasure
+    /// is what they ask for when they want to be forgotten, and it implies leaving.
+    /// </para>
+    /// </remarks>
+    public void Erase(DateTimeOffset asOf)
+    {
+        if (IsErased)
+        {
+            return;
+        }
+
+        DisplayName = ErasedDisplayName;
+        EmailAddress = $"erased-{Id:n}@erased.invalid";
+        Neighbourhood = string.Empty;
+        Description = null;
+        ReasonForJoining = null;
+        Status = MemberStatus.Left;
+        LeftAt ??= asOf;
+        ErasedAt = asOf;
+
+        _helpTags.Clear();
     }
 
     /// <summary>A moderator lets them in.</summary>

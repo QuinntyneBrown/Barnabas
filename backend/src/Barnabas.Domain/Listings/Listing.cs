@@ -83,6 +83,22 @@ public sealed class Listing : ITenantOwned, IOwnedResource
     /// <summary>Whether a moderator has an unreviewed complaint about it. L2-080.</summary>
     public bool IsFlagged => FlaggedAt is not null;
 
+    /// <summary>
+    /// The one photo a goods listing may carry.
+    /// </summary>
+    /// <remarks>
+    /// An identifier rather than the bytes. The bytes live in a store behind an interface and are
+    /// served from a path that cannot execute; what the listing holds is which photo is its own.
+    /// <para>
+    /// One, not a gallery. <c>L2-032</c> says at most one, and a second attachment replaces the
+    /// first rather than adding to it.
+    /// </para>
+    /// </remarks>
+    public Guid? PhotoId { get; private set; }
+
+    /// <summary>Help offers time rather than a thing, so it carries no photo. L2-030, L2-032.</summary>
+    public bool AcceptsAPhoto => Kind != ListingKind.Help;
+
     /// <summary>Present on a Lend listing and on no other kind.</summary>
     public LoanTerms? LoanTerms { get; private set; }
 
@@ -289,6 +305,32 @@ public sealed class Listing : ITenantOwned, IOwnedResource
     }
 
     /// <summary>
+    /// Attaches a photo, replacing whatever was there.
+    /// </summary>
+    /// <remarks>
+    /// The caller is handed back the photo that was displaced, so it can delete those bytes: the
+    /// store holds no reference count and an orphan nobody deletes is an orphan forever.
+    /// </remarks>
+    public Guid? AttachPhoto(Guid photoId)
+    {
+        if (!AcceptsAPhoto)
+        {
+            throw new ListingTakesNoPhotoException(Id);
+        }
+
+        if (!IsActive)
+        {
+            throw new ListingNotActiveException(Id);
+        }
+
+        var displaced = PhotoId;
+
+        PhotoId = photoId;
+
+        return displaced;
+    }
+
+    /// <summary>
     /// Marks it for a moderator's attention.
     /// </summary>
     /// <remarks>
@@ -331,6 +373,30 @@ public sealed class Listing : ITenantOwned, IOwnedResource
         RemovedAt = asOf;
         FlaggedAt = null;
     }
+
+    /// <summary>
+    /// Strips the listing of its owner's words when they ask to be erased.
+    /// </summary>
+    /// <remarks>
+    /// Removed and emptied rather than deleted, because requests and threads point at it and a
+    /// thread whose listing had vanished would be a conversation about nothing. What a member
+    /// wrote goes; that a listing existed stays.
+    /// </remarks>
+    public void EraseOnRequest(DateTimeOffset asOf)
+    {
+        Title = ErasedTitle;
+        Description = string.Empty;
+        Category = string.Empty;
+        Neighbourhood = string.Empty;
+        Condition = null;
+        PhotoId = null;
+        Status = ListingStatus.Removed;
+        RemovedAt ??= asOf;
+        FlaggedAt = null;
+    }
+
+    /// <summary>What an erased listing reads as, wherever one is still pointed at.</summary>
+    public const string ErasedTitle = "A withdrawn listing";
 
     public void CloseOut(DateTimeOffset asOf)
     {

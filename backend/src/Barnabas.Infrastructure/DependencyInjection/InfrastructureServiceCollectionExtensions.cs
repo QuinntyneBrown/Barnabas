@@ -7,6 +7,8 @@ using Barnabas.Application.Joining.Common;
 using Barnabas.Application.Notifications.Common;
 using Barnabas.Application.Requests.Common;
 using Barnabas.Infrastructure.Email;
+using Barnabas.Application.Photos.Common;
+using Barnabas.Infrastructure.Photos;
 using Barnabas.Infrastructure.Persistence;
 using Barnabas.Infrastructure.Persistence.Seeding;
 using Barnabas.Infrastructure.Security;
@@ -30,6 +32,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.Configure<SignInLinkOptions>(configuration.GetSection(SignInLinkOptions.SectionName));
         services.Configure<InviteCodeOptions>(configuration.GetSection(InviteCodeOptions.Section));
+        services.Configure<PhotoStoreOptions>(configuration.GetSection(PhotoStoreOptions.SectionName));
 
         var database = configuration.GetSection(DatabaseOptions.SectionName).Get<DatabaseOptions>() ?? new DatabaseOptions();
 
@@ -57,6 +60,11 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddSingleton<RedemptionThrottle>();
         services.AddSingleton<IRedemptionThrottle>(provider => provider.GetRequiredService<RedemptionThrottle>());
         services.AddScoped(typeof(IOwnerLookup<>), typeof(OwnerLookup<>));
+
+        // Both singletons: neither holds per-request state, and the processor's only field is a
+        // table of magic bytes.
+        services.AddSingleton<IImageProcessor, SkiaImageProcessor>();
+        services.AddSingleton<IPhotoStore, FileSystemPhotoStore>();
 
         // Registered after the open generic so it wins for this one closed type. Deciding a
         // request is authorised against the listing it was made on, which no set of requests

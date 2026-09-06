@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LISTING_SERVICE } from '@barnabas/api';
 
-import { FieldErrors, focusFirstInvalid } from '@barnabas/domain';
+import { FieldErrors, PhotoFieldComponent, focusFirstInvalid } from '@barnabas/domain';
 
 /**
  * Step two of giving something away.
@@ -14,7 +14,7 @@ import { FieldErrors, focusFirstInvalid } from '@barnabas/domain';
  */
 @Component({
   selector: 'bar-post-give',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, PhotoFieldComponent],
   templateUrl: './post-give.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -46,6 +46,14 @@ export class PostGiveComponent {
   readonly errors = signal(FieldErrors.none());
   readonly posting = signal(false);
 
+  /**
+   * The photograph, if they chose one.
+   *
+   * Held rather than sent as it is picked, because a photo goes on a listing that already exists
+   * and there is no listing until this form has posted.
+   */
+  readonly photo = signal<File | null>(null);
+
   async submit(): Promise<void> {
     if (this.posting()) {
       return;
@@ -61,6 +69,15 @@ export class PostGiveComponent {
         category: this.category(),
         neighbourhood: this.neighbourhood(),
       });
+
+      // After the listing exists, and before the confirmation. A photo that failed to attach
+      // must not leave the member on a screen saying everything went well - the listing is
+      // posted either way, and the error names which half did not.
+      const photo = this.photo();
+
+      if (photo) {
+        await this.listings.attachPhoto(posted.listingId, photo);
+      }
 
       await this.router.navigate(['/listings', posted.listingId, 'posted']);
     } catch (failure) {

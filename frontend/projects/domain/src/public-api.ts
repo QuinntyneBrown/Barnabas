@@ -24,6 +24,7 @@ export * from './lib/requests/request.store';
 export * from './lib/messaging/thread.store';
 
 export * from './lib/board/placard/placard.component';
+export * from './lib/listings/photo-field/photo-field.component';
 export * from './lib/moderation/report-listing-dialog/report-listing-dialog.component';
 
 export * from './lib/forms/field-errors';

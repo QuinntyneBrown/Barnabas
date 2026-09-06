@@ -68,6 +68,8 @@
       Barnabas does not handle delivery.
     </p>
 
+    <bar-photo-field (chosen)="photo.set($event)" />
+
     <div class="btn-group">
       <button class="btn btn-primary btn-lg" type="submit" [disabled]="posting()">Post listing</button>
       <a class="btn btn-ghost btn-lg" routerLink="/post">Back</a>

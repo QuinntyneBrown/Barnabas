@@ -41,11 +41,27 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
 
     private readonly TestDatabase _database = new();
 
+    /// <summary>Where this run's photo bytes go. Removed with the database when the run ends.</summary>
+    private static readonly string PhotoRoot =
+        Path.Combine(Path.GetTempPath(), "barnabas-tests", Guid.NewGuid().ToString("n"));
+
     /// <summary>
     /// A clock the tests move deliberately. Expiry is a rule about elapsed time, and a test that
     /// waited for it would be slow and flaky in equal measure.
     /// </summary>
-    public FakeTimeProvider Clock { get; } = new(new DateTimeOffset(2026, 9, 5, 9, 0, 0, TimeSpan.Zero));
+    public FakeTimeProvider Clock { get; } = new(new DateTimeOffset(2026, 9, 5, 9, 0, 0, TimeSpan.Zero))
+    {
+        // One tick per reading, so two things that happen one after the other are ordered one
+        // after the other.
+        //
+        // A frozen clock stamps every row in a test with the same instant, and every list that
+        // orders by time then falls back to comparing identifiers - which are random, so the
+        // order is drawn afresh on every run. Two suites' worth of assertions about "newest
+        // first" and "in the order they were sent" were passing on that draw. A hundred
+        // nanoseconds is enough to break the tie and far too little to disturb anything
+        // reasoning about a fifteen-minute expiry.
+        AutoAdvanceAmount = TimeSpan.FromTicks(1),
+    };
 
     public IEmailOutbox Outbox => Services.GetRequiredService<IEmailOutbox>();
 
@@ -65,6 +81,11 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         await base.DisposeAsync();
 
         await _database.DisposeAsync();
+
+        if (Directory.Exists(PhotoRoot))
+        {
+            Directory.Delete(PhotoRoot, recursive: true);
+        }
     }
 
     /// <summary>Empties every table and re-seeds, so each test starts from the same board.</summary>
@@ -175,6 +196,15 @@ public sealed class BarnabasApiFactory : WebApplicationFactory<Program>, IAsyncL
         builder.UseSetting("Database:ResetOnStart", "false");
         builder.UseSetting("Jwt:SigningKey", SigningKey);
         builder.UseSetting("Auth:RefreshCookie:Secure", "false");
+
+        // The test server speaks plain HTTP, so redirecting to HTTPS would answer 307 to every
+        // request in the suite. The one test that asserts the redirect turns it back on for
+        // itself, so L2-100 AC1 is tested rather than assumed.
+        builder.UseSetting("Security:RequireHttps", "false");
+
+        // A folder of this run's own, so one run's photos are not another's and nothing is left
+        // in the developer's temp directory afterwards.
+        builder.UseSetting("Photos:Root", PhotoRoot);
 
         builder.ConfigureLogging(logging => logging.AddProvider(ServerErrors));
 

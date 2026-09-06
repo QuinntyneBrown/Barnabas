@@ -25,4 +25,7 @@ export interface ListingDetail {
   readonly availabilityWindows: readonly AvailabilityWindow[];
   readonly postedAt: string;
   readonly isOwnedByCaller: boolean;
+
+  /** The full rendition of its photo, or null. Help listings never carry one. */
+  readonly photoUrl: string | null;
 }

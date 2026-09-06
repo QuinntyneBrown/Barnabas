@@ -27,4 +27,5 @@ public sealed record ListingDetailDto(
     string? Condition,
     IReadOnlyList<AvailabilityWindowDto> AvailabilityWindows,
     DateTimeOffset PostedAt,
-    bool IsOwnedByCaller);
+    bool IsOwnedByCaller,
+    string? PhotoUrl);

@@ -65,4 +65,14 @@ public interface IAuthenticationStore
 
     /// <summary>Revokes a session and the refresh tokens bound to it.</summary>
     Task RevokeSessionAsync(Guid sessionId, DateTimeOffset asOf, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Revokes every session a member holds, on every device.
+    /// </summary>
+    /// <remarks>
+    /// Erasure has to reach the phone in a pocket as well as the browser that asked. Revoking
+    /// only the calling session would leave a member who had been forgotten still signed in
+    /// somewhere as a person who no longer has a name.
+    /// </remarks>
+    Task RevokeAllSessionsAsync(Guid memberId, DateTimeOffset asOf, CancellationToken cancellationToken);
 }

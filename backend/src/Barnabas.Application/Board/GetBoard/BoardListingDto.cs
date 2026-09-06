@@ -15,6 +15,10 @@ namespace Barnabas.Application.Board.GetBoard;
 /// member with a colour vision deficiency, or for anyone reading in sunlight.
 /// </para>
 /// <para>
+/// <see cref="PhotoUrl"/> is the board's own rendition rather than the uploaded bytes, so a
+/// mosaic of thirty placards fetches thirty small images. L2-106 AC1.
+/// </para>
+/// <para>
 /// <see cref="Availability"/> is present on Help placards and null on the others. An offer of
 /// time that does not say when is not much of an offer, so the days are on the board rather than
 /// one screen further in.
@@ -28,4 +32,5 @@ public sealed record BoardListingDto(
     string Neighbourhood,
     decimal? Price,
     string? OfferInOwnWords,
-    string? Availability);
+    string? Availability,
+    string? PhotoUrl);

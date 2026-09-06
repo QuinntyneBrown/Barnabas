@@ -86,7 +86,8 @@ public sealed record BoardListingBody(
     string OwnerDisplayName,
     string Neighbourhood,
     decimal? Price,
-    string? OfferInOwnWords);
+    string? OfferInOwnWords,
+    string? PhotoUrl = null);
 
 public sealed record SearchResultBody(
     Guid ListingId,
@@ -121,7 +122,8 @@ public sealed record ListingDetailBody(
     DateTimeOffset PostedAt,
     bool IsOwnedByCaller,
     string? Condition = null,
-    IReadOnlyList<AvailabilityWindowBody>? AvailabilityWindows = null);
+    IReadOnlyList<AvailabilityWindowBody>? AvailabilityWindows = null,
+    string? PhotoUrl = null);
 
 /// <summary>One window a Help listing declares, and the identifier a request names it by.</summary>
 public sealed record AvailabilityWindowBody(
@@ -226,3 +228,52 @@ public sealed record PendingMemberBody(
     string? ReasonForJoining);
 
 public sealed record DecidedMember(Guid MemberId, string Status);
+
+public sealed record AttachedPhoto(Guid ListingId, Guid PhotoId, string Url, string BoardUrl);
+
+public sealed record ErasedData(
+    Guid MemberId,
+    int ListingsErased,
+    int MessagesErased,
+    DateTimeOffset ErasedAt);
+
+public sealed record ExportedProfileBody(
+    Guid MemberId,
+    string DisplayName,
+    string EmailAddress,
+    string Neighbourhood,
+    string? Description,
+    IReadOnlyList<string> HelpTags,
+    string Role,
+    string Status,
+    string? ReasonForJoining,
+    string CongregationName);
+
+public sealed record ExportedListingBody(
+    Guid ListingId,
+    string Kind,
+    string Title,
+    string Description,
+    string Category,
+    string Neighbourhood,
+    string Status,
+    decimal? Price,
+    DateTimeOffset PostedAt,
+    string? PhotoUrl);
+
+public sealed record ExportedRequestBody(
+    Guid RequestId,
+    Guid ListingId,
+    string ListingTitle,
+    string Message,
+    string Status,
+    DateTimeOffset MadeAt);
+
+public sealed record ExportedMessageBody(Guid MessageId, Guid ThreadId, string Body, DateTimeOffset SentAt);
+
+public sealed record MyDataExportBody(
+    DateTimeOffset ExportedAt,
+    ExportedProfileBody Profile,
+    IReadOnlyList<ExportedListingBody> Listings,
+    IReadOnlyList<ExportedRequestBody> Requests,
+    IReadOnlyList<ExportedMessageBody> Messages);

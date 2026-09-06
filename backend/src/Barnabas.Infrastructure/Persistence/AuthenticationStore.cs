@@ -164,4 +164,31 @@ public sealed class AuthenticationStore : IAuthenticationStore
              """,
             cancellationToken);
     }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// The refresh tokens are revoked through their sessions rather than by member, because a
+    /// refresh token records the session it belongs to and not who holds it - which is the right
+    /// way round, and means this needs no second column to stay correct.
+    /// </remarks>
+    public async Task RevokeAllSessionsAsync(
+        Guid memberId,
+        DateTimeOffset asOf,
+        CancellationToken cancellationToken)
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             UPDATE [RefreshTokens] SET [RevokedAt] = {asOf}
+             WHERE [RevokedAt] IS NULL
+               AND [SessionId] IN (SELECT [Id] FROM [Sessions] WHERE [MemberId] = {memberId})
+             """,
+            cancellationToken);
+
+        await _context.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             UPDATE [Sessions] SET [RevokedAt] = {asOf}
+             WHERE [MemberId] = {memberId} AND [RevokedAt] IS NULL
+             """,
+            cancellationToken);
+    }
 }

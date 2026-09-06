@@ -71,6 +71,20 @@ public sealed class Notification : ITenantOwned
     /// <summary>Marks it read, and leaves an already-read one alone.</summary>
     public void MarkRead(DateTimeOffset asOf) => ReadAt ??= asOf;
 
+    /// <summary>
+    /// Forgets who this was about, when that member asks to be erased.
+    /// </summary>
+    /// <remarks>
+    /// The name is copied onto this row rather than joined, which is what makes a notification a
+    /// record of what was true when it happened - and is also why erasing the member elsewhere
+    /// would leave their name sitting in somebody else's list. This is where it goes.
+    /// </remarks>
+    public void ForgetSubject()
+    {
+        SubjectMemberId = null;
+        SubjectMemberDisplayName = Members.Member.ErasedDisplayName;
+    }
+
     /// <summary>Somebody has asked for something of yours.</summary>
     public static Notification RequestReceived(
         Guid id,

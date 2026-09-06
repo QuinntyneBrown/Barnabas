@@ -30,6 +30,15 @@
     <!-- Pinned to the version Microsoft.AspNetCore.Authentication.JwtBearer 10.0.x resolves. -->
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.19.2" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.11" />
+    <!--
+      SkiaSharp: MIT bindings over BSD-3-Clause Skia, with no revenue tier.
+      Deliberately not SixLabors.ImageSharp, which is Apache-2.0 only to 2.1.x and moves to the
+      Six Labors Split Licence at 3.0 - the same trap the MediatR pin exists to avoid.
+      The Linux native assets are listed so a container build has them; the Windows ones ship
+      inside the main package.
+    -->
+    <PackageVersion Include="SkiaSharp" Version="4.151.2" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="4.151.2" />
   </ItemGroup>
 
   <ItemGroup Label="Api">
