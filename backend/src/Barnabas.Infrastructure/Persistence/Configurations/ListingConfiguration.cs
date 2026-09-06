@@ -52,6 +52,7 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         // index that serves it.
         builder.HasIndex(l => new { l.CongregationId, l.Status, l.PostedAt });
         builder.HasIndex(l => l.OwnerId);
+        builder.Property(l => l.PhotoId);
 
         // The moderation queue reads one congregation's flagged listings and nothing else, so the
         // index carries the filter rather than the query scanning a board to find the few.

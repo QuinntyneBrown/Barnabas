@@ -1,5 +1,7 @@
 using Barnabas.Application.Common.Exceptions;
 using Barnabas.Application.Common.Persistence;
+using Barnabas.Application.Photos.Common;
+using Barnabas.Domain.Photos;
 using Barnabas.Application.Common.Tenancy;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -31,38 +33,49 @@ public sealed class GetListingQueryHandler : IRequestHandler<GetListingQuery, Li
 
         var caller = _congregation.MemberId;
 
-        var listing = await _context.Listings
+        // Read the row and the owner's name in one query, then shape it here rather than in the
+        // projection. The photo's address is built by PhotoUrl, which is a rule about where a
+        // thing lives - not something SQL Server can be asked to concatenate.
+        var found = await _context.Listings
             .Where(listing => listing.Id == request.ListingId)
             .Join(
                 _context.Members,
                 listing => listing.OwnerId,
                 member => member.Id,
-                (listing, owner) => new ListingDetailDto(
-                    listing.Id,
-                    listing.Kind,
-                    listing.Title,
-                    listing.Description,
-                    listing.Category,
-                    listing.Neighbourhood,
-                    listing.Status,
-                    listing.OwnerId,
-                    owner.DisplayName,
-                    listing.Price,
-                    listing.LoanTerms == null ? null : listing.LoanTerms.ReturnBy,
-                    listing.Condition,
-                    listing.AvailabilityWindows
-                        .OrderBy(window => window.Day)
-                        .ThenBy(window => window.StartsAt)
-                        .Select(window => new AvailabilityWindowDto(
-                            window.Id,
-                            window.Day,
-                            window.StartsAt,
-                            window.EndsAt))
-                        .ToList(),
-                    listing.PostedAt,
-                    listing.OwnerId == caller))
+                (listing, owner) => new { Listing = listing, OwnerDisplayName = owner.DisplayName })
             .FirstOrDefaultAsync(cancellationToken);
 
-        return listing ?? throw new NotFoundException();
+        if (found is null)
+        {
+            throw new NotFoundException();
+        }
+
+        var listing = new ListingDetailDto(
+            found.Listing.Id,
+            found.Listing.Kind,
+            found.Listing.Title,
+            found.Listing.Description,
+            found.Listing.Category,
+            found.Listing.Neighbourhood,
+            found.Listing.Status,
+            found.Listing.OwnerId,
+            found.OwnerDisplayName,
+            found.Listing.Price,
+            found.Listing.LoanTerms?.ReturnBy,
+            found.Listing.Condition,
+            found.Listing.AvailabilityWindows
+                .OrderBy(window => window.Day)
+                .ThenBy(window => window.StartsAt)
+                .Select(window => new AvailabilityWindowDto(
+                    window.Id,
+                    window.Day,
+                    window.StartsAt,
+                    window.EndsAt))
+                .ToList(),
+            found.Listing.PostedAt,
+            found.Listing.OwnerId == caller,
+            found.Listing.PhotoId is { } photoId ? PhotoUrl.For(photoId, PhotoSize.Full) : null);
+
+        return listing;
     }
 }

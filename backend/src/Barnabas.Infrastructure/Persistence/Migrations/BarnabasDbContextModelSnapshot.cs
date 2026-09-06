@@ -264,6 +264,9 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("PostedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -317,6 +320,9 @@ namespace Barnabas.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
+
+                    b.Property<DateTimeOffset?>("ErasedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("LeftAt")
                         .HasColumnType("datetimeoffset");

@@ -78,6 +78,8 @@
 
     <!-- No price field. A loan is not a sale, and the API refuses one by name. -->
 
+    <bar-photo-field (chosen)="photo.set($event)" />
+
     <div class="btn-group">
       <button class="btn btn-primary btn-lg" type="submit" [disabled]="posting()">Post listing</button>
       <a class="btn btn-ghost btn-lg" routerLink="/post">Back</a>

@@ -75,3 +75,4 @@ export * from './lib/models/message';
 export * from './lib/models/report-reason';
 export * from './lib/models/listing-report';
 export * from './lib/models/pending-member';
+export * from './lib/models/attached-photo';

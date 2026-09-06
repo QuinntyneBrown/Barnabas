@@ -3,6 +3,25 @@
 
   @if (isHelp()) {
     <span class="placard__words">&ldquo;{{ listing().offerInOwnWords }}&rdquo;</span>
+  } @else if (listing().photoUrl; as photo) {
+    <!--
+      Lazy by default, and dimensioned. A mosaic is mostly below the fold, so loading every
+      photograph on the first paint is what L2-106 AC2 asks us not to do; the width and height
+      are what stop each one shoving the placards below it down as it arrives.
+
+      The alt text is the title rather than a description of the picture. Nobody wrote a
+      description, and inventing one would be worse than repeating what the placard already says.
+    -->
+    <span class="placard__art">
+      <img
+        [src]="photo"
+        [alt]="listing().title"
+        loading="lazy"
+        decoding="async"
+        width="640"
+        height="480"
+      />
+    </span>
   }
 
   <span class="placard__body">

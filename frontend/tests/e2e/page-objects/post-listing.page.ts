@@ -102,6 +102,16 @@ export class PostLendPage {
     return this.page.getByRole('button', { name: 'Post listing' });
   }
 
+  /** The one photograph a goods listing may carry. */
+  get photo(): Locator {
+    return this.page.locator('input[type="file"]');
+  }
+
+  /** The local preview, shown before anything is sent. */
+  get photoPreview(): Locator {
+    return this.page.locator('.photo-field__preview');
+  }
+
   get invalidFields(): Locator {
     return this.page.locator('[aria-invalid="true"]');
   }
@@ -175,6 +185,16 @@ export class PostGivePage {
     return this.page.getByRole('button', { name: 'Post listing' });
   }
 
+  /** The one photograph a goods listing may carry. */
+  get photo(): Locator {
+    return this.page.locator('input[type="file"]');
+  }
+
+  /** The local preview, shown before anything is sent. */
+  get photoPreview(): Locator {
+    return this.page.locator('.photo-field__preview');
+  }
+
   async fill(listing: { title: string; description: string }): Promise<void> {
     await this.title.fill(listing.title);
     await this.description.fill(listing.description);
@@ -211,6 +231,16 @@ export class PostSellPage {
 
   get post(): Locator {
     return this.page.getByRole('button', { name: 'Post listing' });
+  }
+
+  /** The one photograph a goods listing may carry. */
+  get photo(): Locator {
+    return this.page.locator('input[type="file"]');
+  }
+
+  /** The local preview, shown before anything is sent. */
+  get photoPreview(): Locator {
+    return this.page.locator('.photo-field__preview');
   }
 
   fieldError(field: string): Locator {
@@ -271,6 +301,16 @@ export class PostHelpPage {
 
   get post(): Locator {
     return this.page.getByRole('button', { name: 'Post listing' });
+  }
+
+  /** The one photograph a goods listing may carry. */
+  get photo(): Locator {
+    return this.page.locator('input[type="file"]');
+  }
+
+  /** The local preview, shown before anything is sent. */
+  get photoPreview(): Locator {
+    return this.page.locator('.photo-field__preview');
   }
 
   async fill(listing: { title: string; description: string }): Promise<void> {

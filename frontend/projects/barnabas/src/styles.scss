@@ -34,3 +34,43 @@
   border-width: 2px;
   outline-offset: 2px;
 }
+
+// --------------------------------------------------------------------------
+// Listing photographs
+//
+// The design system draws its art slots for the line illustrations the mocks carry, and
+// styles the `svg` inside them. A photograph goes in the same slot and needs the same two
+// rules an `svg` gets there, which is why this is here rather than in barnabas.css: that
+// file stays a clean carry of docs/mocks/styles.css.
+//
+// `object-fit: cover` rather than `contain`, because a placard is a solid field of colour and
+// a letterboxed photograph inside one reads as a mistake. The intrinsic width and height on
+// the element are what reserve the space before the bytes arrive, so a lazily-loaded picture
+// does not shove the placards below it down as it lands.
+// --------------------------------------------------------------------------
+
+.placard__art img {
+  width: 100%;
+  height: 100%;
+  max-height: 11rem;
+  object-fit: cover;
+}
+
+.detail__art {
+  padding: 0;
+}
+
+.detail__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-field__preview {
+  display: block;
+  margin-top: var(--s-3);
+  max-width: 16rem;
+  max-height: 12rem;
+  object-fit: cover;
+  border: var(--hairline);
+}

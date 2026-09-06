@@ -14,6 +14,7 @@ import { PostHelpListing } from '../models/post-help-listing';
 import { PostLendListing } from '../models/post-lend-listing';
 import { PostSellListing } from '../models/post-sell-listing';
 import { PostedListing } from '../models/posted-listing';
+import { AttachedPhoto } from '../models/attached-photo';
 import { IListingService } from './listing.service.contract';
 
 /** @inheritdoc */
@@ -76,6 +77,22 @@ export class ListingService implements IListingService {
 
   remove(listingId: string): Promise<void> {
     return firstValueFrom(this.http.delete<void>(`${this.baseUrl}/listings/${listingId}`));
+  }
+
+  /**
+   * Sends the file as multipart, which is the one place in the client that does.
+   *
+   * No Content-Type is set by hand: the browser writes it, and the boundary it has to carry is
+   * something only the browser knows.
+   */
+  attachPhoto(listingId: string, photo: File): Promise<AttachedPhoto> {
+    const body = new FormData();
+
+    body.append('file', photo, photo.name);
+
+    return firstValueFrom(
+      this.http.post<AttachedPhoto>(`${this.baseUrl}/listings/${listingId}/photo`, body),
+    );
   }
 
   closeOut(listingId: string): Promise<ClosedOutListing> {

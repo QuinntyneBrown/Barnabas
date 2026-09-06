@@ -1,0 +1,18 @@
+<div class="field">
+  <label for="photo">{{ label() }}</label>
+  <p class="field-hint">
+    One picture, optional. JPEG, PNG or WebP, up to 10&nbsp;MB &mdash; it is resized and re-saved,
+    so anything your camera recorded about where you were is not kept.
+  </p>
+  <input
+    type="file"
+    id="photo"
+    name="photo"
+    [accept]="accept"
+    (change)="choose($any($event.target).files)"
+  />
+
+  @if (preview(); as source) {
+    <img class="photo-field__preview" [src]="source" [alt]="name() ?? 'The photo you chose'" />
+  }
+</div>

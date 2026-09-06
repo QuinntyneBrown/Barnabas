@@ -7,6 +7,7 @@ using Barnabas.Domain.Common;
 using Barnabas.Domain.Listings;
 using Barnabas.Domain.Messaging;
 using Barnabas.Domain.Moderation;
+using Barnabas.Domain.Photos;
 using Barnabas.Domain.Requests;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
@@ -157,6 +158,17 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
             "That role cannot be granted here."),
 
         ListingNotActiveException => Problem(StatusCodes.Status409Conflict, "The listing is no longer active."),
+
+        // One answer for every way of not being an image Barnabas keeps - a type that does not
+        // match the bytes, bytes that decode to nothing, a canvas too large to decode. Saying
+        // which would tell somebody probing the endpoint how close they got. L2-032 AC3, L2-102 AC1.
+        UnsupportedImageException => Problem(
+            StatusCodes.Status415UnsupportedMediaType,
+            "That file is not an image Barnabas can accept."),
+
+        ListingTakesNoPhotoException => Problem(
+            StatusCodes.Status409Conflict,
+            "That kind of listing does not carry a photo."),
 
         // Reported once, permanently. Unlike a declined request, which may be asked again, there
         // is no second reading of the same complaint from the same person - L2-080 AC2.

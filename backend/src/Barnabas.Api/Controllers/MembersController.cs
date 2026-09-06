@@ -1,5 +1,7 @@
 using Barnabas.Api.Contracts;
 using Barnabas.Application.Members.EditMyProfile;
+using Barnabas.Application.Members.EraseMyData;
+using Barnabas.Application.Members.ExportMyData;
 using Barnabas.Application.Members.GetDirectory;
 using Barnabas.Application.Members.GetMemberProfile;
 using Barnabas.Application.Members.GetMyProfile;
@@ -59,6 +61,31 @@ public sealed class MembersController : ControllerBase
 
         return NoContent();
     }
+
+    /// <summary>
+    /// Everything Barnabas holds about the caller, in one document. L2-101 AC3.
+    /// </summary>
+    /// <remarks>
+    /// It names no member. The one exported comes from the verified session, so there is no
+    /// identifier a caller could change in order to export somebody else.
+    /// </remarks>
+    [HttpGet("members/me/export")]
+    [ProducesResponseType<MyDataExport>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<MyDataExport>> Export(CancellationToken cancellationToken) =>
+        Ok(await _sender.Send(new ExportMyDataQuery(), cancellationToken));
+
+    /// <summary>
+    /// The caller asks to be forgotten. L2-101 AC2.
+    /// </summary>
+    /// <remarks>
+    /// A separate act from leaving, and it implies leaving. Their profile, listings and messages
+    /// are irreversibly anonymised in place — deleting them would break the other party's record
+    /// of a conversation they are entitled to keep — and every session they hold ends.
+    /// </remarks>
+    [HttpPost("members/me/erase")]
+    [ProducesResponseType<ErasedDataResult>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<ErasedDataResult>> Erase(CancellationToken cancellationToken) =>
+        Ok(await _sender.Send(new EraseMyDataCommand(), cancellationToken));
 
     [HttpGet("members/{memberId:guid}")]
     [ProducesResponseType<MemberProfileDto>(StatusCodes.Status200OK)]

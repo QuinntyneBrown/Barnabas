@@ -60,6 +60,11 @@ export class ListingDetailPage {
     return this.page.getByRole('link', { name: /^Request/ });
   }
 
+  /** The listing's own rendition of its photograph, if it has one. */
+  get photo(): Locator {
+    return this.page.locator('.detail__art img');
+  }
+
   /** Any member but the owner may report it. The owner is not offered it at all. */
   get report(): Locator {
     return this.page.getByRole('button', { name: 'Report this listing' });

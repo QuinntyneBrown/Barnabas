@@ -11,6 +11,12 @@
 
     <div class="detail">
       <div class="stack-6">
+        @if (detail.photoUrl; as photo) {
+          <div class="detail__art">
+            <img [src]="photo" [alt]="detail.title" width="1600" height="1200" />
+          </div>
+        }
+
         <blockquote class="quote">{{ detail.description }}</blockquote>
 
         <dl class="facts">

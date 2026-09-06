@@ -1,4 +1,6 @@
 using Barnabas.Application.Common.Persistence;
+using Barnabas.Application.Photos.Common;
+using Barnabas.Domain.Photos;
 using Barnabas.Domain.Listings;
 using Barnabas.Domain.Members;
 using MediatR;
@@ -84,6 +86,11 @@ public sealed class GetBoardQueryHandler : IRequestHandler<GetBoardQuery, BoardP
                             .OrderBy(window => window.Day)
                             .Select(window => window.Day.ToString())
                             .Distinct())
+                    : null,
+
+                // The board's rendition, not the uploaded bytes - L2-106 AC1.
+                row.Listing.PhotoId is { } photoId
+                    ? PhotoUrl.For(photoId, PhotoSize.Board)
                     : null))
             .ToList();
 

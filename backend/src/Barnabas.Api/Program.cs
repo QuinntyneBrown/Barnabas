@@ -7,6 +7,7 @@ using Barnabas.Api.Tenancy;
 using Barnabas.Application.Common.Abuse;
 using Barnabas.Application.Common.Tenancy;
 using Barnabas.Application.DependencyInjection;
+using Barnabas.Domain.Photos;
 using Barnabas.Infrastructure.DependencyInjection;
 using Barnabas.Infrastructure.Persistence;
 using Barnabas.Infrastructure.Security;
@@ -16,19 +17,37 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(kestrel => kestrel.Limits.MaxRequestBodySize = RequestBodyLimitMiddleware.MaxBytes);
+// The largest any endpoint accepts. Kestrel cannot vary its limit per route, so it holds the
+// ceiling and RequestBodyLimitMiddleware holds the per-endpoint floor of 1 MB.
+builder.WebHost.ConfigureKestrel(kestrel => kestrel.Limits.MaxRequestBodySize = PhotoBounds.MaxUploadBytes);
 
 builder.Services
     .AddControllers(options => options.Filters.Add<ForbiddenFieldInspector>())
     .AddJsonOptions(options =>
+    {
         // The four kinds and the request states travel as their names. The web client's own
         // models are string unions, and a number on the wire would make the two disagree about
         // a domain the whole product is written in the vocabulary of.
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+        // Declared rather than inherited. L2-097 AC1 requires member-supplied text to come back
+        // encoded, and what the framework's default encoder escapes has changed between releases
+        // - a requirement that holds only because of a default is one upgrade away from being
+        // false.
+        //
+        // This escapes the HTML-sensitive characters - < > & ' " + - as escape sequences
+        // whatever else it is given, so a description containing a script tag cannot close one
+        // in any document this body is embedded in. UnicodeRanges.All is what stops it also
+        // escaping every accented letter in a member's name, which would be noise rather than
+        // safety.
+        options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
+    })
     .ConfigureApplicationPartManager(manager =>
     {
         if (!builder.Environment.IsDevelopment())
@@ -42,6 +61,9 @@ builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
 
 builder.Services.Configure<RefreshCookieOptions>(
     builder.Configuration.GetSection(RefreshCookieOptions.SectionName));
+
+builder.Services.Configure<SecurityHeaderOptions>(
+    builder.Configuration.GetSection(SecurityHeaderOptions.SectionName));
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddHttpContextAccessor();
@@ -92,7 +114,22 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+var security = app.Services.GetRequiredService<IOptions<SecurityHeaderOptions>>().Value;
+
 app.UseExceptionHandler();
+
+// Outermost, so an exception handler's response carries them too.
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
+if (security.RequireHttps)
+{
+    app.UseHttpsRedirection();
+}
+
+// Explicit, and ahead of the body limit, because that middleware reads the endpoint's declared
+// limit and there is no endpoint until routing has run.
+app.UseRouting();
+
 app.UseMiddleware<RequestBodyLimitMiddleware>();
 
 app.UseAuthentication();

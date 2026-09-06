@@ -18,4 +18,12 @@ export interface BoardListing {
 
   /** The days a Help offer is open. Null on every other kind. */
   readonly availability: string | null;
+
+  /**
+   * The board's own rendition of the listing's photo, or null when it has none.
+   *
+   * The board's, not the listing screen's. A mosaic of thirty placards fetching thirty full-size
+   * photographs is what L2-106 exists to prevent, and the server decides which address is which.
+   */
+  readonly photoUrl: string | null;
 }

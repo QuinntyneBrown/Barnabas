@@ -11,6 +11,7 @@ import { PostHelpListing } from '../models/post-help-listing';
 import { PostLendListing } from '../models/post-lend-listing';
 import { PostSellListing } from '../models/post-sell-listing';
 import { PostedListing } from '../models/posted-listing';
+import { AttachedPhoto } from '../models/attached-photo';
 
 /** The board, and the listings on it. */
 export interface IListingService {
@@ -50,6 +51,15 @@ export interface IListingService {
    * returned loan has already finished.
    */
   restore(listingId: string): Promise<void>;
+
+  /**
+   * Puts one photo on a goods listing, replacing whatever was there.
+   *
+   * A separate call from posting, because a photo goes on a listing that already exists — the
+   * server has to have somewhere to attach it. Help offers time rather than a thing, so it takes
+   * none and the API refuses one.
+   */
+  attachPhoto(listingId: string, photo: File): Promise<AttachedPhoto>;
 
   /** Removes it for good, along with the conversations it opened. */
   remove(listingId: string): Promise<void>;
